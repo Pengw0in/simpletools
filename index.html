@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simply Tools</title>
+    <link rel="icon" type="image/x-icon" href="public/logo.ico">
     <link href="https://cdn.jsdelivr.net/npm/lucide@0.284.0/dist/umd/lucide.js" rel="stylesheet">
     <style>
         * {
@@ -306,6 +307,33 @@
             border-top: 1px solid var(--border-color);
         }
 
+        /* Logo and title styles */
+        .logo-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .logo-img {
+            height: 40px;
+            width: 40px;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            /* Remove background for logo */
+            background: transparent;
+        }
+
+        .logo-title h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 20px 16px;
@@ -316,16 +344,35 @@
             }
             
             .header-controls {
-                position: absolute;
-                top: -10px;
-                right: 0;
-                flex-direction: column;
-                gap: 4px;
+                position: static;
+                flex-direction: row;
+                justify-content: center;
+                gap: 16px;
+                margin-bottom: 16px;
             }
             
+            .search-toggle, .theme-toggle {
+                padding: 16px;
+                min-width: 44px;
+                min-height: 44px;
+                font-size: 18px;
+                border-radius: 50%;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            }
+            .search-container {
+                flex: 1;
+                min-width: 0;
+            }
             .search-input {
-                width: 160px;
-                font-size: 12px;
+                width: 100%;
+                min-width: 120px;
+                font-size: 16px;
+                padding: 12px 16px 12px 40px;
+            }
+            .search-icon-input {
+                left: 16px;
+                width: 20px;
+                height: 20px;
             }
             
             .header h1 {
@@ -354,6 +401,19 @@
             .suggestion-section {
                 margin: 40px 0 16px 0;
             }
+
+            .logo-title {
+                gap: 8px;
+            }
+
+            .logo-img {
+                height: 32px;
+                width: 32px;
+            }
+
+            .logo-title h1 {
+                font-size: 1.5rem;
+            }
         }
 
         /* Theme transition animations */
@@ -380,7 +440,10 @@
                     <i data-lucide="sun" class="theme-icon" id="theme-icon"></i>
                 </button>
             </div>
-            <h1>Simply Tools</h1>
+            <div class="logo-title">
+                <img src="public/logo.png" alt="Simply Tools Logo" class="logo-img" />
+                <h1>Simply Tools</h1>
+            </div>
             <p>A collection of web-based utilities</p>
         </div>
 
