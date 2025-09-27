@@ -6,7 +6,6 @@
     <title>Under Construction - Simple Tools</title>
     <link rel="icon" type="image/x-icon" href="public/logo.ico">
     <link rel="stylesheet" href="toggle.css">
-    <link href="https://unpkg.com/lucide@latest/dist/umd/lucide.js" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -30,14 +29,37 @@
             margin: 0 auto;
             padding: 40px 20px;
             text-align: center;
-            position: relative;
         }
 
+        /* START: Theme Toggle - Now square! */
         .theme-toggle {
-            position: absolute;
-            top: 0;
+            position: fixed;
+            top: 20px;
             right: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 8px;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            z-index: 100;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            line-height: 0;
         }
+        
+        .theme-toggle:hover {
+            background: var(--hover-bg);
+            border-color: var(--text-secondary);
+            color: var(--text-primary);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+        }
+        /* END: Theme Toggle */
 
         .construction-card {
             background: var(--card-bg);
@@ -171,9 +193,11 @@
                 padding: 20px 16px;
             }
 
+            /* Adjusted toggle position for small screens */
             .theme-toggle {
-                top: -10px;
-                right: 16px;
+                top: 10px; 
+                right: 10px;
+                padding: 6px 10px; /* Smaller padding for mobile square button */
             }
             
             .construction-card {
@@ -286,7 +310,8 @@
         // Add some interactivity to the progress bar
         setTimeout(() => {
             const progressFill = document.querySelector('.progress-fill');
-            progressFill.style.width = '45%';
+            // An example of dynamic progress
+            progressFill.style.width = '45%'; 
         }, 1000);
     </script>
 </body>
