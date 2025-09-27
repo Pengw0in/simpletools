@@ -10,6 +10,7 @@
 /yaml              /yaml.html           200
 /convert           /convert.html        200
 /counter           /counter.html        200
+/imgtopdf          /imgtopdf.html       200
 /md                /md.html             200
 
 # Under construction tools - redirect to construction page
@@ -31,4 +32,5 @@
 /convert.html      /convert             301
 /counter.html      /counter             301
 /md.html           /md                  301
+/imgtopdf.html     /imgtopdf            301
 /construction.html /construction        301
