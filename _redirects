@@ -14,13 +14,9 @@
 /pdftoimg          /pdftoimg.html       200
 /imgconverter      /imgconv.html        200
 /md                /md.html             200
-/construction      /gradientgen.html    200
 
 # Under construction tools - redirect to construction page
-#/markdown            /construction.html?tool=markdown    200
-#/hash              /construction.html?tool=hash       200
-#/jwt               /construction.html?tool=jwt        200
-#/timestamp         /construction.html?tool=timestamp  200
+/gradientgen        /construction.html?tool=gradientgen    200
 
 # Redirect .html URLs to clean URLs (301 permanent redirect)
 /json.html         /json                301
@@ -38,5 +34,4 @@
 /imgtopdf.html     /imgtopdf            301
 /pdftoimg.html     /pdftoimg            301
 /imgconv.html      /imgconverter        301
-/construction.html /construction        301
 /gradientgen.html  /construction        301
