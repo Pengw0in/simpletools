@@ -13,7 +13,7 @@
 /md                /md.html             200
 
 # Under construction tools - redirect to construction page
-/markdown            /construction.html?tool=markdown    200
+#/markdown            /construction.html?tool=markdown    200
 #/hash              /construction.html?tool=hash       200
 #/jwt               /construction.html?tool=jwt        200
 #/timestamp         /construction.html?tool=timestamp  200
