@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to Images Splitter (ZIP)</title>
+    <link rel="icon" type="image/x-icon" href="public/logo.ico">
+    <link rel="stylesheet" href="toggle.css">
+    <!-- jsZIP library for creating the ZIP file -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- pdf.js library for parsing and rendering PDFs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        .header p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        .theme-toggle {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            padding: 32px 24px;
+        }
+        .form-group {
+            margin-bottom: 24px;
+        }
+        .form-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            display: block;
+        }
+        .file-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+        .file-input:focus {
+            outline: none;
+            border-color: var(--text-primary);
+            background: var(--input-focus-bg);
+        }
+        .file-count {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        .btn {
+            width: 100%;
+            padding: 12px 0;
+            background: var(--text-primary);
+            color: var(--card-bg);
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+            transition: background 0.2s, color 0.2s, transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn:disabled {
+            background: var(--border-color);
+            color: var(--text-secondary);
+            cursor: not-allowed;
+        }
+        .btn:hover:not(:disabled) {
+            background: var(--text-secondary);
+            color: var(--card-bg);
+            transform: scale(1.01);
+        }
+        .status-message {
+            margin-top: 24px;
+            text-align: center;
+            padding: 12px 20px;
+            border-radius: 4px;
+            font-size: 14px;
+            border: 1px solid var(--border-color);
+            background: var(--notification-bg);
+            color: var(--card-bg);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .status-message.visible {
+            opacity: 1;
+        }
+        .status-message.success {
+            background: var(--success-color);
+            color: #fff;
+            border-color: var(--success-color);
+        }
+        .status-message.error {
+            background: var(--error-color);
+            color: #fff;
+            border-color: var(--error-color);
+        }
+        .status-message.info {
+            background: var(--notification-bg);
+            color: var(--card-bg);
+            border-color: var(--notification-bg);
+        }
+        .btn-icon {
+            width: 20px;
+            height: 20px;
+            color: inherit;
+            vertical-align: middle;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px 8px;
+            }
+            .card {
+                padding: 16px 8px;
+            }
+            .header h1 {
+                font-size: 1.5rem;
+                padding-right: 50px;
+            }
+        }
+        /* Hide the canvas element used for rendering */
+        #render-canvas {
+            display: none;
+        }
+        .spin {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            100% { transform: rotate(360deg);}
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                <i data-lucide="sun" class="theme-icon" id="theme-icon"></i>
+            </button>
+            <h1>PDF to Images Splitter</h1>
+            <p>Upload a PDF file to split it into individual PNG images and download them as a ZIP.</p>
+        </div>
+        <div class="card">
+            <div class="form-group">
+                <label for="pdf-file" class="form-label">Select PDF File</label>
+                <input
+                    type="file"
+                    id="pdf-file"
+                    accept="application/pdf"
+                    class="file-input"
+                    onchange="updateFileCount()"
+                >
+            </div>
+            <div id="file-count" class="file-count">No file selected.</div>
+            <button
+                id="convert-button"
+                class="btn"
+                onclick="splitPdfToImages()"
+                disabled
+            >
+                <i data-lucide="download" class="btn-icon" id="button-icon"></i>
+                <span id="button-text">Split PDF & Download ZIP</span>
+            </button>
+            <div id="status-message" class="status-message"></div>
+            <canvas id="render-canvas"></canvas>
+        </div>
+    </div>
+    <script src="toggle.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script>
+        if (typeof pdfjsLib !== 'undefined') {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        }
+        function updateFileCount() {
+            const input = document.getElementById('pdf-file');
+            const button = document.getElementById('convert-button');
+            const fileCount = document.getElementById('file-count');
+            const statusMessage = document.getElementById('status-message');
+            const hasFile = input.files.length === 1;
+            fileCount.textContent = hasFile ? `${input.files[0].name} selected.` : 'No file selected.';
+            button.disabled = !hasFile;
+            statusMessage.className = 'status-message';
+            statusMessage.textContent = '';
+        }
+        function showStatus(message, type = 'info') {
+            const statusMessage = document.getElementById('status-message');
+            statusMessage.textContent = message;
+            statusMessage.className = `status-message visible ${type}`;
+        }
+        function setLoadingState(isLoading) {
+            const button = document.getElementById('convert-button');
+            const buttonText = document.getElementById('button-text');
+            const buttonIcon = document.getElementById('button-icon');
+            button.disabled = isLoading;
+            if (isLoading) {
+                buttonText.textContent = 'Processing PDF...';
+                buttonIcon.setAttribute('data-lucide', 'loader-2');
+                buttonIcon.classList.add('spin');
+            } else {
+                buttonText.textContent = 'Split PDF & Download ZIP';
+                buttonIcon.setAttribute('data-lucide', 'download');
+                buttonIcon.classList.remove('spin');
+            }
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+        async function splitPdfToImages() {
+            const fileInput = document.getElementById('pdf-file');
+            const files = fileInput.files;
+            if (files.length !== 1) {
+                showStatus('Please select a single PDF file.', 'error');
+                return;
+            }
+            setLoadingState(true);
+            showStatus('Reading PDF file...', 'info');
+            const pdfFile = files[0];
+            try {
+                if (typeof pdfjsLib === 'undefined' || typeof JSZip === 'undefined') {
+                    throw new Error("Required libraries (pdf.js or jszip) failed to load. Check CDN links.");
+                }
+                const arrayBuffer = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.onerror = (e) => reject(new Error("Failed to read PDF file."));
+                    reader.readAsArrayBuffer(pdfFile);
+                });
+                const pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                const numPages = pdfDoc.numPages;
+                showStatus(`PDF loaded successfully. Found ${numPages} page(s).`, 'info');
+                const zip = new JSZip();
+                const canvas = document.getElementById('render-canvas');
+                const context = canvas.getContext('2d');
+                for (let i = 1; i <= numPages; i++) {
+                    const page = await pdfDoc.getPage(i);
+                    const scale = 3;
+                    const viewport = page.getViewport({ scale: scale });
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+                    const renderContext = {
+                        canvasContext: context,
+                        viewport: viewport
+                    };
+                    await page.render(renderContext).promise;
+                    const imageData = canvas.toDataURL('image/png');
+                    const base64Data = imageData.split(',')[1];
+                    zip.file(`${pdfFile.name.replace(/\.pdf$/i, '')}_page_${i}.png`, base64Data, { base64: true });
+                    showStatus(`Page ${i} of ${numPages} rendered and added to ZIP...`, 'info');
+                }
+                showStatus('Compressing files and generating ZIP...', 'info');
+                const zipBlob = await zip.generateAsync({
+                    type: "blob",
+                    compression: "DEFLATE",
+                    compressionOptions: { level: 9 }
+                });
+                const downloadUrl = URL.createObjectURL(zipBlob);
+                const link = document.createElement('a');
+                link.href = downloadUrl;
+                link.download = `${pdfFile.name.replace(/\.pdf$/i, '')}_images.zip`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(downloadUrl);
+                showStatus(`Successfully split PDF into ${numPages} images!`, 'success');
+            } catch (error) {
+                console.error("PDF Split Error:", error);
+                showStatus(`Operation failed. Error: ${error.message}. Please try again with a different PDF.`, 'error');
+            } finally {
+                setLoadingState(false);
+            }
+        }
+        window.onload = function() {
+            updateFileCount();
+            lucide.createIcons();
+        };
+    </script>
+</body>
+</html>

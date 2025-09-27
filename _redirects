@@ -11,7 +11,10 @@
 /convert           /convert.html        200
 /counter           /counter.html        200
 /imgtopdf          /imgtopdf.html       200
+/pdftoimg          /pdftoimg.html       200
+/imgconverter      /imgconv.html        200
 /md                /md.html             200
+/construction      /gradientgen.html    200
 
 # Under construction tools - redirect to construction page
 #/markdown            /construction.html?tool=markdown    200
@@ -33,4 +36,7 @@
 /counter.html      /counter             301
 /md.html           /md                  301
 /imgtopdf.html     /imgtopdf            301
+/pdftoimg.html     /pdftoimg            301
+/imgconv.html      /imgconverter        301
 /construction.html /construction        301
+/gradientgen.html  /construction        301

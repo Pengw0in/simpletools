@@ -1,18 +1,18 @@
 /* Shared Theme System for Simple Tools */
 :root {
-    --bg-color: #fafafa;
-    --card-bg: white;
-    --text-primary: #333;
-    --text-secondary: #666;
-    --border-color: #e0e0e0;
-    --hover-bg: #f5f5f5;
-    --input-bg: white;
-    --input-focus-bg: #fafafa;
-    --code-bg: #f8f9fa;
-    --notification-bg: #333;
-    --error-bg: #fff5f5;
-    --error-color: #d63384;
-    --error-border: #d63384;
+    --bg-color: #e6e6e6;
+    --card-bg: #ededed;
+    --text-primary: #222;
+    --text-secondary: #555;
+    --border-color: #cccccc;
+    --hover-bg: #e0e0e0;
+    --input-bg: #ededed;
+    --input-focus-bg: #e6e6e6;
+    --code-bg: #e2e2e2;
+    --notification-bg: #222;
+    --error-bg: #f8eaea;
+    --error-color: #b03060;
+    --error-border: #b03060;
     --success-color: #22863a;
 }
 
