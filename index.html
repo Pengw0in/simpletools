@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Tools</title>
+    <title>Simply Tools</title>
     <link href="https://cdn.jsdelivr.net/npm/lucide@0.284.0/dist/umd/lucide.js" rel="stylesheet">
     <style>
         * {
@@ -12,11 +12,32 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --bg-color: #fafafa;
+            --card-bg: white;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --border-color: #e0e0e0;
+            --hover-bg: #f5f5f5;
+            --suggestion-hover: rgba(0,0,0,0.02);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --card-bg: #2a2a2a;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --border-color: #404040;
+            --hover-bg: #333;
+            --suggestion-hover: rgba(255,255,255,0.05);
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #fafafa;
-            color: #333;
+            background: var(--bg-color);
+            color: var(--text-primary);
             line-height: 1.6;
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
         .container {
@@ -28,18 +49,140 @@
         .header {
             text-align: center;
             margin-bottom: 40px;
+            position: relative;
         }
 
         .header h1 {
             font-size: 2rem;
             font-weight: 300;
-            color: #333;
+            color: var(--text-primary);
             margin-bottom: 8px;
         }
 
         .header p {
-            color: #666;
+            color: var(--text-secondary);
             font-size: 14px;
+        }
+
+        .header-controls {
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .search-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-input {
+            width: 200px;
+            padding: 8px 12px 8px 36px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            font-size: 13px;
+            transition: all 0.2s ease;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateX(20px);
+        }
+
+        .search-input.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(0);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--text-secondary);
+            background: var(--hover-bg);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .search-icon-input {
+            position: absolute;
+            left: 10px;
+            width: 16px;
+            height: 16px;
+            color: var(--text-secondary);
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .search-input.active + .search-icon-input {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .search-toggle, .theme-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-toggle:hover, .theme-toggle:hover {
+            background: var(--hover-bg);
+            border-color: var(--text-secondary);
+        }
+
+        .search-icon, .theme-icon {
+            width: 18px;
+            height: 18px;
+            color: var(--text-secondary);
+            transition: color 0.2s ease;
+        }
+
+        .search-toggle:hover .search-icon, 
+        .theme-toggle:hover .theme-icon {
+            color: var(--text-primary);
+        }
+
+        .clear-search {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 2px;
+            border-radius: 2px;
+            color: var(--text-secondary);
+            display: none;
+        }
+
+        .clear-search:hover {
+            color: var(--text-primary);
+            background: var(--hover-bg);
+        }
+
+        .clear-search.visible {
+            display: block;
+        }
+
+        .search-results {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--text-secondary);
+            font-size: 13px;
         }
 
         .tools-grid {
@@ -50,26 +193,30 @@
         }
 
         .tool-card {
-            background: white;
-            border: 1px solid #e0e0e0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 4px;
             padding: 24px;
             text-decoration: none;
-            color: #333;
+            color: var(--text-primary);
             transition: all 0.2s ease;
             display: block;
         }
 
         .tool-card:hover {
-            border-color: #bbb;
-            background: #f5f5f5;
+            border-color: var(--text-secondary);
+            background: var(--hover-bg);
+        }
+
+        .tool-card.hidden {
+            display: none;
         }
 
         .tool-icon {
             width: 32px;
             height: 32px;
             margin-bottom: 12px;
-            color: #666;
+            color: var(--text-secondary);
             stroke-width: 1.5;
         }
 
@@ -77,13 +224,42 @@
             font-size: 1.2rem;
             font-weight: 500;
             margin-bottom: 8px;
-            color: #333;
+            color: var(--text-primary);
         }
 
         .tool-description {
-            color: #666;
+            color: var(--text-secondary);
             font-size: 13px;
             line-height: 1.4;
+        }
+
+        .highlight {
+            background: rgba(255, 235, 59, 0.3);
+            padding: 1px 2px;
+            border-radius: 2px;
+        }
+
+        [data-theme="dark"] .highlight {
+            background: rgba(255, 193, 7, 0.2);
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+            display: none;
+        }
+
+        .no-results.visible {
+            display: block;
+        }
+
+        .no-results-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 16px auto;
+            color: var(--text-secondary);
+            opacity: 0.5;
         }
 
         .suggestion-section {
@@ -95,7 +271,7 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            color: #999;
+            color: var(--text-secondary);
             text-decoration: none;
             font-size: 13px;
             font-weight: 400;
@@ -106,9 +282,9 @@
         }
 
         .suggestion-link:hover {
-            color: #333;
-            background: rgba(0,0,0,0.02);
-            border-color: #e0e0e0;
+            color: var(--text-primary);
+            background: var(--suggestion-hover);
+            border-color: var(--border-color);
         }
 
         .suggestion-icon {
@@ -123,11 +299,11 @@
 
         .footer {
             text-align: center;
-            color: #666;
+            color: var(--text-secondary);
             font-size: 13px;
             margin-top: 40px;
             padding-top: 20px;
-            border-top: 1px solid #e0e0e0;
+            border-top: 1px solid var(--border-color);
         }
 
         @media (max-width: 768px) {
@@ -135,8 +311,26 @@
                 padding: 20px 16px;
             }
             
+            .header {
+                position: relative;
+            }
+            
+            .header-controls {
+                position: absolute;
+                top: -10px;
+                right: 0;
+                flex-direction: column;
+                gap: 4px;
+            }
+            
+            .search-input {
+                width: 160px;
+                font-size: 12px;
+            }
+            
             .header h1 {
                 font-size: 1.5rem;
+                padding-right: 50px;
             }
             
             .tools-grid {
@@ -161,17 +355,39 @@
                 margin: 40px 0 16px 0;
             }
         }
+
+        /* Theme transition animations */
+        * {
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
+            <div class="header-controls">
+                <div class="search-container">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search tools..." />
+                    <i data-lucide="search" class="search-icon-input" id="searchIconInput"></i>
+                    <button class="clear-search" onclick="clearSearch()" id="clearSearch">
+                        <i data-lucide="x" style="width: 12px; height: 12px;"></i>
+                    </button>
+                </div>
+                <button class="search-toggle" onclick="toggleSearch()" aria-label="Search tools">
+                    <i data-lucide="search" class="search-icon"></i>
+                </button>
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                    <i data-lucide="sun" class="theme-icon" id="theme-icon"></i>
+                </button>
+            </div>
             <h1>Simply Tools</h1>
             <p>A collection of web-based utilities</p>
         </div>
 
-        <div class="tools-grid">
-            <a href="/json" class="tool-card">
+        <div class="search-results" id="searchResults"></div>
+
+        <div class="tools-grid" id="toolsGrid">
+            <a href="/json" class="tool-card" data-search="json viewer parse syntax highlighting collapsible structure">
                 <i data-lucide="file-json" class="tool-icon"></i>
                 <h2 class="tool-title">JSON Viewer</h2>
                 <p class="tool-description">
@@ -179,7 +395,7 @@
                 </p>
             </a>
 
-            <a href="/csv" class="tool-card">
+            <a href="/csv" class="tool-card" data-search="csv viewer table format search pagination">
                 <i data-lucide="table" class="tool-icon"></i>
                 <h2 class="tool-title">CSV Viewer</h2>
                 <p class="tool-description">
@@ -187,7 +403,7 @@
                 </p>
             </a>
 
-            <a href="/xml" class="tool-card">
+            <a href="/xml" class="tool-card" data-search="xml viewer parse display formatting structure">
                 <i data-lucide="code" class="tool-icon"></i>
                 <h2 class="tool-title">XML Viewer</h2>
                 <p class="tool-description">
@@ -195,7 +411,7 @@
                 </p>
             </a>
 
-            <a href="/regex" class="tool-card">
+            <a href="/regex" class="tool-card" data-search="regex tester regular expressions matching groups">
                 <i data-lucide="search" class="tool-icon"></i>
                 <h2 class="tool-title">Regex Tester</h2>
                 <p class="tool-description">
@@ -203,15 +419,15 @@
                 </p>
             </a>
 
-            <a href="/textdiff" class="tool-card">
+            <a href="/textdiff" class="tool-card" data-search="text diff compare files highlighted differences">
                 <i data-lucide="git-compare" class="tool-icon"></i>
-                <h2 class="tool-title">Text Diff</h2>
+                <h2 class="tool-title">Text Difference</h2>
                 <p class="tool-description">
                     Compare two text files with highlighted differences.
                 </p>
             </a>
 
-            <a href="/qr" class="tool-card">
+            <a href="/qr" class="tool-card" data-search="qr code generator text urls data download">
                 <i data-lucide="qr-code" class="tool-icon"></i>
                 <h2 class="tool-title">QR Code Generator</h2>
                 <p class="tool-description">
@@ -219,7 +435,7 @@
                 </p>
             </a>
 
-            <a href="/pallete" class="tool-card">
+            <a href="/pallete" class="tool-card" data-search="color palette generator pick colors images base color">
                 <i data-lucide="palette" class="tool-icon"></i>
                 <h2 class="tool-title">Color Palette Generator</h2>
                 <p class="tool-description">
@@ -227,7 +443,7 @@
                 </p>
             </a>
 
-            <a href="/sql" class="tool-card">
+            <a href="/sql" class="tool-card" data-search="sql formatter beautify queries dialects">
                 <i data-lucide="database" class="tool-icon"></i>
                 <h2 class="tool-title">SQL Formatter</h2>
                 <p class="tool-description">
@@ -235,7 +451,7 @@
                 </p>
             </a>
 
-            <a href="/yaml" class="tool-card">
+            <a href="/yaml" class="tool-card" data-search="yaml viewer convert json conversion support">
                 <i data-lucide="file-text" class="tool-icon"></i>
                 <h2 class="tool-title">YAML Viewer</h2>
                 <p class="tool-description">
@@ -243,7 +459,7 @@
                 </p>
             </a>
 
-            <a href="/convert" class="tool-card">
+            <a href="/convert" class="tool-card" data-search="unit converter length weight temperature units">
                 <i data-lucide="repeat" class="tool-icon"></i>
                 <h2 class="tool-title">Unit Converter</h2>
                 <p class="tool-description">
@@ -251,7 +467,7 @@
                 </p>
             </a>
 
-            <a href="/counter" class="tool-card">
+            <a href="/counter" class="tool-card" data-search="text counter words characters lines analyze reading time">
                 <i data-lucide="hash" class="tool-icon"></i>
                 <h2 class="tool-title">Text Counter</h2>
                 <p class="tool-description">
@@ -259,7 +475,7 @@
                 </p>
             </a>
 
-            <a href="/markdown" class="tool-card">
+            <a href="/markdown" class="tool-card" data-search="markdown editor preview live rendering syntax highlighting">
                 <i data-lucide="file-edit" class="tool-icon"></i>
                 <h2 class="tool-title">Markdown Editor</h2>
                 <p class="tool-description">
@@ -268,14 +484,20 @@
             </a>
         </div>
 
+        <div class="no-results" id="noResults">
+            <i data-lucide="search-x" class="no-results-icon"></i>
+            <h3>No tools found</h3>
+            <p>Try searching with different keywords or browse all available tools.</p>
+        </div>
+
         <div class="suggestion-section">
             <a href="mailto:zendexino@gmail.com?subject=Simple Tools - Feature Suggestion&body=Hi,%0A%0AI have a suggestion for a new tool:%0A%0A[Describe the tool you'd like to see]%0A%0AThanks!" class="suggestion-link">
                 <i data-lucide="plus-circle" class="suggestion-icon"></i>
-                Suggest a tool
+                Suggest a tool or Report a issue
             </a>
         </div>
 
-        <div class="header">
+        <div class="footer">
             <p>All tools run entirely in your browser.</p>
             <p>No paywalls-No ads</p>
         </div>
@@ -283,7 +505,155 @@
 
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script>
-        lucide.createIcons();
+        let searchActive = false;
+        
+        // Search functionality
+        function toggleSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const searchIconInput = document.getElementById('searchIconInput');
+            searchActive = !searchActive;
+            
+            if (searchActive) {
+                searchInput.classList.add('active');
+                searchIconInput.classList.add('active');
+                setTimeout(() => searchInput.focus(), 200);
+            } else {
+                searchInput.classList.remove('active');
+                searchIconInput.classList.remove('active');
+                clearSearch();
+            }
+        }
+
+        function clearSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const clearButton = document.getElementById('clearSearch');
+            const searchResults = document.getElementById('searchResults');
+            const noResults = document.getElementById('noResults');
+            
+            searchInput.value = '';
+            clearButton.classList.remove('visible');
+            searchResults.innerHTML = '';
+            noResults.classList.remove('visible');
+            
+            // Show all cards
+            document.querySelectorAll('.tool-card').forEach(card => {
+                card.classList.remove('hidden');
+                // Remove highlights
+                const title = card.querySelector('.tool-title');
+                const description = card.querySelector('.tool-description');
+                title.innerHTML = title.textContent;
+                description.innerHTML = description.textContent;
+            });
+        }
+
+        function performSearch(query) {
+            const cards = document.querySelectorAll('.tool-card');
+            const searchResults = document.getElementById('searchResults');
+            const noResults = document.getElementById('noResults');
+            const clearButton = document.getElementById('clearSearch');
+            
+            if (!query.trim()) {
+                clearSearch();
+                return;
+            }
+
+            clearButton.classList.add('visible');
+            
+            const searchTerm = query.toLowerCase();
+            let visibleCount = 0;
+            
+            cards.forEach(card => {
+                const title = card.querySelector('.tool-title').textContent.toLowerCase();
+                const description = card.querySelector('.tool-description').textContent.toLowerCase();
+                const searchData = card.getAttribute('data-search').toLowerCase();
+                
+                const searchContent = `${title} ${description} ${searchData}`;
+                
+                if (searchContent.includes(searchTerm)) {
+                    card.classList.remove('hidden');
+                    visibleCount++;
+                    
+                    // Highlight matches
+                    highlightText(card.querySelector('.tool-title'), searchTerm);
+                    highlightText(card.querySelector('.tool-description'), searchTerm);
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+            
+            // Update results
+            if (visibleCount === 0) {
+                searchResults.innerHTML = '';
+                noResults.classList.add('visible');
+            } else {
+                const resultsText = visibleCount === 1 ? '1 tool found' : `${visibleCount} tools found`;
+                searchResults.innerHTML = `${resultsText} for "${query}"`;
+                noResults.classList.remove('visible');
+            }
+        }
+
+        function highlightText(element, searchTerm) {
+            const originalText = element.textContent;
+            const regex = new RegExp(`(${escapeRegex(searchTerm)})`, 'gi');
+            const highlightedText = originalText.replace(regex, '<span class="highlight">$1</span>');
+            element.innerHTML = highlightedText;
+        }
+
+        function escapeRegex(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        // Search input event listeners
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            performSearch(e.target.value);
+        });
+
+        // Close search on escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && searchActive) {
+                toggleSearch();
+            }
+        });
+
+        // Theme management
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            const themeIcon = document.getElementById('theme-icon');
+            themeIcon.setAttribute('data-lucide', theme === 'dark' ? 'sun' : 'moon');
+            lucide.createIcons();
+        }
+
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            const theme = savedTheme || systemTheme;
+            
+            document.documentElement.setAttribute('data-theme', theme);
+            updateThemeIcon(theme);
+        }
+
+        // Listen for system theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (!localStorage.getItem('theme')) {
+                const theme = e.matches ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-theme', theme);
+                updateThemeIcon(theme);
+            }
+        });
+
+        // Initialize theme and icons
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeTheme();
+            lucide.createIcons();
+        });
     </script>
 </body>
 </html>

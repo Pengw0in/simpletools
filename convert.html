@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unit Converter</title>
+    <link rel="stylesheet" href="toggle.css">
     <style>
         * {
             margin: 0;
@@ -13,8 +14,8 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #fafafa;
-            color: #333;
+            background: var(--bg-color);
+            color: var(--text-primary);
             line-height: 1.6;
         }
 
@@ -27,23 +28,30 @@
         .header {
             text-align: center;
             margin-bottom: 40px;
+            position: relative;
         }
 
         .header h1 {
             font-size: 2rem;
             font-weight: 300;
-            color: #333;
+            color: var(--text-primary);
             margin-bottom: 8px;
         }
 
         .header p {
-            color: #666;
+            color: var(--text-secondary);
             font-size: 14px;
         }
 
+        .theme-toggle {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
         .category-selector {
-            background: white;
-            border: 1px solid #e0e0e0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 4px;
             margin-bottom: 30px;
             overflow: hidden;
@@ -51,10 +59,10 @@
 
         .category-header {
             padding: 12px 16px;
-            background: #f8f9fa;
-            border-bottom: 1px solid #e0e0e0;
+            background: var(--code-bg);
+            border-bottom: 1px solid var(--border-color);
             font-weight: 500;
-            color: #333;
+            color: var(--text-primary);
             font-size: 14px;
         }
 
@@ -67,29 +75,29 @@
 
         .category-tab {
             padding: 8px 16px;
-            border: 1px solid #ddd;
-            background: white;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
             border-radius: 4px;
             cursor: pointer;
             font-size: 13px;
-            color: #333;
+            color: var(--text-primary);
             transition: all 0.2s;
         }
 
         .category-tab:hover {
-            background: #f5f5f5;
-            border-color: #bbb;
+            background: var(--hover-bg);
+            border-color: var(--text-secondary);
         }
 
         .category-tab.active {
-            background: #333;
-            color: white;
-            border-color: #333;
+            background: var(--text-primary);
+            color: var(--card-bg);
+            border-color: var(--text-primary);
         }
 
         .converter-section {
-            background: white;
-            border: 1px solid #e0e0e0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 4px;
             margin-bottom: 30px;
             overflow: hidden;
@@ -116,43 +124,52 @@
         .input-label {
             font-size: 13px;
             font-weight: 500;
-            color: #333;
+            color: var(--text-primary);
         }
 
         .unit-input {
             padding: 12px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--border-color);
             border-radius: 4px;
             font-size: 16px;
             text-align: center;
             outline: none;
+            background: var(--input-bg);
+            color: var(--text-primary);
         }
 
         .unit-input:focus {
-            border-color: #333;
+            border-color: var(--text-primary);
+            background: var(--input-focus-bg);
+        }
+
+        .unit-input::placeholder {
+            color: var(--text-secondary);
         }
 
         .unit-select {
             padding: 8px 12px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--border-color);
             border-radius: 4px;
             font-size: 13px;
-            background: white;
+            background: var(--input-bg);
+            color: var(--text-primary);
             outline: none;
         }
 
         .unit-select:focus {
-            border-color: #333;
+            border-color: var(--text-primary);
+            background: var(--input-focus-bg);
         }
 
         .swap-button {
             padding: 12px;
-            border: 1px solid #ddd;
-            background: white;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
             border-radius: 4px;
             cursor: pointer;
             font-size: 18px;
-            color: #333;
+            color: var(--text-primary);
             transition: all 0.2s;
             display: flex;
             align-items: center;
@@ -161,34 +178,34 @@
         }
 
         .swap-button:hover {
-            background: #f5f5f5;
-            border-color: #bbb;
+            background: var(--hover-bg);
+            border-color: var(--text-secondary);
         }
 
         .conversion-formula {
-            background: #f8f9fa;
+            background: var(--code-bg);
             padding: 16px;
             border-radius: 4px;
-            border-left: 3px solid #333;
+            border-left: 3px solid var(--text-primary);
             font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
             font-size: 13px;
-            color: #666;
+            color: var(--text-secondary);
             margin-top: 16px;
         }
 
         .common-conversions {
-            background: white;
-            border: 1px solid #e0e0e0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 4px;
             overflow: hidden;
         }
 
         .common-header {
             padding: 12px 16px;
-            background: #f8f9fa;
-            border-bottom: 1px solid #e0e0e0;
+            background: var(--code-bg);
+            border-bottom: 1px solid var(--border-color);
             font-weight: 500;
-            color: #333;
+            color: var(--text-primary);
             font-size: 14px;
         }
 
@@ -201,7 +218,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 8px 0;
-            border-bottom: 1px solid #f0f0f0;
+            border-bottom: 1px solid var(--border-color);
             font-size: 13px;
         }
 
@@ -210,20 +227,20 @@
         }
 
         .common-left {
-            color: #333;
+            color: var(--text-primary);
         }
 
         .common-right {
-            color: #666;
+            color: var(--text-secondary);
             font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
         }
 
         .error {
-            background: #fff5f5;
-            color: #d63384;
+            background: var(--error-bg);
+            color: var(--error-color);
             padding: 12px;
             border-radius: 4px;
-            border-left: 3px solid #d63384;
+            border-left: 3px solid var(--error-border);
             font-size: 13px;
             margin-top: 16px;
         }
@@ -239,6 +256,12 @@
             
             .header h1 {
                 font-size: 1.5rem;
+                padding-right: 50px;
+            }
+
+            .theme-toggle {
+                top: -10px;
+                right: 0;
             }
 
             .conversion-row {
@@ -268,6 +291,9 @@
 <body>
     <div class="container">
         <div class="header">
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                <i data-lucide="sun" class="theme-icon" id="theme-icon"></i>
+            </button>
             <h1>Unit Converter</h1>
             <p>Convert between different units of measurement</p>
         </div>
@@ -340,6 +366,8 @@
         </div>
     </div>
 
+    <script src="toggle.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script>
         // Unit definitions and conversion factors
         const unitCategories = {
@@ -721,7 +749,10 @@
         }
 
         // Initialize when page loads
-        window.addEventListener('load', initConverter);
+        window.addEventListener('load', () => {
+            initConverter();
+            lucide.createIcons();
+        });
     </script>
 </body>
 </html>

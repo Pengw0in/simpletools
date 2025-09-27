@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Generator</title>
+    <link rel="stylesheet" href="toggle.css">
     <style>
         * {
             margin: 0;
@@ -13,8 +14,8 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #fafafa;
-            color: #333;
+            background: var(--bg-color);
+            color: var(--text-primary);
             line-height: 1.6;
         }
 
@@ -27,23 +28,30 @@
         .header {
             text-align: center;
             margin-bottom: 40px;
+            position: relative;
         }
 
         .header h1 {
             font-size: 2rem;
             font-weight: 300;
-            color: #333;
+            color: var(--text-primary);
             margin-bottom: 8px;
         }
 
         .header p {
-            color: #666;
+            color: var(--text-secondary);
             font-size: 14px;
         }
 
+        .theme-toggle {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
         .input-section {
-            background: white;
-            border: 1px solid #e0e0e0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 4px;
             margin-bottom: 30px;
             overflow: hidden;
@@ -52,10 +60,10 @@
         .input-label {
             display: block;
             padding: 12px 16px;
-            background: #f8f9fa;
-            border-bottom: 1px solid #e0e0e0;
+            background: var(--code-bg);
+            border-bottom: 1px solid var(--border-color);
             font-weight: 500;
-            color: #333;
+            color: var(--text-primary);
             font-size: 14px;
         }
 
@@ -65,11 +73,21 @@
             border: none;
             outline: none;
             font-size: 14px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+        }
+
+        .input-field:focus {
+            background: var(--input-focus-bg);
+        }
+
+        .input-field::placeholder {
+            color: var(--text-secondary);
         }
 
         .output-section {
-            background: white;
-            border: 1px solid #e0e0e0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 4px;
             padding: 30px;
             text-align: center;
@@ -86,11 +104,11 @@
 
         .qr-placeholder {
             padding: 40px 20px;
-            border: 2px dashed #ddd;
+            border: 2px dashed var(--border-color);
             border-radius: 4px;
-            color: #666;
+            color: var(--text-secondary);
             font-size: 14px;
-            background: #f8f9fa;
+            background: var(--code-bg);
         }
 
         .controls {
@@ -102,29 +120,29 @@
 
         .btn {
             padding: 8px 16px;
-            border: 1px solid #ddd;
-            background: white;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
             border-radius: 4px;
             cursor: pointer;
             font-size: 13px;
-            color: #333;
+            color: var(--text-primary);
             transition: all 0.2s;
         }
 
         .btn:hover {
-            background: #f5f5f5;
-            border-color: #bbb;
+            background: var(--hover-bg);
+            border-color: var(--text-secondary);
         }
 
         .btn-primary {
-            background: #333;
-            color: white;
-            border-color: #333;
+            background: var(--text-primary);
+            color: var(--card-bg);
+            border-color: var(--text-primary);
         }
 
         .btn-primary:hover {
-            background: #555;
-            border-color: #555;
+            background: var(--text-secondary);
+            border-color: var(--text-secondary);
         }
 
         .btn:disabled {
@@ -133,21 +151,28 @@
         }
 
         .btn:disabled:hover {
-            background: white;
-            border-color: #ddd;
+            background: var(--card-bg);
+            border-color: var(--border-color);
         }
 
         .error {
-            background: #fff5f5;
-            color: #d63384;
+            background: var(--error-bg);
+            color: var(--error-color);
             padding: 16px;
             border-radius: 4px;
-            border-left: 3px solid #d63384;
+            border-left: 3px solid var(--error-border);
             font-size: 14px;
         }
 
         .hidden {
             display: none;
+        }
+
+        /* QR Code styling for dark theme */
+        [data-theme="dark"] #qrcode canvas {
+            border-radius: 4px;
+            background: white;
+            padding: 8px;
         }
 
         @media (max-width: 768px) {
@@ -157,6 +182,12 @@
             
             .header h1 {
                 font-size: 1.5rem;
+                padding-right: 50px;
+            }
+
+            .theme-toggle {
+                top: -10px;
+                right: 0;
             }
             
             .controls {
@@ -169,6 +200,9 @@
 <body>
     <div class="container">
         <div class="header">
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                <i data-lucide="sun" class="theme-icon" id="theme-icon"></i>
+            </button>
             <h1>QR Code Generator</h1>
             <p>Generate QR codes from text or URLs</p>
         </div>
@@ -207,6 +241,8 @@
         </div>
     </div>
 
+    <script src="toggle.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script>
         let qrCodeInstance = null;
         const qrCodeContainer = document.getElementById('qrcode');
@@ -286,9 +322,10 @@
             clearQRCode();
         }
 
-        window.onload = function() {
+        window.addEventListener('load', () => {
             dataInput.focus();
-        };
+            lucide.createIcons();
+        });
     </script>
 </body>
 </html>

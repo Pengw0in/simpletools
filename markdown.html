@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Markdown Editor</title>
+    <link rel="stylesheet" href="toggle.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet">
     <style>
         * {
@@ -14,8 +15,8 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #fafafa;
-            color: #333;
+            background: var(--bg-color);
+            color: var(--text-primary);
             line-height: 1.6;
         }
 
@@ -28,23 +29,30 @@
         .header {
             text-align: center;
             margin-bottom: 40px;
+            position: relative;
         }
 
         .header h1 {
             font-size: 2rem;
             font-weight: 300;
-            color: #333;
+            color: var(--text-primary);
             margin-bottom: 8px;
         }
 
         .header p {
-            color: #666;
+            color: var(--text-secondary);
             font-size: 14px;
         }
 
+        .theme-toggle {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
         .toolbar {
-            background: white;
-            border: 1px solid #e0e0e0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 4px;
             margin-bottom: 20px;
             overflow: hidden;
@@ -52,10 +60,10 @@
 
         .toolbar-header {
             padding: 12px 16px;
-            background: #f8f9fa;
-            border-bottom: 1px solid #e0e0e0;
+            background: var(--code-bg);
+            border-bottom: 1px solid var(--border-color);
             font-weight: 500;
-            color: #333;
+            color: var(--text-primary);
             font-size: 14px;
         }
 
@@ -83,8 +91,8 @@
         .file-input-label {
             display: inline-block;
             padding: 6px 12px;
-            background: #333;
-            color: white;
+            background: var(--text-primary);
+            color: var(--card-bg);
             border-radius: 4px;
             cursor: pointer;
             font-size: 13px;
@@ -92,47 +100,47 @@
         }
 
         .file-input-label:hover {
-            background: #555;
+            background: var(--text-secondary);
         }
 
         .btn {
             padding: 6px 12px;
-            border: 1px solid #ddd;
-            background: white;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
             border-radius: 4px;
             cursor: pointer;
             font-size: 13px;
-            color: #333;
+            color: var(--text-primary);
             transition: all 0.2s;
         }
 
         .btn:hover {
-            background: #f5f5f5;
-            border-color: #bbb;
+            background: var(--hover-bg);
+            border-color: var(--text-secondary);
         }
 
         .btn-primary {
-            background: #333;
-            color: white;
-            border-color: #333;
+            background: var(--text-primary);
+            color: var(--card-bg);
+            border-color: var(--text-primary);
         }
 
         .btn-primary:hover {
-            background: #555;
-            border-color: #555;
+            background: var(--text-secondary);
+            border-color: var(--text-secondary);
         }
 
         .btn:disabled {
-            background: #ccc;
-            color: #666;
+            background: var(--border-color);
+            color: var(--text-secondary);
             cursor: not-allowed;
-            border-color: #ccc;
+            border-color: var(--border-color);
         }
 
         .view-toggle {
             display: flex;
             gap: 0;
-            border: 1px solid #ddd;
+            border: 1px solid var(--border-color);
             border-radius: 4px;
             overflow: hidden;
         }
@@ -140,12 +148,12 @@
         .toggle-btn {
             padding: 6px 12px;
             border: none;
-            background: white;
+            background: var(--card-bg);
             cursor: pointer;
             font-size: 13px;
-            color: #333;
+            color: var(--text-primary);
             transition: all 0.2s;
-            border-right: 1px solid #ddd;
+            border-right: 1px solid var(--border-color);
         }
 
         .toggle-btn:last-child {
@@ -153,12 +161,12 @@
         }
 
         .toggle-btn.active {
-            background: #333;
-            color: white;
+            background: var(--text-primary);
+            color: var(--card-bg);
         }
 
         .toggle-btn:hover:not(.active) {
-            background: #f5f5f5;
+            background: var(--hover-bg);
         }
 
         .editor-section {
@@ -185,8 +193,8 @@
         }
 
         .editor-group {
-            background: white;
-            border: 1px solid #e0e0e0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 4px;
             overflow: hidden;
             height: 600px;
@@ -197,10 +205,10 @@
         .editor-label {
             display: block;
             padding: 12px 16px;
-            background: #f8f9fa;
-            border-bottom: 1px solid #e0e0e0;
+            background: var(--code-bg);
+            border-bottom: 1px solid var(--border-color);
             font-weight: 500;
-            color: #333;
+            color: var(--text-primary);
             font-size: 14px;
             flex-shrink: 0;
         }
@@ -215,17 +223,23 @@
             font-size: 14px;
             resize: none;
             line-height: 1.5;
+            background: var(--input-bg);
+            color: var(--text-primary);
         }
 
         .markdown-textarea:focus {
-            background: #fafafa;
+            background: var(--input-focus-bg);
+        }
+
+        .markdown-textarea::placeholder {
+            color: var(--text-secondary);
         }
 
         .preview-container {
             flex: 1;
             padding: 16px;
             overflow-y: auto;
-            background: white;
+            background: var(--card-bg);
         }
 
         .preview-container h1,
@@ -235,18 +249,18 @@
         .preview-container h5,
         .preview-container h6 {
             margin: 16px 0 8px 0;
-            color: #333;
+            color: var(--text-primary);
         }
 
         .preview-container h1 {
             font-size: 2rem;
-            border-bottom: 2px solid #e0e0e0;
+            border-bottom: 2px solid var(--border-color);
             padding-bottom: 8px;
         }
 
         .preview-container h2 {
             font-size: 1.5rem;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid var(--border-color);
             padding-bottom: 4px;
         }
 
@@ -257,11 +271,13 @@
         .preview-container p {
             margin: 8px 0;
             line-height: 1.6;
+            color: var(--text-primary);
         }
 
         .preview-container ul,
         .preview-container ol {
             margin: 8px 0 8px 20px;
+            color: var(--text-primary);
         }
 
         .preview-container li {
@@ -271,27 +287,27 @@
         .preview-container blockquote {
             margin: 16px 0;
             padding: 8px 16px;
-            border-left: 4px solid #e0e0e0;
-            background: #f8f9fa;
-            color: #666;
+            border-left: 4px solid var(--border-color);
+            background: var(--code-bg);
+            color: var(--text-secondary);
         }
 
         .preview-container code {
-            background: #f8f9fa;
+            background: var(--code-bg);
             padding: 2px 4px;
             border-radius: 3px;
             font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
             font-size: 13px;
-            color: #d63384;
+            color: var(--error-color);
         }
 
         .preview-container pre {
-            background: #f8f9fa;
+            background: var(--code-bg);
             padding: 16px;
             border-radius: 4px;
             overflow-x: auto;
             margin: 16px 0;
-            border: 1px solid #e0e0e0;
+            border: 1px solid var(--border-color);
         }
 
         .preview-container pre code {
@@ -308,19 +324,24 @@
 
         .preview-container th,
         .preview-container td {
-            border: 1px solid #e0e0e0;
+            border: 1px solid var(--border-color);
             padding: 8px 12px;
             text-align: left;
+            color: var(--text-primary);
         }
 
         .preview-container th {
-            background: #f8f9fa;
+            background: var(--code-bg);
             font-weight: 500;
         }
 
         .preview-container a {
             color: #0066cc;
             text-decoration: none;
+        }
+
+        [data-theme="dark"] .preview-container a {
+            color: #66b3ff;
         }
 
         .preview-container a:hover {
@@ -337,13 +358,13 @@
         .preview-container hr {
             border: none;
             height: 1px;
-            background: #e0e0e0;
+            background: var(--border-color);
             margin: 20px 0;
         }
 
         .stats-section {
-            background: white;
-            border: 1px solid #e0e0e0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 4px;
             padding: 16px;
             display: flex;
@@ -353,17 +374,17 @@
         }
 
         .stat-item {
-            color: #666;
+            color: var(--text-secondary);
         }
 
         .stat-value {
             font-weight: 500;
-            color: #333;
+            color: var(--text-primary);
         }
 
         .empty-state {
             text-align: center;
-            color: #666;
+            color: var(--text-secondary);
             font-size: 14px;
             padding: 40px 20px;
         }
@@ -374,8 +395,8 @@
             left: 50%;
             transform: translateX(-50%);
             padding: 12px 20px;
-            background: #333;
-            color: white;
+            background: var(--notification-bg);
+            color: var(--card-bg);
             border-radius: 4px;
             font-size: 14px;
             opacity: 0;
@@ -385,7 +406,7 @@
         }
 
         .notification.error {
-            background: #d63384;
+            background: var(--error-color);
         }
 
         .notification.show {
@@ -427,6 +448,12 @@
             
             .header h1 {
                 font-size: 1.5rem;
+                padding-right: 50px;
+            }
+
+            .theme-toggle {
+                top: -10px;
+                right: 0;
             }
 
             .editor-section {
@@ -467,6 +494,9 @@
 <body>
     <div class="container">
         <div class="header">
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                <i data-lucide="sun" class="theme-icon" id="theme-icon"></i>
+            </button>
             <h1>Markdown Editor</h1>
             <p>Write and preview Markdown with live rendering and syntax highlighting</p>
         </div>
@@ -547,6 +577,8 @@ function hello() {
         <div id="pdfContainer" style="position: absolute; left: -9999px;"></div>
     </div>
 
+    <script src="toggle.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
@@ -777,6 +809,7 @@ ${html}
 
         window.addEventListener('load', () => {
             updatePreview();
+            lucide.createIcons();
         });
     </script>
 </body>

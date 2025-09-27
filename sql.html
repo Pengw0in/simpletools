@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SQL Formatter & Beautifier</title>
+    <link rel="stylesheet" href="toggle.css">
     <!-- Load Prism.js CSS (light theme) -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/themes/prism.min.css" rel="stylesheet" />
     <style>
@@ -15,8 +16,8 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #fafafa;
-            color: #333;
+            background: var(--bg-color);
+            color: var(--text-primary);
             line-height: 1.6;
         }
 
@@ -29,23 +30,30 @@
         .header {
             text-align: center;
             margin-bottom: 40px;
+            position: relative;
         }
 
         .header h1 {
             font-size: 2rem;
             font-weight: 300;
-            color: #333;
+            color: var(--text-primary);
             margin-bottom: 8px;
         }
 
         .header p {
-            color: #666;
+            color: var(--text-secondary);
             font-size: 14px;
         }
 
+        .theme-toggle {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
         .config-section {
-            background: white;
-            border: 1px solid #e0e0e0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 4px;
             margin-bottom: 30px;
             overflow: hidden;
@@ -53,10 +61,10 @@
 
         .config-header {
             padding: 12px 16px;
-            background: #f8f9fa;
-            border-bottom: 1px solid #e0e0e0;
+            background: var(--code-bg);
+            border-bottom: 1px solid var(--border-color);
             font-weight: 500;
-            color: #333;
+            color: var(--text-primary);
             font-size: 14px;
         }
 
@@ -76,22 +84,23 @@
 
         .config-label {
             font-size: 13px;
-            color: #666;
+            color: var(--text-secondary);
             white-space: nowrap;
         }
 
         .config-select {
             padding: 6px 8px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--border-color);
             border-radius: 4px;
             font-size: 13px;
-            background: white;
+            background: var(--input-bg);
+            color: var(--text-primary);
             min-width: 140px;
         }
 
         .config-select:focus {
             outline: none;
-            border-color: #333;
+            border-color: var(--text-primary);
         }
 
         .file-input-wrapper {
@@ -110,8 +119,8 @@
         .file-input-label {
             display: inline-block;
             padding: 6px 12px;
-            background: #333;
-            color: white;
+            background: var(--text-primary);
+            color: var(--card-bg);
             border-radius: 4px;
             cursor: pointer;
             font-size: 13px;
@@ -119,34 +128,34 @@
         }
 
         .file-input-label:hover {
-            background: #555;
+            background: var(--text-secondary);
         }
 
         .btn {
             padding: 6px 16px;
-            border: 1px solid #ddd;
-            background: white;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
             border-radius: 4px;
             cursor: pointer;
             font-size: 13px;
-            color: #333;
+            color: var(--text-primary);
             transition: all 0.2s;
         }
 
         .btn:hover {
-            background: #f5f5f5;
-            border-color: #bbb;
+            background: var(--hover-bg);
+            border-color: var(--text-secondary);
         }
 
         .btn-primary {
-            background: #333;
-            color: white;
-            border-color: #333;
+            background: var(--text-primary);
+            color: var(--card-bg);
+            border-color: var(--text-primary);
         }
 
         .btn-primary:hover {
-            background: #555;
-            border-color: #555;
+            background: var(--text-secondary);
+            border-color: var(--text-secondary);
         }
 
         .editor-section {
@@ -157,8 +166,8 @@
         }
 
         .editor-group {
-            background: white;
-            border: 1px solid #e0e0e0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 4px;
             overflow: hidden;
         }
@@ -166,10 +175,10 @@
         .editor-label {
             display: block;
             padding: 12px 16px;
-            background: #f8f9fa;
-            border-bottom: 1px solid #e0e0e0;
+            background: var(--code-bg);
+            border-bottom: 1px solid var(--border-color);
             font-weight: 500;
-            color: #333;
+            color: var(--text-primary);
             font-size: 14px;
         }
 
@@ -184,10 +193,16 @@
             font-size: 14px;
             resize: vertical;
             line-height: 1.5;
+            background: var(--input-bg);
+            color: var(--text-primary);
         }
 
         .sql-textarea:focus {
-            background: #fafafa;
+            background: var(--input-focus-bg);
+        }
+
+        .sql-textarea::placeholder {
+            color: var(--text-secondary);
         }
 
         /* Styles for the Output PRE/CODE block (new structure for highlighting) */
@@ -200,7 +215,7 @@
             overflow: auto; 
             font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
             padding: 0 !important; /* Overwrite Prism's padding on the PRE tag */
-            background: #ffffff; /* Explicitly set to white for light theme */
+            background: var(--code-bg) !important; /* Theme-aware background */
         }
 
         /* Styles for the CODE block inside PRE */
@@ -210,7 +225,44 @@
             padding: 16px; 
             font-size: 14px;
             line-height: 1.5;
-            white-space: pre; 
+            white-space: pre;
+            background: var(--code-bg) !important;
+            color: var(--text-primary) !important;
+        }
+
+        /* Dark theme adjustments for Prism syntax highlighting */
+        [data-theme="dark"] .token.comment,
+        [data-theme="dark"] .token.prolog,
+        [data-theme="dark"] .token.doctype,
+        [data-theme="dark"] .token.cdata {
+            color: #8a8a8a;
+        }
+
+        [data-theme="dark"] .token.keyword {
+            color: #66b3ff;
+        }
+
+        [data-theme="dark"] .token.string,
+        [data-theme="dark"] .token.attr-value {
+            color: #4ade80;
+        }
+
+        [data-theme="dark"] .token.number {
+            color: #fb923c;
+        }
+
+        [data-theme="dark"] .token.operator,
+        [data-theme="dark"] .token.punctuation {
+            color: #e0e0e0;
+        }
+
+        [data-theme="dark"] .token.function {
+            color: #a78bfa;
+        }
+
+        [data-theme="dark"] pre.language-sql,
+        [data-theme="dark"] pre.language-sql code {
+            text-shadow: none !important;
         }
 
         .copy-button-wrapper {
@@ -222,8 +274,8 @@
             bottom: 8px;
             right: 8px;
             padding: 4px 8px;
-            background: #22863a;
-            color: white;
+            background: var(--success-color);
+            color: var(--card-bg);
             border: none;
             border-radius: 3px;
             cursor: pointer;
@@ -238,8 +290,12 @@
             background: #28a745;
         }
 
+        [data-theme="dark"] .copy-button:hover {
+            background: #5fb85f;
+        }
+
         .copy-button:disabled {
-            background: #666;
+            background: var(--text-secondary);
             cursor: not-allowed;
             opacity: 0.5;
         }
@@ -250,8 +306,8 @@
             left: 50%;
             transform: translateX(-50%);
             padding: 12px 20px;
-            background: #333;
-            color: white;
+            background: var(--notification-bg);
+            color: var(--card-bg);
             border-radius: 4px;
             font-size: 14px;
             opacity: 0;
@@ -261,7 +317,16 @@
         }
 
         .notification.error {
-            background: #d63384;
+            background: var(--error-color);
+        }
+
+        [data-theme="dark"] .notification {
+            background: #fafafa;
+            color: #222;
+        }
+        [data-theme="dark"] .notification.error {
+            background: #ff6b6b;
+            color: #fff;
         }
 
         .notification.show {
@@ -269,11 +334,11 @@
         }
 
         .error {
-            background: #fff5f5;
-            color: #d63384;
+            background: var(--error-bg);
+            color: var(--error-color);
             padding: 16px;
             border-radius: 4px;
-            border-left: 3px solid #d63384;
+            border-left: 3px solid var(--error-border);
             font-size: 14px;
         }
 
@@ -285,6 +350,12 @@
             
             .header h1 {
                 font-size: 1.5rem;
+                padding-right: 50px;
+            }
+
+            .theme-toggle {
+                top: -10px;
+                right: 0;
             }
 
             .editor-section {
@@ -354,6 +425,9 @@
 <body>
     <div class="container">
         <div class="header">
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                <i data-lucide="sun" class="theme-icon" id="theme-icon"></i>
+            </button>
             <h1>SQL Formatter & Beautifier</h1>
             <p>Format and beautify your SQL queries with dialect support</p>
         </div>
@@ -420,6 +494,8 @@
         <div id="notification" class="notification"></div>
     </div>
 
+    <script src="toggle.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script>
         // DOM Elements
         const inputSql = document.getElementById('inputSql');
@@ -436,6 +512,7 @@
             } else {
                 console.error("One or more required libraries failed to load (sqlFormatter or Prism).");
             }
+            lucide.createIcons();
         };
 
         /**

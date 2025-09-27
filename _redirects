@@ -3,7 +3,7 @@
 /csv               /csv.html            200
 /xml               /xml.html            200
 /regex             /regex.html          200
-/textdiff          /textdiff.html       200
+/textdifference    /textdiff.html       200
 /qr                /qr.html             200
 /pallete           /pallete.html        200
 /sql               /sql.html            200
@@ -23,7 +23,7 @@
 /csv.html          /csv                 301
 /xml.html          /xml                 301
 /regex.html        /regex               301
-/textdiff.html     /textdiff            301
+/textdiff.html     /textdifference      301
 /qr.html           /qr                  301
 /pallete.html      /pallete             301
 /sql.html          /sql                 301
