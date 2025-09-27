@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Tools</title>
+    <link href="https://cdn.jsdelivr.net/npm/lucide@0.284.0/dist/umd/lucide.js" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #fafafa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .tool-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 24px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.2s ease;
+            display: block;
+        }
+
+        .tool-card:hover {
+            border-color: #bbb;
+            background: #f5f5f5;
+        }
+
+        .tool-icon {
+            width: 32px;
+            height: 32px;
+            margin-bottom: 12px;
+            color: #666;
+            stroke-width: 1.5;
+        }
+
+        .tool-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .tool-description {
+            color: #666;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .suggestion-section {
+            margin: 60px 0 20px 0;
+            text-align: center;
+        }
+
+        .suggestion-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #999;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 400;
+            padding: 8px 12px;
+            border-radius: 20px;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .suggestion-link:hover {
+            color: #333;
+            background: rgba(0,0,0,0.02);
+            border-color: #e0e0e0;
+        }
+
+        .suggestion-icon {
+            width: 14px;
+            height: 14px;
+            opacity: 0.6;
+        }
+
+        .suggestion-link:hover .suggestion-icon {
+            opacity: 1;
+        }
+
+        .footer {
+            text-align: center;
+            color: #666;
+            font-size: 13px;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 16px;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .tools-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .tool-card {
+                padding: 20px;
+            }
+            
+            .tool-icon {
+                width: 28px;
+                height: 28px;
+            }
+            
+            .tool-title {
+                font-size: 1.1rem;
+            }
+
+            .suggestion-section {
+                margin: 40px 0 16px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Simple Tools</h1>
+            <p>A collection of web-based utilities</p>
+        </div>
+
+        <div class="tools-grid">
+            <a href="/json" class="tool-card">
+                <i data-lucide="file-json" class="tool-icon"></i>
+                <h2 class="tool-title">JSON Viewer</h2>
+                <p class="tool-description">
+                    Parse and view JSON files with syntax highlighting and collapsible structure.
+                </p>
+            </a>
+
+            <a href="/csv" class="tool-card">
+                <i data-lucide="table" class="tool-icon"></i>
+                <h2 class="tool-title">CSV Viewer</h2>
+                <p class="tool-description">
+                    View CSV files in a clean table format with search and pagination.
+                </p>
+            </a>
+
+            <a href="/xml" class="tool-card">
+                <i data-lucide="code" class="tool-icon"></i>
+                <h2 class="tool-title">XML Viewer</h2>
+                <p class="tool-description">
+                    Parse and display XML files with proper formatting and structure.
+                </p>
+            </a>
+
+            <a href="/regex" class="tool-card">
+                <i data-lucide="search" class="tool-icon"></i>
+                <h2 class="tool-title">Regex Tester</h2>
+                <p class="tool-description">
+                    Test regular expressions with real-time matching and groups.
+                </p>
+            </a>
+
+            <a href="/textdiff" class="tool-card">
+                <i data-lucide="git-compare" class="tool-icon"></i>
+                <h2 class="tool-title">Text Diff</h2>
+                <p class="tool-description">
+                    Compare two text files with highlighted differences.
+                </p>
+            </a>
+
+            <a href="/qr" class="tool-card">
+                <i data-lucide="qr-code" class="tool-icon"></i>
+                <h2 class="tool-title">QR Code Generator</h2>
+                <p class="tool-description">
+                    Generate QR codes from text, URLs, or any data with download option.
+                </p>
+            </a>
+
+            <a href="/pallete" class="tool-card">
+                <i data-lucide="palette" class="tool-icon"></i>
+                <h2 class="tool-title">Color Palette Generator</h2>
+                <p class="tool-description">
+                    Pick colors from images or generate palettes from any base color.
+                </p>
+            </a>
+
+            <a href="/sql" class="tool-card">
+                <i data-lucide="database" class="tool-icon"></i>
+                <h2 class="tool-title">SQL Formatter</h2>
+                <p class="tool-description">
+                    Format and beautify SQL queries with support for multiple dialects.
+                </p>
+            </a>
+
+            <a href="/yaml" class="tool-card">
+                <i data-lucide="file-text" class="tool-icon"></i>
+                <h2 class="tool-title">YAML Viewer</h2>
+                <p class="tool-description">
+                    View and convert YAML files with JSON conversion support.
+                </p>
+            </a>
+
+            <a href="/convert" class="tool-card">
+                <i data-lucide="repeat" class="tool-icon"></i>
+                <h2 class="tool-title">Unit Converter</h2>
+                <p class="tool-description">
+                    Convert between different units of length, weight, temperature, and more.
+                </p>
+            </a>
+
+            <a href="/counter" class="tool-card">
+                <i data-lucide="hash" class="tool-icon"></i>
+                <h2 class="tool-title">Text Counter</h2>
+                <p class="tool-description">
+                    Count words, characters, lines and analyze text with reading time estimates.
+                </p>
+            </a>
+
+            <a href="/markdown" class="tool-card">
+                <i data-lucide="file-edit" class="tool-icon"></i>
+                <h2 class="tool-title">Markdown Editor</h2>
+                <p class="tool-description">
+                    Write and preview Markdown with live rendering and syntax highlighting.
+                </p>
+            </a>
+        </div>
+
+        <div class="suggestion-section">
+            <a href="mailto:zendexino@gmail.com?subject=Simple Tools - Feature Suggestion&body=Hi,%0A%0AI have a suggestion for a new tool:%0A%0A[Describe the tool you'd like to see]%0A%0AThanks!" class="suggestion-link">
+                <i data-lucide="plus-circle" class="suggestion-icon"></i>
+                Suggest a tool
+            </a>
+        </div>
+
+        <div class="header">
+            <p>All tools run entirely in your browser.</p>
+            <p>No paywalls-No ads</p>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

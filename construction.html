@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Under Construction - Simple Tools</title>
+    <link href="https://unpkg.com/lucide@latest/dist/umd/lucide.js" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #fafafa;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .construction-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 60px 40px;
+            margin-bottom: 30px;
+        }
+
+        .construction-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px auto;
+            color: #666;
+            stroke-width: 1;
+        }
+
+        .construction-title {
+            font-size: 2rem;
+            font-weight: 300;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .construction-subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 24px;
+        }
+
+        .construction-description {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: #333;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .back-button:hover {
+            background: #555;
+        }
+
+        .back-icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        .features-section {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 30px;
+        }
+
+        .features-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .features-list {
+            list-style: none;
+            text-align: left;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .features-list li {
+            padding: 8px 0;
+            color: #666;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-icon {
+            width: 16px;
+            height: 16px;
+            color: #999;
+        }
+
+        .progress-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .progress-text {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #333;
+            width: 35%;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 16px;
+            }
+            
+            .construction-card {
+                padding: 40px 20px;
+            }
+            
+            .construction-icon {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .construction-title {
+                font-size: 1.5rem;
+            }
+            
+            .construction-subtitle {
+                font-size: 1rem;
+            }
+            
+            .features-section {
+                padding: 20px;
+            }
+        }
+
+        .animated {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="construction-card animated">
+            <i data-lucide="construction" class="construction-icon"></i>
+            <h1 class="construction-title">Under Construction</h1>
+            <p class="construction-subtitle">This tool is currently being built</p>
+            <p class="construction-description">
+                We're working hard to bring you this amazing tool. It will be available soon with all the features you need.
+            </p>
+            <a href="/" class="back-button">
+                <i data-lucide="arrow-left" class="back-icon"></i>
+                Back to Tools
+            </a>
+        </div>
+
+        <div class="features-section animated">
+            <h2 class="features-title">What to expect:</h2>
+            <ul class="features-list">
+                <li>
+                    <i data-lucide="check-circle" class="feature-icon"></i>
+                    Clean, intuitive interface
+                </li>
+                <li>
+                    <i data-lucide="zap" class="feature-icon"></i>
+                    Fast and responsive
+                </li>
+                <li>
+                    <i data-lucide="shield-check" class="feature-icon"></i>
+                    Privacy-focused (runs in browser)
+                </li>
+                <li>
+                    <i data-lucide="download" class="feature-icon"></i>
+                    Export functionality
+                </li>
+                <li>
+                    <i data-lucide="smartphone" class="feature-icon"></i>
+                    Mobile-friendly design
+                </li>
+            </ul>
+
+            <div class="progress-section">
+                <div class="progress-text">Development Progress</div>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script>
+        lucide.createIcons();
+        
+        // Get tool name from URL parameter if provided
+        const urlParams = new URLSearchParams(window.location.search);
+        const toolName = urlParams.get('tool');
+        
+        if (toolName) {
+            // Capitalize first letter for display
+            const displayName = toolName.charAt(0).toUpperCase() + toolName.slice(1);
+            document.querySelector('.construction-subtitle').textContent = `${displayName} is currently being built`;
+            document.title = `${displayName} - Under Construction`;
+        }
+        
+        // Add some interactivity to the progress bar
+        setTimeout(() => {
+            const progressFill = document.querySelector('.progress-fill');
+            progressFill.style.width = '45%';
+        }, 1000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV Viewer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #fafafa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .upload-section {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-input-label {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #333;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .file-input-label:hover {
+            background: #555;
+        }
+
+        .file-name {
+            margin-top: 12px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #333;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background: #f5f5f5;
+            border-color: #bbb;
+        }
+
+        .btn-primary {
+            background: #333;
+            color: white;
+            border-color: #333;
+        }
+
+        .btn-primary:hover {
+            background: #555;
+            border-color: #555;
+        }
+
+        .csv-container {
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            background: white;
+            max-height: 70vh;
+            overflow: auto;
+            font-size: 13px;
+        }
+
+        .csv-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+        }
+
+        .csv-table th,
+        .csv-table td {
+            padding: 8px 12px;
+            text-align: left;
+            border-right: 1px solid #e0e0e0;
+            border-bottom: 1px solid #e0e0e0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+        }
+
+        .csv-table th {
+            background: #f8f9fa;
+            font-weight: 500;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        .csv-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .csv-table td:last-child,
+        .csv-table th:last-child {
+            border-right: none;
+        }
+
+        .row-number {
+            background: #f8f9fa;
+            color: #666;
+            font-weight: 500;
+            text-align: center;
+            min-width: 40px;
+            position: sticky;
+            left: 0;
+            z-index: 1;
+        }
+
+        .error {
+            background: #fff5f5;
+            color: #d63384;
+            padding: 16px;
+            border-radius: 4px;
+            border-left: 3px solid #d63384;
+            font-size: 14px;
+        }
+
+        .stats {
+            background: white;
+            padding: 16px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            border: 1px solid #e0e0e0;
+            display: flex;
+            gap: 24px;
+            font-size: 13px;
+        }
+
+        .stat-item {
+            color: #666;
+        }
+
+        .stat-value {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .search-box {
+            margin-bottom: 16px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #333;
+        }
+
+        .highlight {
+            background: yellow;
+        }
+
+        .pagination {
+            margin-top: 16px;
+            text-align: center;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .page-info {
+            font-size: 13px;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 16px;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .controls {
+                flex-wrap: wrap;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .csv-table th,
+            .csv-table td {
+                max-width: 120px;
+                padding: 6px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>CSV Viewer</h1>
+            <p>Upload and view CSV files</p>
+        </div>
+
+        <div class="upload-section">
+            <div class="file-input-wrapper">
+                <input type="file" id="csvFile" class="file-input" accept=".csv,text/csv" />
+                <label for="csvFile" class="file-input-label">
+                    Choose CSV File
+                </label>
+            </div>
+            <div class="file-name" id="fileName"></div>
+        </div>
+
+        <div class="controls" style="display: none;" id="controls">
+            <button class="btn btn-primary" onclick="downloadFormatted()">Download</button>
+            <button class="btn" onclick="exportToJSON()">Export JSON</button>
+            <select class="btn" id="rowsPerPage" onchange="changeRowsPerPage()">
+                <option value="50">50 rows</option>
+                <option value="100">100 rows</option>
+                <option value="200">200 rows</option>
+                <option value="all">All rows</option>
+            </select>
+        </div>
+
+        <div class="viewer" id="viewer" style="display: none;">
+            <div class="stats" id="stats"></div>
+            
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="Search in table..." id="searchInput" oninput="searchTable()">
+                <button class="btn" onclick="clearSearch()">Clear</button>
+            </div>
+
+            <div class="csv-container" id="csvContainer"></div>
+            
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </div>
+
+    <script>
+        let csvData = [];
+        let filteredData = [];
+        let currentPage = 1;
+        let rowsPerPage = 50;
+        let originalCsvString = '';
+
+        document.getElementById('csvFile').addEventListener('change', handleFileSelect);
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            document.getElementById('fileName').textContent = `Selected: ${file.name}`;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                originalCsvString = e.target.result;
+                parseAndDisplayCSV(originalCsvString);
+            };
+            reader.readAsText(file);
+        }
+
+        function parseAndDisplayCSV(csvString) {
+            try {
+                csvData = parseCSV(csvString);
+                if (csvData.length === 0) {
+                    throw new Error('No data found in CSV file');
+                }
+
+                filteredData = [...csvData];
+                currentPage = 1;
+                displayCSV();
+                showStats();
+                document.getElementById('controls').style.display = 'flex';
+                document.getElementById('viewer').style.display = 'block';
+                
+            } catch (error) {
+                displayError(error.message);
+            }
+        }
+
+        function parseCSV(csvString) {
+            const lines = csvString.split('\n').filter(line => line.trim());
+            if (lines.length === 0) return [];
+
+            const result = [];
+            
+            for (let line of lines) {
+                const row = [];
+                let current = '';
+                let inQuotes = false;
+                
+                for (let i = 0; i < line.length; i++) {
+                    const char = line[i];
+                    const nextChar = line[i + 1];
+                    
+                    if (char === '"') {
+                        if (inQuotes && nextChar === '"') {
+                            current += '"';
+                            i++; // Skip next quote
+                        } else {
+                            inQuotes = !inQuotes;
+                        }
+                    } else if (char === ',' && !inQuotes) {
+                        row.push(current.trim());
+                        current = '';
+                    } else {
+                        current += char;
+                    }
+                }
+                
+                row.push(current.trim());
+                result.push(row);
+            }
+            
+            return result;
+        }
+
+        function displayCSV() {
+            const container = document.getElementById('csvContainer');
+            
+            if (filteredData.length === 0) {
+                container.innerHTML = '<div class="error">No data to display</div>';
+                return;
+            }
+
+            const startIndex = rowsPerPage === 'all' ? 0 : (currentPage - 1) * parseInt(rowsPerPage);
+            const endIndex = rowsPerPage === 'all' ? filteredData.length : startIndex + parseInt(rowsPerPage);
+            const pageData = filteredData.slice(startIndex, endIndex);
+
+            let html = '<table class="csv-table"><thead><tr>';
+            
+            // Add row number header
+            html += '<th class="row-number">#</th>';
+            
+            // Add column headers (first row or generated)
+            const headers = filteredData[0];
+            for (let i = 0; i < headers.length; i++) {
+                const header = headers[i] || `Column ${i + 1}`;
+                html += `<th title="${escapeHtml(header)}">${escapeHtml(header)}</th>`;
+            }
+            html += '</tr></thead><tbody>';
+
+            // Add data rows
+            for (let i = 0; i < pageData.length; i++) {
+                const row = pageData[i];
+                const actualRowIndex = startIndex + i + 1;
+                
+                html += '<tr>';
+                html += `<td class="row-number">${actualRowIndex}</td>`;
+                
+                for (let j = 0; j < Math.max(row.length, headers.length); j++) {
+                    const cell = row[j] || '';
+                    html += `<td title="${escapeHtml(cell)}">${escapeHtml(cell)}</td>`;
+                }
+                html += '</tr>';
+            }
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+            
+            updatePagination();
+        }
+
+        function updatePagination() {
+            const pagination = document.getElementById('pagination');
+            
+            if (rowsPerPage === 'all') {
+                pagination.innerHTML = `<div class="page-info">Showing all ${filteredData.length} rows</div>`;
+                return;
+            }
+
+            const totalPages = Math.ceil(filteredData.length / parseInt(rowsPerPage));
+            const startRow = (currentPage - 1) * parseInt(rowsPerPage) + 1;
+            const endRow = Math.min(currentPage * parseInt(rowsPerPage), filteredData.length);
+
+            let html = '';
+            
+            if (currentPage > 1) {
+                html += `<button class="btn" onclick="changePage(${currentPage - 1})">Previous</button>`;
+            }
+            
+            html += `<div class="page-info">Page ${currentPage} of ${totalPages} (${startRow}-${endRow} of ${filteredData.length} rows)</div>`;
+            
+            if (currentPage < totalPages) {
+                html += `<button class="btn" onclick="changePage(${currentPage + 1})">Next</button>`;
+            }
+            
+            pagination.innerHTML = html;
+        }
+
+        function changePage(page) {
+            currentPage = page;
+            displayCSV();
+        }
+
+        function changeRowsPerPage() {
+            rowsPerPage = document.getElementById('rowsPerPage').value;
+            currentPage = 1;
+            displayCSV();
+        }
+
+        function searchTable() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            if (!searchTerm) {
+                filteredData = [...csvData];
+            } else {
+                filteredData = csvData.filter(row => 
+                    row.some(cell => cell.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            currentPage = 1;
+            displayCSV();
+            showStats();
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            filteredData = [...csvData];
+            currentPage = 1;
+            displayCSV();
+            showStats();
+        }
+
+        function showStats() {
+            if (csvData.length === 0) return;
+            
+            const totalRows = csvData.length;
+            const totalColumns = Math.max(...csvData.map(row => row.length));
+            const filteredRows = filteredData.length;
+            const totalCells = csvData.reduce((sum, row) => sum + row.length, 0);
+            
+            let statsHtml = `
+                <div class="stat-item">Total Rows: <span class="stat-value">${totalRows}</span></div>
+                <div class="stat-item">Columns: <span class="stat-value">${totalColumns}</span></div>
+                <div class="stat-item">Total Cells: <span class="stat-value">${totalCells}</span></div>
+            `;
+            
+            if (filteredRows !== totalRows) {
+                statsHtml += `<div class="stat-item">Filtered Rows: <span class="stat-value">${filteredRows}</span></div>`;
+            }
+            
+            document.getElementById('stats').innerHTML = statsHtml;
+        }
+
+        function displayError(message) {
+            const container = document.getElementById('csvContainer');
+            container.innerHTML = `<div class="error">
+                <strong>Error:</strong> ${message}
+            </div>`;
+            
+            document.getElementById('controls').style.display = 'none';
+            document.getElementById('viewer').style.display = 'block';
+        }
+
+        function downloadFormatted() {
+            if (!originalCsvString) return;
+            
+            const blob = new Blob([originalCsvString], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'formatted.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function exportToJSON() {
+            if (csvData.length === 0) return;
+            
+            const headers = csvData[0];
+            const jsonData = csvData.slice(1).map(row => {
+                const obj = {};
+                headers.forEach((header, index) => {
+                    obj[header] = row[index] || '';
+                });
+                return obj;
+            });
+            
+            const jsonString = JSON.stringify(jsonData, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'data.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>

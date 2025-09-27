@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Palette Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #fafafa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .section {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 12px 16px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            font-weight: 500;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .section-content {
+            padding: 20px;
+        }
+
+        .image-upload-area {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 16px;
+        }
+
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-input-label {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #333;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .file-input-label:hover {
+            background: #555;
+        }
+
+        .canvas-container {
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+            min-height: 300px;
+            border: 2px dashed #ddd;
+            border-radius: 4px;
+            background: #f8f9fa;
+        }
+
+        .canvas-container.has-image {
+            border-style: solid;
+            background: white;
+        }
+
+        .color-picker-canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            cursor: crosshair;
+            border-radius: 4px;
+        }
+
+        .image-placeholder {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #666;
+            font-size: 14px;
+            text-align: center;
+            padding: 20px;
+            pointer-events: none;
+        }
+
+        .picker-instruction {
+            margin-top: 12px;
+            color: #22863a;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .color-input-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .color-input-label {
+            font-weight: 500;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .color-picker-input {
+            width: 48px;
+            height: 48px;
+            padding: 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            background: transparent;
+            transition: transform 0.15s ease-in-out;
+        }
+
+        .color-picker-input::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        .color-picker-input::-webkit-color-swatch {
+            border: none;
+            border-radius: 3px;
+        }
+
+        .color-picker-input:hover {
+            transform: scale(1.05);
+        }
+
+        .hex-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .hex-prefix {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .hex-input {
+            width: 80px;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+            font-size: 14px;
+            text-transform: uppercase;
+            outline: none;
+        }
+
+        .hex-input:focus {
+            border-color: #333;
+        }
+
+        .palette-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .color-card {
+            height: 120px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .color-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .color-hex {
+            font-weight: 500;
+            font-size: 16px;
+            margin-bottom: 4px;
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+        }
+
+        .color-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 20px;
+            background: #333;
+            color: white;
+            border-radius: 4px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .notification.error {
+            background: #d63384;
+        }
+
+        .notification.show {
+            opacity: 1;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 16px;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .canvas-container {
+                max-width: 100%;
+                min-height: 250px;
+            }
+            
+            .color-input-area {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .palette-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+            
+            .color-card {
+                height: 100px;
+                padding: 10px;
+            }
+            
+            .color-hex {
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .palette-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Color Palette Generator</h1>
+            <p>Pick colors from images or generate palettes from any color</p>
+        </div>
+
+        <div class="section">
+            <div class="section-header">Pick Color from Image</div>
+            <div class="section-content">
+                <div class="image-upload-area">
+                    <div class="file-input-wrapper">
+                        <input type="file" id="imageUpload" class="file-input" accept="image/*" onchange="loadImage(event)">
+                        <label for="imageUpload" class="file-input-label">Upload Image</label>
+                    </div>
+                    
+                    <div class="canvas-container" id="canvasContainer">
+                        <canvas id="colorPickerCanvas" class="color-picker-canvas"></canvas>
+                        <div id="imagePlaceholder" class="image-placeholder">
+                            Upload an image above to start picking colors
+                        </div>
+                    </div>
+                    
+                    <div id="pickerInstruction" class="picker-instruction hidden">
+                        Image loaded! Click anywhere on the image to select a color
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">Base Color</div>
+            <div class="section-content">
+                <div class="color-input-area">
+                    <label for="baseColorPicker" class="color-input-label">Choose Color:</label>
+                    
+                    <input 
+                        type="color" 
+                        id="baseColorPicker" 
+                        class="color-picker-input"
+                        value="#2563EB"
+                        oninput="debouncedGeneratePalette()"
+                    >
+                    
+                    <div class="hex-input-wrapper">
+                        <span class="hex-prefix">#</span>
+                        <input 
+                            type="text" 
+                            id="baseHexInput" 
+                            class="hex-input"
+                            maxlength="6"
+                            value="2563EB"
+                            oninput="validateAndUpdateColor(this.value)"
+                        >
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">Generated Palette</div>
+            <div class="section-content">
+                <div id="paletteContainer" class="palette-container">
+                    <!-- Color cards will be rendered here -->
+                </div>
+            </div>
+        </div>
+
+        <div id="notification" class="notification"></div>
+    </div>
+
+    <script>
+        const baseColorPicker = document.getElementById('baseColorPicker');
+        const baseHexInput = document.getElementById('baseHexInput');
+        const paletteContainer = document.getElementById('paletteContainer');
+        const notification = document.getElementById('notification');
+        const imageUpload = document.getElementById('imageUpload');
+        const colorPickerCanvas = document.getElementById('colorPickerCanvas');
+        const canvasContainer = document.getElementById('canvasContainer');
+        const imagePlaceholder = document.getElementById('imagePlaceholder');
+        const pickerInstruction = document.getElementById('pickerInstruction');
+        let ctx;
+
+        // Color utility functions
+        function hslToRgb(h, s, l) {
+            let r, g, b;
+
+            if (s === 0) {
+                r = g = b = l;
+            } else {
+                const hue2rgb = (p, q, t) => {
+                    if (t < 0) t += 1;
+                    if (t > 1) t -= 1;
+                    if (t < 1 / 6) return p + (q - p) * 6 * t;
+                    if (t < 1 / 2) return q;
+                    if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+                    return p;
+                };
+
+                const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                const p = 2 * l - q;
+                r = hue2rgb(p, q, h + 1 / 3);
+                g = hue2rgb(p, q, h);
+                b = hue2rgb(p, q, h - 1 / 3);
+            }
+
+            return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+        }
+
+        function rgbToHex(r, g, b) {
+            const componentToHex = (c) => {
+                const hex = c.toString(16);
+                return hex.length === 1 ? "0" + hex : hex;
+            };
+            return componentToHex(r) + componentToHex(g) + componentToHex(b);
+        }
+
+        function hexToHsl(hex) {
+            if (hex.length !== 6) return [0, 0, 0.5];
+
+            const r = parseInt(hex.substring(0, 2), 16) / 255;
+            const g = parseInt(hex.substring(2, 4), 16) / 255;
+            const b = parseInt(hex.substring(4, 6), 16) / 255;
+
+            const max = Math.max(r, g, b), min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+
+            if (max === min) {
+                h = s = 0;
+            } else {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                    case g: h = (b - r) / d + 2; break;
+                    case b: h = (r - g) / d + 4; break;
+                }
+                h /= 6;
+            }
+
+            return [h, s, l];
+        }
+
+        function hslToHex(h, s, l) {
+            const [r, g, b] = hslToRgb(h, s, l);
+            return rgbToHex(r, g, b);
+        }
+
+        function generatePalette(hex) {
+            if (hex.length !== 6) return ['2563EB'];
+
+            const [h, s, l] = hexToHsl(hex);
+            const palette = [];
+            const step = 0.15;
+
+            palette.push(hslToHex(h, s, Math.max(0, l - step * 2)));
+            palette.push(hslToHex(h, s, Math.max(0, l - step)));
+            palette.push(hex.toUpperCase());
+            palette.push(hslToHex(h, s, Math.min(1, l + step)));
+            palette.push(hslToHex(h, s, Math.min(1, l + step * 2)));
+
+            return palette;
+        }
+
+        function renderPalette(colors) {
+            paletteContainer.innerHTML = '';
+            
+            const labels = ["Shade 2", "Shade 1", "Base", "Tint 1", "Tint 2"];
+
+            colors.forEach((hex, index) => {
+                const colorHex = '#' + hex.toUpperCase();
+                const luminance = hexToHsl(hex)[2];
+                const textColor = luminance > 0.5 ? '#333' : '#fff';
+
+                const card = document.createElement('div');
+                card.className = 'color-card';
+                card.style.backgroundColor = colorHex;
+                card.style.color = textColor;
+                card.onclick = () => copyToClipboard(colorHex);
+                
+                card.innerHTML = `
+                    <div class="color-hex">${colorHex}</div>
+                    <div class="color-label">${labels[index]}</div>
+                `;
+                
+                paletteContainer.appendChild(card);
+            });
+        }
+
+        function loadImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const containerWidth = canvasContainer.offsetWidth - 4; // Account for border
+                    const containerHeight = 500; // Increased from 400
+                    
+                    let displayWidth, displayHeight;
+                    const ratio = img.width / img.height;
+                    
+                    // Always make the image fill more of the container
+                    if (ratio > 1) {
+                        // Landscape image
+                        displayWidth = Math.min(containerWidth, img.width * 0.8); // Use 80% of container width minimum
+                        displayHeight = displayWidth / ratio;
+                    } else {
+                        // Portrait or square image
+                        displayHeight = Math.min(containerHeight, img.height * 0.8); // Use 80% of container height minimum
+                        displayWidth = displayHeight * ratio;
+                    }
+                    
+                    // Ensure minimum size for usability
+                    const minSize = 300;
+                    if (displayWidth < minSize || displayHeight < minSize) {
+                        if (ratio > 1) {
+                            displayWidth = minSize;
+                            displayHeight = minSize / ratio;
+                        } else {
+                            displayHeight = minSize;
+                            displayWidth = minSize * ratio;
+                        }
+                    }
+
+                    colorPickerCanvas.width = displayWidth;
+                    colorPickerCanvas.height = displayHeight;
+                    
+                    ctx.drawImage(img, 0, 0, displayWidth, displayHeight);
+                    
+                    canvasContainer.classList.add('has-image');
+                    imagePlaceholder.classList.add('hidden');
+                    pickerInstruction.classList.remove('hidden');
+                    
+                    colorPickerCanvas.removeEventListener('click', pickColorFromCanvas);
+                    colorPickerCanvas.addEventListener('click', pickColorFromCanvas);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function pickColorFromCanvas(event) {
+            const rect = colorPickerCanvas.getBoundingClientRect();
+            const x = (event.clientX - rect.left) * (colorPickerCanvas.width / rect.width);
+            const y = (event.clientY - rect.top) * (colorPickerCanvas.height / rect.height);
+
+            try {
+                const pixelData = ctx.getImageData(Math.floor(x), Math.floor(y), 1, 1).data;
+                const r = pixelData[0];
+                const g = pixelData[1];
+                const b = pixelData[2];
+                
+                const newHex = rgbToHex(r, g, b);
+                
+                baseHexInput.value = newHex.toUpperCase();
+                baseColorPicker.value = `#${newHex}`;
+                debouncedGeneratePalette();
+                
+                showNotification(`Color picked: #${newHex.toUpperCase()}`);
+            } catch (e) {
+                showNotification("Error: Cannot pick color due to security restrictions. Try a local image.", true);
+            }
+        }
+
+        function validateAndUpdateColor(value) {
+            const cleanHex = value.toUpperCase().replace(/[^0-9A-F]/g, '').substring(0, 6);
+            baseHexInput.value = cleanHex;
+            
+            if (cleanHex.length === 6) {
+                baseColorPicker.value = `#${cleanHex}`;
+                debouncedGeneratePalette();
+            }
+        }
+        
+        let timeout;
+        function debouncedGeneratePalette() {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                const hex = baseHexInput.value.toUpperCase();
+                if (hex.length === 6) {
+                    const palette = generatePalette(hex);
+                    renderPalette(palette);
+                }
+            }, 100);
+        }
+
+        function copyToClipboard(text) {
+            const tempInput = document.createElement('textarea');
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            try {
+                document.execCommand('copy');
+                showNotification(`${text} copied to clipboard!`);
+            } catch (err) {
+                showNotification("Failed to copy code.", true);
+            }
+            document.body.removeChild(tempInput);
+        }
+
+        function showNotification(message, isError = false) {
+            notification.textContent = message;
+            notification.className = `notification show ${isError ? 'error' : ''}`;
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            ctx = colorPickerCanvas.getContext('2d');
+            validateAndUpdateColor(baseHexInput.value);
+        });
+    </script>
+</body>
+</html>

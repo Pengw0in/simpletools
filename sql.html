@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Formatter & Beautifier</title>
+    <!-- Load Prism.js CSS (light theme) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/themes/prism.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #fafafa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .config-section {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .config-header {
+            padding: 12px 16px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            font-weight: 500;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .config-content {
+            padding: 16px;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .config-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .config-label {
+            font-size: 13px;
+            color: #666;
+            white-space: nowrap;
+        }
+
+        .config-select {
+            padding: 6px 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            background: white;
+            min-width: 140px;
+        }
+
+        .config-select:focus {
+            outline: none;
+            border-color: #333;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-input-label {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #333;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.2s;
+        }
+
+        .file-input-label:hover {
+            background: #555;
+        }
+
+        .btn {
+            padding: 6px 16px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #333;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background: #f5f5f5;
+            border-color: #bbb;
+        }
+
+        .btn-primary {
+            background: #333;
+            color: white;
+            border-color: #333;
+        }
+
+        .btn-primary:hover {
+            background: #555;
+            border-color: #555;
+        }
+
+        .editor-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .editor-group {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .editor-label {
+            display: block;
+            padding: 12px 16px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            font-weight: 500;
+            color: #333;
+            font-size: 14px;
+        }
+
+        /* Styles for the Input Textarea (remains a textarea) */
+        .sql-textarea {
+            width: 100%;
+            min-height: 700px;
+            padding: 16px;
+            border: none;
+            outline: none;
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+            font-size: 14px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        .sql-textarea:focus {
+            background: #fafafa;
+        }
+
+        /* Styles for the Output PRE/CODE block (new structure for highlighting) */
+        .editor-group pre.language-sql {
+            margin: 0; 
+            border: none;
+            border-radius: 0;
+            min-height: 700px;
+            max-height: 700px;
+            overflow: auto; 
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+            padding: 0 !important; /* Overwrite Prism's padding on the PRE tag */
+            background: #ffffff; /* Explicitly set to white for light theme */
+        }
+
+        /* Styles for the CODE block inside PRE */
+        .editor-group pre code {
+            display: block;
+            min-height: 700px;
+            padding: 16px; 
+            font-size: 14px;
+            line-height: 1.5;
+            white-space: pre; 
+        }
+
+        .copy-button-wrapper {
+            position: relative;
+        }
+
+        .copy-button {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            padding: 4px 8px;
+            background: #22863a;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            opacity: 0.8;
+            transition: all 0.2s;
+            z-index: 10;
+        }
+
+        .copy-button:hover {
+            opacity: 1;
+            background: #28a745;
+        }
+
+        .copy-button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 20px;
+            background: #333;
+            color: white;
+            border-radius: 4px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .notification.error {
+            background: #d63384;
+        }
+
+        .notification.show {
+            opacity: 1;
+        }
+
+        .error {
+            background: #fff5f5;
+            color: #d63384;
+            padding: 16px;
+            border-radius: 4px;
+            border-left: 3px solid #d63384;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 16px;
+                max-width: 100%;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .editor-section {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .config-content {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+
+            .config-group {
+                justify-content: space-between;
+            }
+
+            .config-select {
+                min-width: auto;
+                flex: 1;
+            }
+
+            .sql-textarea {
+                min-height: 500px;
+                font-size: 13px;
+            }
+
+            .editor-group pre.language-sql {
+                min-height: 500px;
+                max-height: 500px;
+            }
+
+            .editor-group pre code {
+                min-height: 500px;
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 16px 12px;
+            }
+            
+            .sql-textarea {
+                min-height: 400px;
+                padding: 12px;
+            }
+
+            .editor-group pre.language-sql {
+                min-height: 400px;
+                max-height: 400px;
+            }
+
+            .editor-group pre code {
+                min-height: 400px;
+                padding: 12px;
+            }
+        }
+    </style>
+    <!-- Load SQL Formatter Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql-formatter/15.0.0/sql-formatter.min.js"></script>
+    <!-- Load Prism.js Core -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/prism.min.js"></script>
+    <!-- Load SQL language component for Prism -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/components/prism-sql.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>SQL Formatter & Beautifier</h1>
+            <p>Format and beautify your SQL queries with dialect support</p>
+        </div>
+
+        <div class="config-section">
+            <div class="config-header">Configuration & Actions</div>
+            <div class="config-content">
+                <div class="config-group">
+                    <label class="config-label">SQL Dialect:</label>
+                    <select id="sqlDialect" class="config-select" onchange="formatSql()">
+                        <option value="sql">Standard SQL</option>
+                        <option value="postgresql">PostgreSQL</option>
+                        <option value="mysql">MySQL</option>
+                        <option value="plsql">PL/SQL (Oracle)</option>
+                        <option value="mariadb">MariaDB</option>
+                        <option value="tsql">SQL Server (TSQL)</option>
+                        <option value="sqlite">SQLite</option>
+                        <option value="bigquery">BigQuery</option>
+                    </select>
+                </div>
+                
+                <div class="config-group">
+                    <label class="config-label">Upload File:</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="sqlFile" class="file-input" accept=".sql,.txt" onchange="handleFileUpload(event)">
+                        <label for="sqlFile" class="file-input-label">Choose File</label>
+                    </div>
+                </div>
+
+                <button id="formatButton" class="btn btn-primary" onclick="formatSql()">
+                    Format Query
+                </button>
+            </div>
+        </div>
+
+        <div class="editor-section">
+            <div class="editor-group">
+                <label class="editor-label">Unformatted SQL</label>
+                <textarea 
+                    id="inputSql" 
+                    class="sql-textarea"
+                    placeholder="Paste your messy SQL here..." 
+                    oninput="formatSql()"
+                >SELECT COUNT(id), name FROM users JOIN orders ON users.id = orders.user_id WHERE orders.amount > 100 GROUP BY name ORDER BY 1 DESC;</textarea>
+            </div>
+
+            <div class="editor-group">
+                <label class="editor-label">Formatted SQL (Highlighted)</label>
+                <div class="copy-button-wrapper">
+                    <!-- Changed from textarea to pre/code for highlighting -->
+                    <pre class="language-sql"><code id="outputSql" class="language-sql"></code></pre>
+                    <button 
+                        id="copyButton"
+                        class="copy-button"
+                        onclick="copyToClipboard(document.getElementById('outputSql').textContent)"
+                        disabled
+                    >
+                        Copy
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="notification" class="notification"></div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const inputSql = document.getElementById('inputSql');
+        const outputSql = document.getElementById('outputSql'); // Now references the <code> element
+        const sqlDialect = document.getElementById('sqlDialect');
+        const copyButton = document.getElementById('copyButton');
+        const notification = document.getElementById('notification');
+
+        // Initial format on load
+        window.onload = function() {
+            // Check if both libraries are loaded before proceeding
+            if (typeof sqlFormatter !== 'undefined' && typeof Prism !== 'undefined') {
+                formatSql(); 
+            } else {
+                console.error("One or more required libraries failed to load (sqlFormatter or Prism).");
+            }
+        };
+
+        /**
+         * Handles the uploading of an SQL file and loads its content into the input area.
+         */
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                inputSql.value = e.target.result;
+                formatSql();
+                showNotification(`File "${file.name}" loaded successfully!`);
+            };
+
+            reader.onerror = () => {
+                console.error("Error reading file:", reader.error);
+                showNotification("Failed to read file.", true);
+            };
+
+            reader.readAsText(file);
+        }
+
+        /**
+         * Formats the SQL query using the selected dialect and applies syntax highlighting.
+         */
+        function formatSql() {
+            const sqlText = inputSql.value.trim();
+            const dialect = sqlDialect.value;
+
+            if (sqlText === "") {
+                outputSql.textContent = "";
+                copyButton.disabled = true;
+                return;
+            }
+
+            try {
+                const formatted = sqlFormatter.format(sqlText, {
+                    language: dialect,
+                    indent: '  '
+                });
+                
+                // Set the text content of the <code> block
+                outputSql.textContent = formatted; 
+                
+                // Tell Prism to re-highlight the content
+                Prism.highlightElement(outputSql); 
+
+                copyButton.disabled = false;
+
+            } catch (error) {
+                // Display error message in the code block as plain text
+                outputSql.textContent = `Error formatting SQL: ${error.message}`;
+                // Since the content is error text, we explicitly prevent highlighting by Prism.
+                outputSql.className = ''; 
+                copyButton.disabled = true;
+                showNotification("Formatting failed. Check your query syntax.", true);
+            }
+        }
+
+        /**
+         * Copies the given text to the clipboard and shows a notification.
+         * Note: The text parameter now comes from the <code> element's textContent.
+         * @param {string} text - The text to copy.
+         */
+        function copyToClipboard(text) {
+            if (!text.trim()) {
+                showNotification("Nothing to copy!", true);
+                return;
+            }
+
+            // Create a temporary textarea to hold the text for the copy operation
+            const tempInput = document.createElement('textarea');
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            
+            try {
+                document.execCommand('copy');
+                showNotification("Formatted SQL copied!");
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+                showNotification("Failed to copy code.", true);
+            }
+            document.body.removeChild(tempInput);
+        }
+
+        /**
+         * Shows a temporary notification.
+         * @param {string} message - The message to display.
+         * @param {boolean} isError - If true, displays a red error message.
+         */
+        function showNotification(message, isError = false) {
+            notification.textContent = message;
+            notification.className = `notification show ${isError ? 'error' : ''}`;
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

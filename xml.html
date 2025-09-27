@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XML Viewer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #fafafa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .upload-section {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-input-label {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #333;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .file-input-label:hover {
+            background: #555;
+        }
+
+        .file-name {
+            margin-top: 12px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #333;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background: #f5f5f5;
+            border-color: #bbb;
+        }
+
+        .btn-primary {
+            background: #333;
+            color: white;
+            border-color: #333;
+        }
+
+        .btn-primary:hover {
+            background: #555;
+            border-color: #555;
+        }
+
+        .xml-container {
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            background: white;
+            max-height: 70vh;
+            overflow: auto;
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.4;
+            padding: 20px;
+        }
+
+        .xml-node {
+            margin-left: 16px;
+        }
+
+        .xml-element {
+            margin: 2px 0;
+        }
+
+        .xml-tag {
+            color: #0066cc;
+        }
+
+        .xml-attribute {
+            color: #cc6600;
+        }
+
+        .xml-text {
+            color: #333;
+            margin-left: 8px;
+        }
+
+        .xml-comment {
+            color: #999;
+            font-style: italic;
+        }
+
+        .collapsible {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .collapsible::before {
+            content: '▼';
+            position: absolute;
+            left: -12px;
+            color: #999;
+            font-size: 10px;
+            width: 10px;
+        }
+
+        .collapsible.collapsed::before {
+            content: '▶';
+        }
+
+        .collapsed + .xml-node {
+            display: none;
+        }
+
+        .error {
+            background: #fff5f5;
+            color: #d63384;
+            padding: 16px;
+            border-radius: 4px;
+            border-left: 3px solid #d63384;
+            font-size: 14px;
+        }
+
+        .stats {
+            background: white;
+            padding: 16px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            border: 1px solid #e0e0e0;
+            display: flex;
+            gap: 24px;
+            font-size: 13px;
+        }
+
+        .stat-item {
+            color: #666;
+        }
+
+        .stat-value {
+            font-weight: 500;
+            color: #333;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 16px;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .controls {
+                flex-wrap: wrap;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>XML Viewer</h1>
+            <p>Upload and view XML files</p>
+        </div>
+
+        <div class="upload-section">
+            <div class="file-input-wrapper">
+                <input type="file" id="xmlFile" class="file-input" accept=".xml,text/xml,application/xml" />
+                <label for="xmlFile" class="file-input-label">
+                    Choose XML File
+                </label>
+            </div>
+            <div class="file-name" id="fileName"></div>
+        </div>
+
+        <div class="controls" style="display: none;" id="controls">
+            <button class="btn btn-primary" onclick="expandAll()">Expand All</button>
+            <button class="btn" onclick="collapseAll()">Collapse All</button>
+            <button class="btn" onclick="downloadFormatted()">Download</button>
+        </div>
+
+        <div class="viewer" id="viewer" style="display: none;">
+            <div class="stats" id="stats"></div>
+            <div class="xml-container" id="xmlContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        let xmlDoc = null;
+        let originalXmlString = '';
+
+        document.getElementById('xmlFile').addEventListener('change', handleFileSelect);
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            document.getElementById('fileName').textContent = `Selected: ${file.name}`;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                originalXmlString = e.target.result;
+                parseAndDisplayXML(originalXmlString);
+            };
+            reader.readAsText(file);
+        }
+
+        function parseAndDisplayXML(xmlString) {
+            try {
+                const parser = new DOMParser();
+                xmlDoc = parser.parseFromString(xmlString, 'text/xml');
+                
+                // Check for parsing errors
+                const parseError = xmlDoc.getElementsByTagName('parsererror');
+                if (parseError.length > 0) {
+                    throw new Error('XML parsing error: ' + parseError[0].textContent);
+                }
+
+                displayXML();
+                showStats();
+                document.getElementById('controls').style.display = 'flex';
+                document.getElementById('viewer').style.display = 'block';
+                
+            } catch (error) {
+                displayError(error.message);
+            }
+        }
+
+        function displayXML() {
+            const container = document.getElementById('xmlContainer');
+            container.innerHTML = '';
+            
+            if (xmlDoc.documentElement) {
+                const xmlHtml = formatXMLNode(xmlDoc.documentElement, 0);
+                container.innerHTML = xmlHtml;
+                
+                // Add click handlers for collapsible elements
+                container.querySelectorAll('.collapsible').forEach(element => {
+                    element.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        this.classList.toggle('collapsed');
+                    });
+                });
+            }
+        }
+
+        function formatXMLNode(node, level) {
+            if (node.nodeType === Node.TEXT_NODE) {
+                const text = node.textContent.trim();
+                return text ? `<span class="xml-text">${escapeHtml(text)}</span>` : '';
+            }
+            
+            if (node.nodeType === Node.COMMENT_NODE) {
+                return `<div class="xml-comment">&lt;!-- ${escapeHtml(node.textContent)} --&gt;</div>`;
+            }
+            
+            if (node.nodeType === Node.ELEMENT_NODE) {
+                let html = '';
+                const hasChildren = node.children.length > 0 || (node.childNodes.length > 0 && 
+                    Array.from(node.childNodes).some(child => child.nodeType === Node.TEXT_NODE && child.textContent.trim()));
+                
+                const collapsibleClass = hasChildren ? 'collapsible' : '';
+                
+                // Opening tag
+                html += `<div class="xml-element">`;
+                html += `<span class="xml-tag ${collapsibleClass}">&lt;${node.tagName}`;
+                
+                // Attributes
+                if (node.attributes.length > 0) {
+                    for (let i = 0; i < node.attributes.length; i++) {
+                        const attr = node.attributes[i];
+                        html += ` <span class="xml-attribute">${attr.name}="${escapeHtml(attr.value)}"</span>`;
+                    }
+                }
+                
+                if (hasChildren) {
+                    html += `&gt;</span>`;
+                    
+                    // Children
+                    html += `<div class="xml-node">`;
+                    for (let child of node.childNodes) {
+                        html += formatXMLNode(child, level + 1);
+                    }
+                    html += `</div>`;
+                    
+                    // Closing tag
+                    html += `<span class="xml-tag">&lt;/${node.tagName}&gt;</span>`;
+                } else {
+                    html += ` /&gt;</span>`;
+                }
+                
+                html += `</div>`;
+                return html;
+            }
+            
+            return '';
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showStats() {
+            if (!xmlDoc) return;
+            
+            const elements = xmlDoc.getElementsByTagName('*');
+            const attributes = Array.from(elements).reduce((count, el) => count + el.attributes.length, 0);
+            const textNodes = Array.from(xmlDoc.createTreeWalker(xmlDoc, NodeFilter.SHOW_TEXT))
+                .filter(node => node.textContent.trim()).length;
+            
+            const statsHtml = `
+                <div class="stat-item">Elements: <span class="stat-value">${elements.length}</span></div>
+                <div class="stat-item">Attributes: <span class="stat-value">${attributes}</span></div>
+                <div class="stat-item">Text Nodes: <span class="stat-value">${textNodes}</span></div>
+                <div class="stat-item">Root: <span class="stat-value">${xmlDoc.documentElement.tagName}</span></div>
+            `;
+            
+            document.getElementById('stats').innerHTML = statsHtml;
+        }
+
+        function displayError(message) {
+            const container = document.getElementById('xmlContainer');
+            container.innerHTML = `<div class="error">
+                <strong>Error:</strong> ${message}
+            </div>`;
+            
+            document.getElementById('controls').style.display = 'none';
+            document.getElementById('viewer').style.display = 'block';
+        }
+
+        function expandAll() {
+            document.querySelectorAll('.collapsible.collapsed').forEach(element => {
+                element.classList.remove('collapsed');
+            });
+        }
+
+        function collapseAll() {
+            document.querySelectorAll('.collapsible').forEach(element => {
+                element.classList.add('collapsed');
+            });
+        }
+
+        function downloadFormatted() {
+            if (!originalXmlString) return;
+            
+            try {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(originalXmlString, 'text/xml');
+                const serializer = new XMLSerializer();
+                const formatted = formatXMLString(serializer.serializeToString(xmlDoc));
+                
+                const blob = new Blob([formatted], { type: 'text/xml' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'formatted.xml';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } catch (error) {
+                alert('Error formatting XML: ' + error.message);
+            }
+        }
+
+        function formatXMLString(xml) {
+            const PADDING = '  ';
+            const reg = /(>)(<)(\/*)/g;
+            let formatted = xml.replace(reg, '$1\r\n$2$3');
+            let pad = 0;
+            
+            return formatted.split('\r\n').map(line => {
+                let indent = 0;
+                if (line.match(/.+<\/\w[^>]*>$/)) {
+                    indent = 0;
+                } else if (line.match(/^<\/\w/) && pad > 0) {
+                    pad -= 1;
+                } else if (line.match(/^<\w[^>]*[^\/]>.*$/)) {
+                    indent = 1;
+                } else {
+                    indent = 0;
+                }
+                
+                const padding = PADDING.repeat(pad);
+                pad += indent;
+                return padding + line;
+            }).join('\r\n');
+        }
+    </script>
+</body>
+</html>

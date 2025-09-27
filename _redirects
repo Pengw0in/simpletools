@@ -1,0 +1,34 @@
+# Active tools - redirect clean URLs to .html files
+/json              /json.html           200
+/csv               /csv.html            200
+/xml               /xml.html            200
+/regex             /regex.html          200
+/textdiff          /textdiff.html       200
+/qr                /qr.html             200
+/pallete           /pallete.html        200
+/sql               /sql.html            200
+/yaml              /yaml.html           200
+/convert           /convert.html        200
+/counter           /counter.html        200
+/md                /md.html             200
+
+# Under construction tools - redirect to construction page
+/markdown            /construction.html?tool=markdown    200
+#/hash              /construction.html?tool=hash       200
+#/jwt               /construction.html?tool=jwt        200
+#/timestamp         /construction.html?tool=timestamp  200
+
+# Redirect .html URLs to clean URLs (301 permanent redirect)
+/json.html         /json                301
+/csv.html          /csv                 301
+/xml.html          /xml                 301
+/regex.html        /regex               301
+/textdiff.html     /textdiff            301
+/qr.html           /qr                  301
+/pallete.html      /pallete             301
+/sql.html          /sql                 301
+/yaml.html         /yaml                301
+/convert.html      /convert             301
+/counter.html      /counter             301
+/md.html           /md                  301
+/construction.html /construction        301
