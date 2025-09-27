@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base64 Converter Tool</title>
+    <link rel="icon" type="image/x-icon" href="public/logo.ico">
+    <link rel="stylesheet" href="toggle.css">
+    <style>
+        /* Global Reset and Variables */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        /* Container and Header */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            position: relative;
+        }
+        .header-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+        .header p {
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .theme-toggle:hover {
+            background: var(--hover-bg);
+            border-color: var(--text-secondary);
+        }
+        .theme-icon {
+            width: 18px;
+            height: 18px;
+            color: var(--text-secondary);
+            transition: color 0.2s ease;
+        }
+        .theme-toggle:hover .theme-icon {
+            color: var(--text-primary);
+        }
+
+        /* Grid Layout: Main Panels and Controls */
+        .main-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .panel {
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px;
+            background: var(--card-bg);
+        }
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .panel-label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .panel-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .text-area {
+            width: 100%;
+            min-height: 180px;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            font-family: monospace;
+            font-size: 14px;
+            resize: vertical;
+            line-height: 1.5;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .text-area:focus {
+            background: var(--input-focus-bg);
+            outline: none;
+            border-color: var(--text-primary); /* Use text-primary for focus border */
+        }
+        .text-area::placeholder {
+            color: var(--text-secondary);
+        }
+
+        /* Buttons and Controls */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: background 0.2s, opacity 0.2s, color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        /* Primary Button: Reverting to original color scheme */
+        .btn-primary {
+            background: var(--text-primary);
+            color: var(--card-bg);
+        }
+        .btn-primary:hover:not(:disabled) {
+            background: var(--text-secondary);
+            color: var(--card-bg); /* Keeping the text white/light for contrast */
+        }
+        
+        /* Secondary Button: For Clear/Copy buttons */
+        .btn-secondary {
+            background: var(--input-bg);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            padding: 6px 10px;
+            font-size: 13px;
+        }
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--border-color);
+            color: var(--text-primary);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background: var(--border-color); /* Added disabled background for clarity */
+            color: var(--text-secondary);
+        }
+
+        /* Conversion Action Bar */
+        .action-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            margin: 16px 0;
+        }
+        
+        /* Status Message */
+        .status-container {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            min-width: 300px;
+            text-align: center;
+        }
+        .status-message {
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            transform: translateY(10px);
+        }
+        .status-message.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* Color mapping for status messages */
+        .status-message.success {
+            background: var(--success-color, #4CAF50);
+            color: #fff;
+        }
+        .status-message.error {
+            background: var(--error-bg, #F44336);
+            color: #fff;
+        }
+        .status-message.info {
+            background: var(--text-secondary);
+            color: var(--card-bg);
+        }
+
+        /* Media Queries */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px 8px;
+            }
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            .action-container {
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header" style="display: flex; align-items: center; justify-content: space-between;">
+            <div style="flex: 1;">
+                <div class="header-title-row">
+                    <i data-lucide="omega" style="width: 36px; height: 36px; color: var(--text-secondary);"></i>
+                    <h1>Base64 Converter</h1>
+                </div>
+                <p>Encode text to Base64 or decode Base64 back to text with automatic detection.</p>
+            </div>
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                <i data-lucide="sun" class="theme-icon" id="theme-icon" style="width: 20px; height: 20px;"></i>
+            </button>
+        </div>
+        
+        <div class="main-grid">
+            <div class="panel" id="input-panel">
+                <div class="panel-header">
+                    <label for="input-text" class="panel-label">Input Text or Base64</label>
+                    <div class="panel-actions">
+                        <button id="clear-input-button" class="btn btn-secondary">
+                            <i data-lucide="x-circle" style="width:14px;height:14px;"></i>
+                            Clear
+                        </button>
+                    </div>
+                </div>
+                <textarea id="input-text" class="text-area" placeholder="Paste your text or Base64 string here..."></textarea>
+            </div>
+
+            <div class="action-container">
+                 <button id="convert-button" class="btn btn-primary" disabled>
+                    <i data-lucide="refresh-cw" style="width:16px;height:16px;"></i>
+                    Convert (Auto Detect)
+                </button>
+                <!--<i data-lucide="arrow-down" style="width:20px;height:20px; color: var(--text-secondary);"></i>-->
+            </div>
+            
+            <div class="panel" id="output-panel">
+                <div class="panel-header">
+                    <label for="output-text" class="panel-label">Result</label>
+                    <div class="panel-actions">
+                        <button id="copy-button" class="btn btn-secondary" disabled>
+                            <i data-lucide="copy" style="width:14px;height:14px;"></i>
+                            Copy
+                        </button>
+                        <button id="clear-output-button" class="btn btn-secondary">
+                            <i data-lucide="x-circle" style="width:14px;height:14px;"></i>
+                            Clear
+                        </button>
+                    </div>
+                </div>
+                <textarea id="output-text" class="text-area" readonly placeholder="The converted result will appear here..."></textarea>
+            </div>
+        </div>
+
+        <div class="status-container">
+            <div id="status-message" class="status-message info"></div>
+        </div>
+    </div>
+    
+    <script src="toggle.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script>
+        // Global references to elements
+        const inputTextarea = document.getElementById('input-text');
+        const outputTextarea = document.getElementById('output-text');
+        const convertButton = document.getElementById('convert-button');
+        const copyButton = document.getElementById('copy-button');
+        const clearInputButton = document.getElementById('clear-input-button');
+        const clearOutputButton = document.getElementById('clear-output-button');
+        const statusMessage = document.getElementById('status-message');
+
+        const DEFAULT_STATUS = "Ready. Enter text to begin conversion.";
+
+        // --- Utility Functions ---
+
+        // Function to check if a string is likely a valid Base64 string
+        function isBase64(str) {
+            if (str.length === 0) return false;
+            let cleaned = str.trim();
+            // Base64 length check: must be a multiple of 4 (including padding)
+            if (cleaned.length % 4 !== 0) return false;
+            // Check for valid characters: A-Z, a-z, 0-9, +, /, and = (padding)
+            return /^[A-Za-z0-9+/]+={0,2}$/.test(cleaned);
+        }
+
+        function safeBtoa(str) {
+            try {
+                return btoa(unescape(encodeURIComponent(str)));
+            } catch (e) {
+                console.error("Encoding failed:", e);
+                displayStatus("Encoding Error: Could not process input string.", 'error');
+                return null;
+            }
+        }
+
+        function safeAtob(base64) {
+            try {
+                return decodeURIComponent(escape(atob(base64)));
+            } catch (e) {
+                console.error("Decoding failed:", e);
+                displayStatus("Decoding Error: Input is not a valid Base64 string.", 'error');
+                return null;
+            }
+        }
+
+        function displayStatus(message, type = 'info') {
+            statusMessage.textContent = message;
+            statusMessage.className = 'status-message ' + type;
+            setTimeout(() => {
+                statusMessage.classList.add('visible');
+            }, 50);
+
+            setTimeout(() => {
+                statusMessage.classList.remove('visible');
+                setTimeout(() => {
+                    statusMessage.textContent = DEFAULT_STATUS;
+                    statusMessage.className = 'status-message info';
+                }, 300);
+            }, 4000);
+        }
+        
+        // --- Event Handlers and Main Logic ---
+
+        function handleConvert() {
+            const input = inputTextarea.value.trim();
+            outputTextarea.value = '';
+
+            if (input.length === 0) {
+                displayStatus("Input field is empty. Nothing to convert.", 'error');
+                updateUI();
+                return;
+            }
+
+            // Auto-Detect Logic
+            if (isBase64(input)) {
+                // Attempt to DECODE
+                const decoded = safeAtob(input);
+                if (decoded !== null) {
+                    outputTextarea.value = decoded;
+                    displayStatus("Base64 successfully decoded to text.", 'success');
+                }
+            } else {
+                // Assume plain text, attempt to ENCODE
+                const encoded = safeBtoa(input);
+                if (encoded !== null) {
+                    outputTextarea.value = encoded;
+                    displayStatus("Text successfully encoded to Base64.", 'success');
+                }
+            }
+            updateUI();
+        }
+
+        function handleCopy() {
+            const output = outputTextarea.value;
+            if (output.length === 0) {
+                displayStatus("Nothing to copy.", 'info');
+                return;
+            }
+            
+            navigator.clipboard.writeText(output).then(() => {
+                displayStatus("Result copied to clipboard!", 'success');
+            }).catch(err => {
+                // Fallback for older browsers
+                const tempInput = document.createElement('textarea');
+                tempInput.value = output;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                try {
+                    document.execCommand('copy');
+                    displayStatus("Result copied to clipboard!", 'success');
+                } catch (e) {
+                    displayStatus("Copy failed. Please try manually.", 'error');
+                } finally {
+                    document.body.removeChild(tempInput);
+                }
+            });
+        }
+
+        function updateUI() {
+            convertButton.disabled = inputTextarea.value.trim().length === 0;
+            copyButton.disabled = outputTextarea.value.length === 0;
+            clearInputButton.disabled = inputTextarea.value.length === 0;
+            clearOutputButton.disabled = outputTextarea.value.length === 0;
+        }
+
+        // --- Initialization and Event Listeners ---
+        
+        inputTextarea.addEventListener('input', updateUI);
+        convertButton.addEventListener('click', handleConvert);
+        copyButton.addEventListener('click', handleCopy);
+
+        clearInputButton.addEventListener('click', () => {
+            inputTextarea.value = '';
+            outputTextarea.value = '';
+            updateUI();
+            displayStatus("Input and Output fields cleared.", 'info');
+        });
+
+        clearOutputButton.addEventListener('click', () => {
+            outputTextarea.value = '';
+            updateUI();
+            displayStatus("Output field cleared.", 'info');
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateUI();
+            displayStatus(DEFAULT_STATUS, 'info');
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>

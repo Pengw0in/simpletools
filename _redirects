@@ -14,6 +14,7 @@
 /pdftoimg          /pdftoimg.html       200
 /imgconverter      /imgconv.html        200
 /md                /md.html             200
+/base64            /base64.html         200
 
 # Under construction tools - redirect to construction page
 /gradientgen        /construction.html?tool=gradientgen    200
@@ -35,3 +36,4 @@
 /pdftoimg.html     /pdftoimg            301
 /imgconv.html      /imgconverter        301
 /gradientgen.html  /construction        301
+/base64.html       /base64              301
