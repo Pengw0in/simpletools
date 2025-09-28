@@ -4,6 +4,8 @@
 /yaml /src/tools/yaml.html 200
 /xml /src/tools/xml.html 200
 /sql /src/tools/sql.html 200
+/cssformatter /src/tools/cssformatter.html 200
+/jsformatter /src/tools/jsformatter.html 200
 /imgconv /src/tools/imgconv.html 200
 /pallete /src/tools/pallete.html 200
 /gradientgen /src/tools/gradientgen.html 200
@@ -26,6 +28,8 @@
 /src/tools/yaml.html /yaml 301
 /src/tools/xml.html /xml 301
 /src/tools/sql.html /sql 301
+/src/tools/cssformatter.html /cssformatter 301
+/src/tools/jsformatter.html /jsformatter 301
 /src/tools/imgconv.html /imgconverter 301
 /src/tools/pallete.html /pallete 301
 /src/tools/gradientgen.html /gradientgen 301
