@@ -81,7 +81,7 @@
             margin-bottom: 8px;
             display: block;
         }
-        .file-input {
+        .file-input, .select-input {
             width: 100%;
             padding: 8px;
             border: 1px solid var(--border-color);
@@ -90,7 +90,7 @@
             color: var(--text-primary);
             font-size: 14px;
         }
-        .file-input:focus {
+        .file-input:focus, .select-input:focus {
             outline: none;
             border-color: var(--text-primary);
             background: var(--input-focus-bg);
@@ -164,6 +164,77 @@
             color: inherit;
             vertical-align: middle;
         }
+
+        /* --- NEW STYLES FOR COMPACT GALLERY --- */
+        #image-preview-container {
+            margin-top: 16px;
+            margin-bottom: 24px;
+            padding: 8px 0;
+            white-space: nowrap;
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--input-bg);
+            display: none; /* Hide until files are selected */
+        }
+        #image-preview-container.visible {
+            display: block;
+        }
+        .image-preview-item {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px;
+            width: 140px; /* Increased from 100px to accommodate larger images */
+            margin-right: 8px;
+            vertical-align: top;
+            background: var(--card-bg);
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .preview-image-wrapper {
+            width: 120px; /* Increased from 80px */
+            height: 120px; /* Increased from 80px */
+            overflow: hidden;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+        }
+        .preview-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+        .image-info {
+            font-size: 10px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .rotation-controls button {
+            padding: 4px 6px;
+            margin: 0 2px;
+            background: var(--text-secondary);
+            color: var(--card-bg);
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 10px;
+            line-height: 1;
+            transition: background 0.2s;
+        }
+        .rotation-controls button:hover {
+            background: var(--text-primary);
+        }
+        /* --- END NEW STYLES --- */
+
         @media (max-width: 600px) {
             .container {
                 padding: 20px 8px;
@@ -177,8 +248,8 @@
             }
         }
     </style>
-    <!-- jsPDF library for PDF generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exif-js/2.3.0/exif.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -202,6 +273,18 @@
                 >
             </div>
             <div id="file-count" class="file-count">No files selected.</div>
+
+            <div class="form-group" id="orientation-group" style="display: none;">
+                <label for="pdf-orientation" class="form-label">PDF Page Orientation</label>
+                <select id="pdf-orientation" class="select-input">
+                    <option value="p">Portrait (Default)</option>
+                    <option value="l">Landscape</option>
+                </select>
+            </div>
+            
+            <div id="image-preview-container">
+                <p style="text-align: center; color: var(--text-secondary); font-size: 14px;">Image Previews & Rotation Controls will appear here.</p>
+            </div>
             <button
                 id="convert-button"
                 class="btn"
@@ -217,6 +300,19 @@
     <script src="../toggle.js"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script>
+        // Global array to store file info, rotation, and EXIF
+        let imageFilesData = []; 
+
+        // Maps EXIF orientation tag value (1-8) to a rotation degree
+        function exifOrientationToDegrees(orientation) {
+            switch (orientation) {
+                case 3: return 180;
+                case 6: return 90;
+                case 8: return 270;
+                default: return 0;
+            }
+        }
+
         // --- Utility Functions ---
         function fileToDataUrl(file) {
             return new Promise((resolve, reject) => {
@@ -234,23 +330,42 @@
                 img.src = dataUrl;
             });
         }
+        
         // --- UI Update Functions ---
         function updateFileCount() {
             const input = document.getElementById('image-files');
             const button = document.getElementById('convert-button');
             const fileCount = document.getElementById('file-count');
             const statusMessage = document.getElementById('status-message');
+            const previewContainer = document.getElementById('image-preview-container');
+            const orientationGroup = document.getElementById('orientation-group');
+
             const count = input.files.length;
             fileCount.textContent = count > 0 ? `${count} file(s) selected.` : 'No files selected.';
             button.disabled = count === 0;
             statusMessage.className = 'status-message';
             statusMessage.textContent = '';
+            
+            // Toggle visibility of the preview gallery and orientation setting
+            previewContainer.classList.toggle('visible', count > 0);
+            orientationGroup.style.display = count > 0 ? 'block' : 'none';
+
+            // Clear and populate the image preview container
+            previewContainer.innerHTML = '';
+            imageFilesData = []; // Clear global data
+            if (count > 0) {
+                loadAndRenderImages(Array.from(input.files));
+            } else {
+                 previewContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary); font-size: 14px; padding: 16px;">Image Previews & Rotation Controls will appear here.</p>';
+            }
         }
+        
         function showStatus(message, type = 'info') {
             const statusMessage = document.getElementById('status-message');
             statusMessage.textContent = message;
             statusMessage.className = `status-message visible ${type}`;
         }
+        
         function setLoadingState(isLoading) {
             const button = document.getElementById('convert-button');
             const buttonText = document.getElementById('button-text');
@@ -267,50 +382,175 @@
             }
             if (typeof lucide !== 'undefined') lucide.createIcons();
         }
+
+        // --- Image Loading and Preview Rendering ---
+        async function loadAndRenderImages(files) {
+            const previewContainer = document.getElementById('image-preview-container');
+            showStatus('Loading image previews and checking orientation...', 'info');
+
+            // Add the "scroll left/right hint"
+            if(files.length > 3) {
+                previewContainer.innerHTML = '<p style="font-size: 12px; color: var(--text-secondary); text-align: center; margin-bottom: 8px;">(Scroll right to see all images)</p>';
+            }
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const dataUrl = await fileToDataUrl(file);
+                let orientation = 1; // Default EXIF orientation
+
+                // Read EXIF orientation
+                if (typeof EXIF !== 'undefined' && file.type === 'image/jpeg') {
+                    await new Promise(resolve => {
+                        EXIF.getData(file, function() {
+                            orientation = EXIF.getTag(this, 'Orientation') || 1;
+                            resolve();
+                        });
+                    });
+                }
+
+                const initialRotation = exifOrientationToDegrees(orientation);
+
+                // Store data for later use in PDF generation
+                const fileData = {
+                    file,
+                    dataUrl,
+                    exifOrientation: orientation,
+                    rotation: initialRotation, 
+                    index: i
+                };
+                imageFilesData.push(fileData);
+
+                // Create UI elements
+                const item = document.createElement('div');
+                item.className = 'image-preview-item';
+                item.innerHTML = `
+                    <div class="image-info" title="${file.name}">#${i + 1}: ${file.name}</div>
+                    <div class="preview-image-wrapper">
+                        <img id="preview-img-${i}" class="preview-image" src="${dataUrl}" style="transform: rotate(${fileData.rotation}deg);">
+                    </div>
+                    <div class="rotation-controls">
+                        <button onclick="rotateImage(${i}, -90)" aria-label="Rotate left">
+                             <i data-lucide="rotate-ccw" style="width: 12px; height: 12px; vertical-align: middle;"></i>
+                        </button>
+                        <button onclick="rotateImage(${i}, 90)" aria-label="Rotate right">
+                             <i data-lucide="rotate-cw" style="width: 12px; height: 12px; vertical-align: middle;"></i>
+                        </button>
+                    </div>
+                `;
+                // Append the new item to the container
+                previewContainer.appendChild(item);
+                
+                // Re-initialize lucide icons for the new elements
+                if (typeof lucide !== 'undefined') lucide.createIcons(); 
+            }
+            showStatus(`Loaded ${files.length} images. Adjust orientation as needed.`, 'info');
+        }
+
+        function rotateImage(index, degrees) {
+            const data = imageFilesData[index];
+            if (!data) return;
+
+            data.rotation = (data.rotation + degrees) % 360;
+            if (data.rotation < 0) {
+                data.rotation += 360;
+            }
+            
+            // Update the visual preview
+            const imgElement = document.getElementById(`preview-img-${index}`);
+            if (imgElement) {
+                imgElement.style.transform = `rotate(${data.rotation}deg)`;
+            }
+        }
+
         // --- Main Conversion Logic ---
         async function convertImagesToPdf() {
-            const fileInput = document.getElementById('image-files');
-            const files = fileInput.files;
-            if (files.length === 0) {
+            if (imageFilesData.length === 0) {
                 showStatus('Please select at least one image file.', 'error');
                 return;
             }
             setLoadingState(true);
-            showStatus('Preparing images for PDF generation...', 'info');
+            showStatus('Generating PDF, applying custom orientations...', 'info');
+
+            const pdfOrientation = document.getElementById('pdf-orientation').value;
+
             try {
                 if (typeof window.jspdf === 'undefined' || typeof window.jspdf.jsPDF !== 'function') {
                     throw new Error("PDF generation library (jsPDF) failed to load.");
                 }
                 const { jsPDF } = window.jspdf;
-                const loadPromises = Array.from(files).map(async (file) => {
-                    const dataUrl = await fileToDataUrl(file);
-                    const image = await loadImage(dataUrl);
-                    return { image, dataUrl, type: file.type };
-                });
-                const loadedImages = await Promise.all(loadPromises);
-                const doc = new jsPDF('p', 'mm', 'a4');
-                const pdfWidth = doc.internal.pageSize.getWidth();
-                const pdfHeight = doc.internal.pageSize.getHeight();
+                // Use the selected orientation for the overall document
+                const doc = new jsPDF(pdfOrientation, 'mm', 'a4'); 
+                
+                let pdfWidth = doc.internal.pageSize.getWidth();
+                let pdfHeight = doc.internal.pageSize.getHeight();
+                
+                // If the orientation is set to Landscape, jspdf handles the swap
+                // but we fetch the dimensions again just in case of future jspdf changes
+                pdfWidth = doc.internal.pageSize.getWidth();
+                pdfHeight = doc.internal.pageSize.getHeight();
+
                 doc.deletePage(1);
-                loadedImages.forEach(({ image, dataUrl, type }, index) => {
-                    const imgWidth = image.naturalWidth;
-                    const imgHeight = image.naturalHeight;
-                    const aspectRatio = imgWidth / imgHeight;
+
+                for (let i = 0; i < imageFilesData.length; i++) {
+                    showStatus(`Processing image ${i + 1} of ${imageFilesData.length}...`, 'info');
+                    const fileData = imageFilesData[i];
+                    const { dataUrl, file, rotation } = fileData;
+                    
+                    const image = await loadImage(dataUrl); 
+
+                    // Get original dimensions
+                    let imgWidth = image.naturalWidth;
+                    let imgHeight = image.naturalHeight;
+                    const format = file.type.split('/')[1].toUpperCase();
+                    
+                    // --- CANVAS ROTATION & RESIZING ---
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    // Set canvas size: use max dimension for both width/height to avoid clipping
+                    const maxSize = Math.max(imgWidth, imgHeight);
+                    canvas.width = maxSize;
+                    canvas.height = maxSize;
+                    
+                    // Translate to center for rotation
+                    ctx.translate(maxSize / 2, maxSize / 2);
+                    // Rotate
+                    ctx.rotate(rotation * Math.PI / 180);
+                    
+                    // Draw the image, accounting for its original center
+                    ctx.drawImage(image, -imgWidth / 2, -imgHeight / 2);
+
+                    // Get the rotated image data from the canvas
+                    const rotatedDataUrl = canvas.toDataURL(file.type, 1.0);
+
+                    // We now use the rotated data to calculate its dimensions for PDF fitting
+                    const tempImg = await loadImage(rotatedDataUrl);
+                    const rotatedImgWidth = tempImg.naturalWidth;
+                    const rotatedImgHeight = tempImg.naturalHeight;
+                    
+                    const aspectRatio = rotatedImgWidth / rotatedImgHeight;
+
+                    // Fit to PDF page dimensions (Portrait or Landscape A4)
                     let finalWidth = pdfWidth;
                     let finalHeight = finalWidth / aspectRatio;
+                    
                     if (finalHeight > pdfHeight) {
                         finalHeight = pdfHeight;
                         finalWidth = finalHeight * aspectRatio;
                     }
+
                     const x = (pdfWidth - finalWidth) / 2;
                     const y = (pdfHeight - finalHeight) / 2;
-                    const format = type.split('/')[1].toUpperCase();
+
                     doc.addPage();
-                    doc.addImage(dataUrl, format, x, y, finalWidth, finalHeight);
-                });
+                    doc.addImage(rotatedDataUrl, format, x, y, finalWidth, finalHeight);
+
+                }
+
                 const currentDate = new Date().toISOString().slice(0, 10);
                 doc.save(`images-to-pdf_${currentDate}.pdf`);
-                showStatus(`Successfully converted ${files.length} images into a single PDF!`, 'success');
+                showStatus(`Successfully converted ${imageFilesData.length} images into a single PDF!`, 'success');
+                
             } catch (error) {
                 console.error("PDF Generation Error:", error);
                 showStatus(`Conversion failed. Error: ${error.message}. Please check your files.`, 'error');
@@ -318,9 +558,10 @@
                 setLoadingState(false);
             }
         }
+
         window.onload = function() {
             updateFileCount();
-            lucide.createIcons();
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         };
     </script>
     <style>
