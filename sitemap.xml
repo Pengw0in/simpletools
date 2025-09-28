@@ -7,121 +7,121 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://simplytool.netlify.app/src/tools/analysis.html</loc>
+    <loc>https://simplytool.netlify.app/analysis.html</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://simplytool.netlify.app/src/tools/base64.html</loc>
+    <loc>https://simplytool.netlify.app/base64.html</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://simplytool.netlify.app/src/tools/convert.html</loc>
+    <loc>https://simplytool.netlify.app/convert.html</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://simplytool.netlify.app/src/tools/csv.html</loc>
+    <loc>https://simplytool.netlify.app/csv.html</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://simplytool.netlify.app/src/tools/gradientgen.html</loc>
+    <loc>https://simplytool.netlify.app/gradientgen.html</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://simplytool.netlify.app/src/tools/imgconv.html</loc>
+    <loc>https://simplytool.netlify.app/imgconv.html</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://simplytool.netlify.app/src/tools/imgmeta.html</loc>
+    <loc>https://simplytool.netlify.app/imgmeta.html</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://simplytool.netlify.app/src/tools/imgtopdf.html</loc>
+    <loc>https://simplytool.netlify.app/imgtopdf.html</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://simplytool.netlify.app/src/tools/json.html</loc>
+    <loc>https://simplytool.netlify.app/json.html</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://simplytool.netlify.app/src/tools/markdown.html</loc>
+    <loc>https://simplytool.netlify.app/markdown.html</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://simplytool.netlify.app/src/tools/pallete.html</loc>
+    <loc>https://simplytool.netlify.app/pallete.html</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://simplytool.netlify.app/src/tools/pdftoimg.html</loc>
+    <loc>https://simplytool.netlify.app/pdftoimg.html</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://simplytool.netlify.app/src/tools/qr.html</loc>
+    <loc>https://simplytool.netlify.app/qr.html</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://simplytool.netlify.app/src/tools/regex.html</loc>
+    <loc>https://simplytool.netlify.app/regex.html</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://simplytool.netlify.app/src/tools/sql.html</loc>
+    <loc>https://simplytool.netlify.app/sql.html</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://simplytool.netlify.app/src/tools/textdiff.html</loc>
+    <loc>https://simplytool.netlify.app/textdiff.html</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://simplytool.netlify.app/src/tools/textgen.html</loc>
+    <loc>https://simplytool.netlify.app/textgen.html</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://simplytool.netlify.app/src/tools/timestamp.html</loc>
+    <loc>https://simplytool.netlify.app/timestamp.html</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://simplytool.netlify.app/src/tools/xml.html</loc>
+    <loc>https://simplytool.netlify.app/xml.html</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://simplytool.netlify.app/src/tools/yaml.html</loc>
+    <loc>https://simplytool.netlify.app/yaml.html</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
