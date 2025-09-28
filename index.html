@@ -20,10 +20,13 @@
                     <button class="search-toggle" onclick="toggleSearch()" aria-label="Search tools">
                         <i data-lucide="search" class="search-icon"></i>
                     </button>
-                    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-                        <i data-lucide="sun" class="theme-icon" id="theme-icon"></i>
+                    <button class="clear-search" id="clearSearch" onclick="clearSearch()" aria-label="Clear search">
+                        <i data-lucide="x" class="clear-icon"></i> 
                     </button>
                 </div>
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                    <i data-lucide="sun" class="theme-icon" id="theme-icon"></i>
+                </button>
             </div>
             <div class="logo-title">
                 <img src="public/logo.png" alt="Simply Tools Logo" class="logo-img" width="40" height="40" />
@@ -76,6 +79,22 @@
                     <h3 class="tool-title">SQL Formatter</h3>
                     <p class="tool-description">
                         Format and beautify SQL queries with support for multiple dialects.
+                    </p>
+                </a>
+
+                <a href="/cssformatter" class="tool-card" data-search="css formatter minifier unminifier beautify compress">
+                    <i data-lucide="code" class="tool-icon"></i>
+                    <h3 class="tool-title">CSS Formatter</h3>
+                    <p class="tool-description">
+                        Minify or beautify CSS code with proper formatting and indentation.
+                    </p>
+                </a>
+
+                <a href="/jsformatter" class="tool-card" data-search="javascript formatter minifier unminifier beautify compress">
+                    <i data-lucide="code" class="tool-icon"></i>
+                    <h3 class="tool-title">JavaScript Formatter</h3>
+                    <p class="tool-description">
+                        Minify or beautify JavaScript code with proper formatting and indentation.
                     </p>
                 </a>
 
@@ -241,11 +260,16 @@
         function toggleSearch() {
             const searchInput = document.getElementById('searchInput');
             const searchIconInput = document.getElementById('searchIconInput');
+            const clearButton = document.getElementById('clearSearch'); // Get the clear button
             searchActive = !searchActive;
             
             if (searchActive) {
                 searchInput.classList.add('active');
                 searchIconInput.classList.add('active');
+                // Only show the clear button if there is text in the search input
+                if (searchInput.value.trim()) {
+                    clearButton.classList.add('visible');
+                }
                 setTimeout(() => searchInput.focus(), 200);
             } else {
                 searchInput.classList.remove('active');
@@ -263,7 +287,8 @@
             const categoryGrids = document.querySelectorAll('.tools-grid.category-grid');
             
             searchInput.value = '';
-            clearButton.classList.remove('visible');
+            // Ensure clear button is hidden when search is cleared
+            clearButton.classList.remove('visible'); 
             searchResults.innerHTML = '';
             noResults.classList.remove('visible');
             
@@ -283,7 +308,8 @@
             const cards = document.querySelectorAll('.tool-card');
             const searchResults = document.getElementById('searchResults');
             const noResults = document.getElementById('noResults');
-            const clearButton = document.getElementById('clearSearch');
+            // Ensure you are targeting the correct clear button
+            const clearButton = document.getElementById('clearSearch'); 
             const categoryHeadings = document.querySelectorAll('.category-heading');
             const categoryGrids = document.querySelectorAll('.tools-grid.category-grid');
             
@@ -294,6 +320,7 @@
                 return;
             }
 
+            // Show clear button when typing
             clearButton.classList.add('visible');
             
             const searchTerm = query.toLowerCase();
@@ -375,6 +402,13 @@
         // Search input event listeners
         document.getElementById('searchInput').addEventListener('input', (e) => {
             performSearch(e.target.value);
+            // Toggle clear button visibility based on input content
+            const clearButton = document.getElementById('clearSearch');
+            if (e.target.value.trim()) {
+                clearButton.classList.add('visible');
+            } else {
+                clearButton.classList.remove('visible');
+            }
         });
 
         // Close search on escape
@@ -397,7 +431,10 @@
         function updateThemeIcon(theme) {
             const themeIcon = document.getElementById('theme-icon');
             themeIcon.setAttribute('data-lucide', theme === 'dark' ? 'sun' : 'moon');
-            lucide.createIcons();
+            // If lucide is available globally, call it here. Otherwise, rely on DOMContentLoaded.
+            if (window.lucide && window.lucide.createIcons) {
+                 lucide.createIcons();
+            }
         }
 
         function initializeTheme() {
