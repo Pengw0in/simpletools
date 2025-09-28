@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://simplytool.netlify.app/sitemap.xml

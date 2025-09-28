@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simply Tools</title>
+    <title>Simply Tools - Free Web-Based Utilities</title>
+    <meta name="description" content="A collection of web-based utilities for JSON viewing, CSV parsing, image conversion, and more. All tools run in your browser with no ads or paywalls.">
+    <meta name="keywords" content="web tools, utilities, JSON viewer, CSV parser, image converter, free online tools">
     <link rel="icon" type="image/x-icon" href="public/logo.ico">
     <link href="https://cdn.jsdelivr.net/npm/lucide@0.284.0/dist/umd/lucide.js" rel="stylesheet">
     <link rel="stylesheet" href="/index.css">
@@ -15,16 +17,13 @@
                 <div class="search-container">
                     <input type="text" class="search-input" id="searchInput" placeholder="Search tools..." />
                     <i data-lucide="search" class="search-icon-input" id="searchIconInput"></i>
-                    <button class="clear-search" onclick="clearSearch()" id="clearSearch">
-                        <i data-lucide="x" style="width: 12px; height: 12px;"></i>
+                    <button class="search-toggle" onclick="toggleSearch()" aria-label="Search tools">
+                        <i data-lucide="search" class="search-icon"></i>
+                    </button>
+                    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                        <i data-lucide="sun" class="theme-icon" id="theme-icon"></i>
                     </button>
                 </div>
-                <button class="search-toggle" onclick="toggleSearch()" aria-label="Search tools">
-                    <i data-lucide="search" class="search-icon"></i>
-                </button>
-                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-                    <i data-lucide="sun" class="theme-icon" id="theme-icon"></i>
-                </button>
             </div>
             <div class="logo-title">
                 <img src="public/logo.png" alt="Simply Tools Logo" class="logo-img" />
