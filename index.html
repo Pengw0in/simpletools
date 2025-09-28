@@ -421,7 +421,7 @@
         // Initialize theme and icons
         document.addEventListener('DOMContentLoaded', () => {
             initializeTheme();
-            lucide.createIcons();
+            requestAnimationFrame(() => lucide.createIcons());
         });
     </script>
 </body>
