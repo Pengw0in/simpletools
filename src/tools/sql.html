@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YAML Viewer & Converter</title>
-    <link rel="icon" type="image/x-icon" href="public/logo.ico">
-    <link rel="stylesheet" href="toggle.css">
-    <!-- Load YAML Library for parsing and stringifying -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+    <title>SQL Formatter & Beautifier</title>
+    <link rel="icon" type="image/x-icon" href="../../public/logo.ico">
+    <link rel="stylesheet" href="../toggle.css">
+    <!-- Load Prism.js CSS (light theme) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/themes/prism.min.css" rel="stylesheet" />
     <style>
         * {
             margin: 0;
@@ -23,7 +23,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 40px 20px;
         }
@@ -106,24 +106,23 @@
 
         .config-label {
             font-size: 13px;
-            font-weight: 500;
-            color: var(--text-primary);
+            color: var(--text-secondary);
             white-space: nowrap;
         }
 
         .config-select {
-            padding: 6px 12px;
+            padding: 6px 8px;
             border: 1px solid var(--border-color);
             border-radius: 4px;
+            font-size: 13px;
             background: var(--input-bg);
             color: var(--text-primary);
-            font-size: 13px;
+            min-width: 140px;
         }
 
         .config-select:focus {
             outline: none;
             border-color: var(--text-primary);
-            background: var(--input-focus-bg);
         }
 
         .file-input-wrapper {
@@ -155,7 +154,7 @@
         }
 
         .btn {
-            padding: 8px 16px;
+            padding: 6px 16px;
             border: 1px solid var(--border-color);
             background: var(--card-bg);
             border-radius: 4px;
@@ -181,18 +180,11 @@
             border-color: var(--text-secondary);
         }
 
-        .btn:disabled {
-            background: var(--border-color);
-            color: var(--text-secondary);
-            cursor: not-allowed;
-            border-color: var(--border-color);
-        }
-
         .editor-section {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         .editor-group {
@@ -212,31 +204,87 @@
             font-size: 14px;
         }
 
-        .yaml-textarea {
+        /* Styles for the Input Textarea (remains a textarea) */
+        .sql-textarea {
             width: 100%;
-            height: 400px;
+            min-height: 700px;
             padding: 16px;
             border: none;
             outline: none;
             font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
             font-size: 14px;
-            resize: none;
+            resize: vertical;
             line-height: 1.5;
             background: var(--input-bg);
             color: var(--text-primary);
         }
 
-        .yaml-textarea:focus {
+        .sql-textarea:focus {
             background: var(--input-focus-bg);
         }
 
-        .yaml-textarea::placeholder {
+        .sql-textarea::placeholder {
             color: var(--text-secondary);
         }
 
-        .yaml-textarea[readonly] {
-            background: var(--code-bg);
-            color: var(--text-primary);
+        /* Styles for the Output PRE/CODE block (new structure for highlighting) */
+        .editor-group pre.language-sql {
+            margin: 0; 
+            border: none;
+            border-radius: 0;
+            min-height: 700px;
+            max-height: 700px;
+            overflow: auto; 
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+            padding: 0 !important; /* Overwrite Prism's padding on the PRE tag */
+            background: var(--code-bg) !important; /* Theme-aware background */
+        }
+
+        /* Styles for the CODE block inside PRE */
+        .editor-group pre code {
+            display: block;
+            min-height: 700px;
+            padding: 16px; 
+            font-size: 14px;
+            line-height: 1.5;
+            white-space: pre;
+            background: var(--code-bg) !important;
+            color: var(--text-primary) !important;
+        }
+
+        /* Dark theme adjustments for Prism syntax highlighting */
+        [data-theme="dark"] .token.comment,
+        [data-theme="dark"] .token.prolog,
+        [data-theme="dark"] .token.doctype,
+        [data-theme="dark"] .token.cdata {
+            color: #8a8a8a;
+        }
+
+        [data-theme="dark"] .token.keyword {
+            color: #66b3ff;
+        }
+
+        [data-theme="dark"] .token.string,
+        [data-theme="dark"] .token.attr-value {
+            color: #4ade80;
+        }
+
+        [data-theme="dark"] .token.number {
+            color: #fb923c;
+        }
+
+        [data-theme="dark"] .token.operator,
+        [data-theme="dark"] .token.punctuation {
+            color: #e0e0e0;
+        }
+
+        [data-theme="dark"] .token.function {
+            color: #a78bfa;
+        }
+
+        [data-theme="dark"] pre.language-sql,
+        [data-theme="dark"] pre.language-sql code {
+            text-shadow: none !important;
         }
 
         .copy-button-wrapper {
@@ -262,6 +310,10 @@
         .copy-button:hover {
             opacity: 1;
             background: #28a745;
+        }
+
+        [data-theme="dark"] .copy-button:hover {
+            background: #5fb85f;
         }
 
         .copy-button:disabled {
@@ -290,18 +342,32 @@
             background: var(--error-color);
         }
 
+        [data-theme="dark"] .notification {
+            background: #fafafa;
+            color: #222;
+        }
+        [data-theme="dark"] .notification.error {
+            background: #ff6b6b;
+            color: #fff;
+        }
+
         .notification.show {
             opacity: 1;
         }
 
-        .error-output {
+        .error {
             background: var(--error-bg);
             color: var(--error-color);
+            padding: 16px;
+            border-radius: 4px;
+            border-left: 3px solid var(--error-border);
+            font-size: 14px;
         }
 
         @media (max-width: 768px) {
             .container {
                 padding: 20px 16px;
+                max-width: 100%;
             }
             
             .header h1 {
@@ -314,6 +380,11 @@
                 right: 0;
             }
 
+            .editor-section {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
             .config-content {
                 flex-direction: column;
                 align-items: stretch;
@@ -324,16 +395,54 @@
                 justify-content: space-between;
             }
 
-            .editor-section {
-                grid-template-columns: 1fr;
-                gap: 16px;
+            .config-select {
+                min-width: auto;
+                flex: 1;
             }
 
-            .yaml-textarea {
-                height: 300px;
+            .sql-textarea {
+                min-height: 500px;
+                font-size: 13px;
+            }
+
+            .editor-group pre.language-sql {
+                min-height: 500px;
+                max-height: 500px;
+            }
+
+            .editor-group pre code {
+                min-height: 500px;
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 16px 12px;
+            }
+            
+            .sql-textarea {
+                min-height: 400px;
+                padding: 12px;
+            }
+
+            .editor-group pre.language-sql {
+                min-height: 400px;
+                max-height: 400px;
+            }
+
+            .editor-group pre code {
+                min-height: 400px;
+                padding: 12px;
             }
         }
     </style>
+    <!-- Load SQL Formatter Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql-formatter/15.0.0/sql-formatter.min.js"></script>
+    <!-- Load Prism.js Core -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/prism.min.js"></script>
+    <!-- Load SQL language component for Prism -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/components/prism-sql.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -341,68 +450,61 @@
             <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
                 <i data-lucide="sun" class="theme-icon" id="theme-icon"></i>
             </button>
-            <h1>YAML Viewer & Converter</h1>
-            <p>Paste or upload your YAML, select the conversion type, and process to view or convert</p>
+            <h1>SQL Formatter & Beautifier</h1>
+            <p>Format and beautify your SQL queries with dialect support</p>
         </div>
 
         <div class="config-section">
-            <div class="config-header">Configuration & Actions</div>
+            <div class="config-header">Configuration</div>
             <div class="config-content">
                 <div class="config-group">
-                    <label class="config-label">Conversion Type:</label>
-                    <select id="conversionType" class="config-select" onchange="processYaml()">
-                        <option value="yaml">Beautify YAML</option>
-                        <option value="json">Convert to JSON</option>
+                    <label class="config-label">SQL Dialect:</label>
+                    <select id="sqlDialect" class="config-select" onchange="formatSql()">
+                        <option value="sql">Standard SQL</option>
+                        <option value="postgresql">PostgreSQL</option>
+                        <option value="mysql">MySQL</option>
+                        <option value="plsql">PL/SQL (Oracle)</option>
+                        <option value="mariadb">MariaDB</option>
+                        <option value="tsql">SQL Server (TSQL)</option>
+                        <option value="sqlite">SQLite</option>
+                        <option value="bigquery">BigQuery</option>
                     </select>
                 </div>
-
+                
                 <div class="config-group">
                     <label class="config-label">Upload File:</label>
                     <div class="file-input-wrapper">
-                        <input type="file" id="yamlFile" class="file-input" accept=".yaml,.yml,.txt" onchange="handleFileUpload(event)">
-                        <label for="yamlFile" class="file-input-label">Choose File</label>
+                        <input type="file" id="sqlFile" class="file-input" accept=".sql,.txt" onchange="handleFileUpload(event)">
+                        <label for="sqlFile" class="file-input-label">Choose File</label>
                     </div>
                 </div>
 
-                <button id="processButton" class="btn btn-primary" onclick="processYaml()">
-                    Process YAML
+                <button id="formatButton" class="btn btn-primary" onclick="formatSql()">
+                    Format Query
                 </button>
             </div>
         </div>
 
         <div class="editor-section">
             <div class="editor-group">
-                <label class="editor-label">Input YAML</label>
+                <label class="editor-label">Unformatted SQL</label>
                 <textarea 
-                    id="inputYaml" 
-                    class="yaml-textarea"
-                    placeholder="Paste your YAML content here..."
-                    oninput="processYaml()"
-                >person:
-  name: "Jane Doe"
-  age: 30
-  hobbies: [reading, hiking, coding]
-database:
-  host: localhost
-  port: 5432
-  credentials:
-    user: admin
-    password: secure_password_123</textarea>
+                    id="inputSql" 
+                    class="sql-textarea"
+                    placeholder="Paste your messy SQL here..." 
+                    oninput="formatSql()"
+                >SELECT COUNT(id), name FROM users JOIN orders ON users.id = orders.user_id WHERE orders.amount > 100 GROUP BY name ORDER BY 1 DESC;</textarea>
             </div>
 
             <div class="editor-group">
-                <label class="editor-label" id="outputLabel">Beautified YAML Output</label>
+                <label class="editor-label">Formatted SQL (Highlighted)</label>
                 <div class="copy-button-wrapper">
-                    <textarea 
-                        id="outputData" 
-                        class="yaml-textarea"
-                        placeholder="Processed data will appear here..."
-                        readonly
-                    ></textarea>
+                    <!-- Changed from textarea to pre/code for highlighting -->
+                    <pre class="language-sql"><code id="outputSql" class="language-sql"></code></pre>
                     <button 
                         id="copyButton"
                         class="copy-button"
-                        onclick="copyToClipboard(document.getElementById('outputData').value)"
+                        onclick="copyToClipboard(document.getElementById('outputSql').textContent)"
                         disabled
                     >
                         Copy
@@ -414,31 +516,29 @@ database:
         <div id="notification" class="notification"></div>
     </div>
 
-    <script src="toggle.js"></script>
+    <script src="../toggle.js"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script>
         // DOM Elements
-        const inputYaml = document.getElementById('inputYaml');
-        const outputData = document.getElementById('outputData');
-        const conversionType = document.getElementById('conversionType');
-        const outputLabel = document.getElementById('outputLabel');
+        const inputSql = document.getElementById('inputSql');
+        const outputSql = document.getElementById('outputSql'); // Now references the <code> element
+        const sqlDialect = document.getElementById('sqlDialect');
         const copyButton = document.getElementById('copyButton');
         const notification = document.getElementById('notification');
 
-        // Initial process on load
-        window.addEventListener('load', () => {
-            // Check if jsyaml is loaded before calling processYaml
-            if (typeof jsyaml !== 'undefined') {
-                processYaml(); 
+        // Initial format on load
+        window.onload = function() {
+            // Check if both libraries are loaded before proceeding
+            if (typeof sqlFormatter !== 'undefined' && typeof Prism !== 'undefined') {
+                formatSql(); 
             } else {
-                console.error("js-yaml library failed to load.");
-                showNotification("Failed to load YAML library.", true);
+                console.error("One or more required libraries failed to load (sqlFormatter or Prism).");
             }
             lucide.createIcons();
-        });
+        };
 
         /**
-         * Handles the uploading of an YAML/text file and loads its content into the input area.
+         * Handles the uploading of an SQL file and loads its content into the input area.
          */
         function handleFileUpload(event) {
             const file = event.target.files[0];
@@ -447,8 +547,8 @@ database:
             const reader = new FileReader();
             
             reader.onload = (e) => {
-                inputYaml.value = e.target.result;
-                processYaml(); // Process immediately after loading
+                inputSql.value = e.target.result;
+                formatSql();
                 showNotification(`File "${file.name}" loaded successfully!`);
             };
 
@@ -461,55 +561,45 @@ database:
         }
 
         /**
-         * Processes the YAML input based on the selected conversion type.
+         * Formats the SQL query using the selected dialect and applies syntax highlighting.
          */
-        function processYaml() {
-            const inputText = inputYaml.value.trim();
-            const type = conversionType.value;
+        function formatSql() {
+            const sqlText = inputSql.value.trim();
+            const dialect = sqlDialect.value;
 
-            if (inputText === "") {
-                outputData.value = "";
-                outputData.classList.remove('error-output');
+            if (sqlText === "") {
+                outputSql.textContent = "";
                 copyButton.disabled = true;
-                outputLabel.textContent = "Output Data";
                 return;
             }
 
             try {
-                // 1. Parse YAML content into a JavaScript object
-                const yamlData = jsyaml.load(inputText);
-                let outputText = "";
-
-                if (type === "json") {
-                    // 2. Convert object to formatted JSON string
-                    outputText = JSON.stringify(yamlData, null, 2);
-                    outputLabel.textContent = "Formatted JSON Output";
-                } else {
-                    // 2. Convert object back to standardized YAML string (Beautify)
-                    outputText = jsyaml.dump(yamlData, { 
-                        indent: 2, 
-                        lineWidth: 100, // Better line wrapping for viewing
-                        skipInvalid: true 
-                    });
-                    outputLabel.textContent = "Beautified YAML Output";
-                }
+                const formatted = sqlFormatter.format(sqlText, {
+                    language: dialect,
+                    indent: '  '
+                });
                 
-                outputData.value = outputText;
-                outputData.classList.remove('error-output');
-                copyButton.disabled = outputText.trim() === "";
+                // Set the text content of the <code> block
+                outputSql.textContent = formatted; 
+                
+                // Tell Prism to re-highlight the content
+                Prism.highlightElement(outputSql); 
+
+                copyButton.disabled = false;
 
             } catch (error) {
-                // Display parsing or conversion errors
-                outputData.value = `YAML Processing Error:\n\n${error.message}`;
-                outputData.classList.add('error-output');
-                outputLabel.textContent = "Output (Error)";
+                // Display error message in the code block as plain text
+                outputSql.textContent = `Error formatting SQL: ${error.message}`;
+                // Since the content is error text, we explicitly prevent highlighting by Prism.
+                outputSql.className = ''; 
                 copyButton.disabled = true;
-                showNotification("YAML processing failed. Check your file syntax.", true);
+                showNotification("Formatting failed. Check your query syntax.", true);
             }
         }
 
         /**
          * Copies the given text to the clipboard and shows a notification.
+         * Note: The text parameter now comes from the <code> element's textContent.
          * @param {string} text - The text to copy.
          */
         function copyToClipboard(text) {
@@ -518,19 +608,7 @@ database:
                 return;
             }
 
-            // Try modern clipboard API first
-            if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(text).then(() => {
-                    showNotification("Content copied!");
-                }).catch(() => {
-                    fallbackCopy(text);
-                });
-            } else {
-                fallbackCopy(text);
-            }
-        }
-
-        function fallbackCopy(text) {
+            // Create a temporary textarea to hold the text for the copy operation
             const tempInput = document.createElement('textarea');
             tempInput.value = text;
             document.body.appendChild(tempInput);
@@ -538,10 +616,10 @@ database:
             
             try {
                 document.execCommand('copy');
-                showNotification("Content copied!");
+                showNotification("Formatted SQL copied!");
             } catch (err) {
                 console.error('Failed to copy text: ', err);
-                showNotification("Failed to copy content.", true);
+                showNotification("Failed to copy code.", true);
             }
             document.body.removeChild(tempInput);
         }
@@ -555,7 +633,6 @@ database:
             notification.textContent = message;
             notification.className = `notification show ${isError ? 'error' : ''}`;
 
-            // Hide the notification after 3 seconds
             setTimeout(() => {
                 notification.classList.remove('show');
             }, 3000);

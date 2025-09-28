@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gradient Generator</title>
+    <link rel="icon" type="image/x-icon" href="../../public/logo.ico">
+    <link rel="stylesheet" href="../toggle.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        .header p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 8px;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            z-index: 100;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            line-height: 0;
+        }
+        .theme-toggle:hover {
+            background: var(--hover-bg);
+            border-color: var(--text-secondary);
+            color: var(--text-primary);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+        }
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+        .panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 24px;
+        }
+        .panel-header {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 18px;
+        }
+        .color-group {
+            margin-bottom: 24px;
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--code-bg);
+        }
+        .color-preview {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            border: 2px solid #fff;
+            box-shadow: 0 0 0 1px var(--border-color);
+            margin-right: 8px;
+        }
+        input[type="color"] {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            padding: 0;
+            border: none;
+            position: absolute;
+            pointer-events: none;
+        }
+        .hex-input {
+            width: 80px;
+            padding: 6px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+            color: var(--text-primary);
+            background: var(--input-bg);
+        }
+        .hex-input:focus {
+            border-color: var(--text-secondary);
+            background: var(--input-focus-bg);
+            outline: none;
+        }
+        .position-input-container {
+            display: grid;
+            grid-template-columns: 1fr 50px;
+            gap: 1rem;
+            align-items: center;
+        }
+        .position-slider {
+            width: 100%;
+            height: 6px;
+            background: var(--border-color);
+            border-radius: 4px;
+            appearance: none;
+        }
+        .position-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--text-primary);
+            cursor: pointer;
+            border: 2px solid var(--card-bg);
+        }
+        .position-value {
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-align: right;
+        }
+        .color-group-3 { display: none; }
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+        .btn:hover {
+            background: var(--hover-bg);
+            border-color: var(--text-secondary);
+        }
+        .btn-primary {
+            background: var(--text-primary);
+            color: var(--card-bg);
+            border-color: var(--text-primary);
+        }
+        .btn-primary:hover {
+            background: var(--text-secondary);
+            border-color: var(--text-secondary);
+        }
+        .gradient-preview {
+            width: 100%;
+            height: 320px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid var(--border-color);
+            margin-bottom: 24px;
+            background: linear-gradient(51deg, #3f5d85 0%, #3ea145 100%);
+            transition: background 0.3s;
+        }
+        .css-output-block {
+            background: var(--code-bg);
+            border-radius: 6px;
+            padding: 16px;
+            font-size: 14px;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            margin-top: 8px;
+            overflow-x: auto;
+        }
+        .copy-message {
+            position: absolute;
+            top: -32px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--text-primary);
+            color: var(--card-bg);
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 10;
+        }
+        .copy-message.visible {
+            opacity: 1;
+        }
+        @media (max-width: 900px) {
+            .main-grid { grid-template-columns: 1fr; gap: 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                <i data-lucide="sun" class="theme-icon" id="theme-icon"></i>
+            </button>
+            <h1>Gradient Generator</h1>
+            <p>Create and export beautiful gradients with up to three colors.</p>
+        </div>
+        <div class="main-grid">
+            <!-- CONTROL PANEL -->
+            <div class="panel" id="control-panel">
+                <div class="panel-header">Controls</div>
+                <div style="display: flex; gap: 16px; margin-bottom: 24px;">
+                    <div style="flex:1;">
+                        <label for="rotation" style="font-size:13px;font-weight:500;color:var(--text-primary);margin-bottom:6px;display:block;">Rotation (Linear) (0-360°)</label>
+                        <input type="number" id="rotation" min="0" max="360" step="1" value="51" class="hex-input">
+                    </div>
+                    <div style="flex:1;">
+                        <label for="type" style="font-size:13px;font-weight:500;color:var(--text-primary);margin-bottom:6px;display:block;">Type</label>
+                        <select id="type" class="hex-input">
+                            <option value="linear" selected>Linear</option>
+                            <option value="radial">Radial</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="color-groups-container">
+                    <div id="color-group-1" class="color-group">
+                        <div style="margin-bottom:10px;font-weight:500;color:var(--text-primary);">Color 1</div>
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            <label style="display:flex;align-items:center;cursor:pointer;">
+                                <span class="color-preview" style="background-color: #3f5d85;" data-id="1"></span>
+                                <input type="color" class="color-input" data-id="1" value="#3f5d85">
+                            </label>
+                            <input type="text" data-id="1" class="hex-input" value="#3f5d85" maxlength="7">
+                            <div class="position-input-container" style="flex:1;">
+                                <input type="range" data-id="1" min="0" max="100" value="0" class="position-slider">
+                                <span class="position-value" data-id="1">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="color-group-2" class="color-group">
+                        <div style="margin-bottom:10px;font-weight:500;color:var(--text-primary);">Color 2</div>
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            <label style="display:flex;align-items:center;cursor:pointer;">
+                                <span class="color-preview" style="background-color: #3ea145;" data-id="2"></span>
+                                <input type="color" class="color-input" data-id="2" value="#3ea145">
+                            </label>
+                            <input type="text" data-id="2" class="hex-input" value="#3ea145" maxlength="7">
+                            <div class="position-input-container" style="flex:1;">
+                                <input type="range" data-id="2" min="0" max="100" value="100" class="position-slider">
+                                <span class="position-value" data-id="2">100%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="color-group-3" class="color-group color-group-3">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                            <span style="font-weight:500;color:var(--text-primary);">Color 3</span>
+                            <button onclick="removeColor(3)" class="btn" style="color:var(--error-color);background:var(--error-bg);">Remove</button>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            <label style="display:flex;align-items:center;cursor:pointer;">
+                                <span class="color-preview" style="background-color: #00FF00;" data-id="3"></span>
+                                <input type="color" class="color-input" data-id="3" value="#00FF00">
+                            </label>
+                            <input type="text" data-id="3" class="hex-input" value="#00FF00" maxlength="7">
+                            <div class="position-input-container" style="flex:1;">
+                                <input type="range" data-id="3" min="0" max="100" value="50" class="position-slider">
+                                <span class="position-value" data-id="3">50%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="display:flex;gap:12px;margin-top:24px;">
+                    <button id="random-btn" class="btn">Random</button>
+                    <button id="add-color-btn" class="btn">Add Color (Max 3)</button>
+                    <button id="copy-css-btn" class="btn btn-primary" style="position:relative;">
+                        Copy CSS
+                        <span id="copy-message" class="copy-message">Copied!</span>
+                    </button>
+                </div>
+            </div>
+            <!-- PREVIEW AREA -->
+            <div>
+                <div class="gradient-preview" id="gradient-preview"></div>
+                <div class="css-output-block">
+                    <div style="font-weight:500;color:var(--text-secondary);margin-bottom:6px;">Generated CSS:</div>
+                    <code id="css-output">background: linear-gradient(51deg, #3f5d85 0%, #3ea145 100%);</code>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../toggle.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script type="module">
+        // --- Firebase/Auth Setup (Mandatory but not used for core logic) ---
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        const apiKey = "";
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let db, auth;
+        let userId = 'anonymous';
+
+        if (firebaseConfig) {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+            
+            // Authenticate user
+            (async () => {
+                try {
+                    if (initialAuthToken) {
+                        await signInWithCustomToken(auth, initialAuthToken);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                    userId = auth.currentUser?.uid || 'anonymous';
+                    console.log("Firebase initialized and user signed in:", userId);
+                } catch (error) {
+                    console.error("Firebase authentication failed:", error);
+                }
+            })();
+        }
+        // --- End of Firebase/Auth Setup ---
+
+
+        // --- Gradient Logic ---
+        const $ = selector => document.querySelector(selector);
+        const $$ = selector => document.querySelectorAll(selector);
+
+        let gradientState = {
+            type: 'linear', // 'linear' or 'radial'
+            rotation: 51, // degrees
+            colors: [
+                { id: 1, hex: '#3f5d85', position: 0 },
+                { id: 2, hex: '#3ea145', position: 100 }
+            ],
+            maxColors: 3
+        };
+
+        const previewEl = $('#gradient-preview');
+        const cssOutputEl = $('#css-output');
+        const addColorBtn = $('#add-color-btn');
+        const randomBtn = $('#random-btn'); 
+        const colorGroup3El = $('#color-group-3');
+        const rotationSelect = $('#rotation');
+        const typeSelect = $('#type');
+        const copyCssBtn = $('#copy-css-btn');
+        // Corrected selector for control panel
+        const controlPanel = $('#control-panel');
+
+
+        /**
+         * Converts a hex color to an RGB string for use in gradient track.
+         * @param {string} hex - The hex color code (e.g., "#FF0080").
+         * @returns {string} - The RGB string (e.g., "rgb(255, 0, 128)").
+         */
+        const hexToRgb = (hex) => {
+            const bigint = parseInt(hex.slice(1), 16);
+            const r = (bigint >> 16) & 255;
+            const g = (bigint >> 8) & 255;
+            const b = bigint & 255;
+            return `rgb(${r}, ${g}, ${b})`;
+        };
+
+        /**
+         * Generates the CSS gradient string based on current state.
+         * @returns {string} The full CSS property value.
+         */
+        const generateGradientCSS = () => {
+            // 1. Sort colors by position
+            const sortedColors = [...gradientState.colors].sort((a, b) => a.position - b.position);
+
+            // 2. Create the color stop list (e.g., "#HEX POS%, #HEX2 POS2%")
+            const colorStops = sortedColors.map(color => `${color.hex} ${color.position}%`).join(', ');
+
+            // 3. Generate the full gradient string
+            if (gradientState.type === 'linear') {
+                return `linear-gradient(${gradientState.rotation}deg, ${colorStops})`;
+            } else {
+                return `radial-gradient(circle, ${colorStops})`;
+            }
+        };
+
+        /**
+         * Updates the preview and CSS output.
+         */
+        const updateUI = () => {
+            // Update gradient preview
+            const gradientCSS = generateGradientCSS();
+            previewEl.style.background = gradientCSS;
+            cssOutputEl.textContent = `background: ${gradientCSS};`;
+
+            // Update color inputs and previews
+            gradientState.colors.forEach(color => {
+                const colorPreview = $(`.color-preview[data-id="${color.id}"]`);
+                const colorInput = $(`.color-input[data-id="${color.id}"]`);
+                const hexInput = $(`.hex-input[data-id="${color.id}"]`);
+                const positionSlider = $(`.position-slider[data-id="${color.id}"]`);
+                const positionValue = $(`.position-value[data-id="${color.id}"]`);
+
+                if (colorPreview) colorPreview.style.backgroundColor = color.hex;
+                if (colorInput) colorInput.value = color.hex;
+                if (hexInput) hexInput.value = color.hex;
+                if (positionSlider) positionSlider.value = color.position;
+                if (positionValue) positionValue.textContent = `${color.position}%`;
+            });
+
+            // Update rotation and type selects
+            rotationSelect.value = gradientState.rotation.toString();
+            typeSelect.value = gradientState.type;
+
+            // Disable rotation select if radial
+            rotationSelect.disabled = gradientState.type === 'radial';
+
+            // 4. Update Add Color Button state
+            const isMaxColors = gradientState.colors.length >= gradientState.maxColors;
+            addColorBtn.disabled = isMaxColors;
+            if (isMaxColors) {
+                addColorBtn.textContent = 'Maximum 3 Colors';
+            } else {
+                addColorBtn.textContent = 'Add Color (Max 3)';
+            }
+        };
+
+        /**
+         * Handles all input changes to update the state and UI.
+         */
+        const handleInputChange = (e) => {
+            const target = e.target;
+            const value = target.value;
+
+            if (target === rotationSelect) {
+                gradientState.rotation = parseInt(value) || 0; // Default to 0 if invalid
+            } else if (target === typeSelect) {
+                gradientState.type = value;
+                // Disable rotation input if radial
+                rotationSelect.disabled = value === 'radial';
+            } else if (target.classList.contains('color-input')) {
+                const id = parseInt(target.getAttribute('data-id'));
+                const color = gradientState.colors.find(c => c.id === id);
+                if (color) {
+                    color.hex = value;
+                    $(`.hex-input[data-id="${id}"]`).value = value;
+                }
+            } else if (target.classList.contains('hex-input')) {
+                const id = parseInt(target.getAttribute('data-id'));
+                const color = gradientState.colors.find(c => c.id === id);
+                if (color) {
+                    color.hex = value;
+                    $(`.color-input[data-id="${id}"]`).value = value;
+                    $(`.color-preview[data-id="${id}"]`).style.backgroundColor = value;
+                }
+            } else if (target.classList.contains('position-slider')) {
+                const id = parseInt(target.getAttribute('data-id'));
+                const color = gradientState.colors.find(c => c.id === id);
+                if (color) {
+                    color.position = parseInt(value);
+                    $(`.position-value[data-id="${id}"]`).textContent = `${value}%`;
+                }
+            }
+
+            updateUI();
+        };
+
+        /**
+         * Adds a new color to the gradient.
+         */
+        const addColor = () => {
+            if (gradientState.colors.length >= gradientState.maxColors) return;
+
+            const newId = Math.max(...gradientState.colors.map(c => c.id)) + 1;
+            const newColor = {
+                id: newId,
+                hex: generateRandomColor(),
+                position: 50
+            };
+
+            gradientState.colors.push(newColor);
+
+            // Show the third color group if adding the third color
+            if (gradientState.colors.length === 3) {
+                colorGroup3El.style.display = 'block';
+            }
+
+            updateUI();
+        };
+
+        /**
+         * Removes a color from the gradient.
+         */
+        window.removeColor = (id) => {
+            gradientState.colors = gradientState.colors.filter(c => c.id !== id);
+
+            // Hide the third color group if removing the third color
+            if (id === 3) {
+                colorGroup3El.style.display = 'none';
+            }
+
+            updateUI();
+        };
+
+        /**
+         * Generates a random hex color.
+         */
+        const generateRandomColor = () => {
+            return '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+        };
+
+        /**
+         * Randomizes the gradient.
+         */
+        const randomizeGradient = () => {
+            // Randomize existing colors and positions
+            gradientState.colors = gradientState.colors.map(color => {
+                const id = color.id;
+                let newPosition;
+
+                if (gradientState.colors.length === 1) {
+                    newPosition = 0; // Single color, position doesn't matter
+                } else if (gradientState.colors.length === 2) {
+                    // If only 2 colors, keep start/end stops (0% and 100%) for full coverage.
+                    newPosition = id === 1 ? 0 : 100;
+                } else if (gradientState.colors.length === 3) {
+                    // For 3 colors, allow middle position to vary, but keep ends fixed for coverage
+                    if (id === 1) {
+                        newPosition = 0;
+                    } else if (id === 2) {
+                        newPosition = 100;
+                    } else if (id === 3) {
+                        newPosition = Math.floor(Math.random() * 98) + 1; // 1 to 99
+                    }
+                }
+
+                return {
+                    ...color,
+                    hex: generateRandomColor(),
+                    position: newPosition
+                };
+            });
+
+            // Randomize type and rotation
+            const isLinear = Math.random() < 0.7; // 70% chance of linear
+            gradientState.type = isLinear ? 'linear' : 'radial';
+            
+            if (isLinear) {
+                gradientState.rotation = Math.floor(Math.random() * 361); // 0 to 360 degrees
+            }
+            
+            // Update UI controls to match new state
+            rotationSelect.value = gradientState.rotation.toString();
+            typeSelect.value = gradientState.type;
+
+            updateUI();
+        };
+
+        /**
+         * Copies the CSS to clipboard.
+         */
+        const copyCSSToClipboard = () => {
+            const css = `background: ${generateGradientCSS()};`;
+            const textarea = document.createElement('textarea');
+            textarea.value = css;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                const copyMessage = $('#copy-message');
+                copyMessage.classList.add('visible');
+                setTimeout(() => copyMessage.classList.remove('visible'), 2000);
+            } catch (err) {
+                console.error('Could not copy text: ', err);
+            } finally {
+                document.body.removeChild(textarea);
+            }
+        };
+
+        // --- Event Listeners Setup ---
+        window.onload = () => {
+            // Add app-input class to relevant elements for consistent theming
+            // REMOVED: Non-existent class application
+            // $$('select, input[type="text"]').forEach(el => el.classList.add('app-input'));
+
+            // Initial UI update
+            updateUI();
+            
+            // Re-apply `lucide` icons
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons();
+            }
+
+            // Corrected: Attach listener to the correct control panel element (ID added in HTML)
+            if (controlPanel) {
+                controlPanel.addEventListener('input', handleInputChange);
+                controlPanel.addEventListener('change', handleInputChange); // For selects and color inputs
+            }
+
+            // Attach listener for the Add Color button
+            addColorBtn.addEventListener('click', addColor);
+
+            // Attach listener for the Random button
+            randomBtn.addEventListener('click', randomizeGradient);
+
+            // Attach listener for the Copy CSS button
+            copyCssBtn.addEventListener('click', copyCSSToClipboard);
+        };
+    </script>
+</body>
+</html>

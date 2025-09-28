@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Text Counter</title>
-    <link rel="icon" type="image/x-icon" href="public/logo.ico">
-    <link rel="stylesheet" href="toggle.css">
+    <link rel="icon" type="image/x-icon" href="../../public/logo.ico">
+    <link rel="stylesheet" href="../toggle.css">
     <style>
         * {
             margin: 0;
@@ -21,7 +21,7 @@
         }
 
         .container {
-            max-width: 800px;
+            max-width: 1200px; /* Increased max-width for the grid */
             margin: 0 auto;
             padding: 40px 20px;
         }
@@ -71,14 +71,27 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.08);
         }
 
+        /* NEW: Main Grid Layout */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr; /* Text input is wider than stats */
+            gap: 30px;
+        }
+        
+        .left-column {
+            display: flex;
+            flex-direction: column;
+        }
+
         .input-section {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 4px;
             margin-bottom: 30px;
             overflow: hidden;
+            flex-grow: 1; /* Allows it to fill the height */
         }
-
+        
         .input-header {
             padding: 12px 16px;
             background: var(--code-bg);
@@ -90,6 +103,43 @@
             justify-content: space-between;
             align-items: center;
         }
+        
+        /* New Styles for Search Functionality */
+        .search-section {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            margin-bottom: 30px;
+            gap: 10px;
+        }
+        
+        .search-input {
+            flex-grow: 1;
+            padding: 8px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 14px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        
+        .search-input:focus {
+            border-color: var(--text-secondary);
+            background: var(--input-focus-bg);
+        }
+
+        .search-status {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        /* End New Styles */
 
         .file-upload-wrapper {
             display: flex;
@@ -141,28 +191,63 @@
             border-color: var(--text-secondary);
         }
 
-        .text-area {
+        /* --- Text Highlight Container --- */
+        .textarea-container {
+             position: relative;
+             min-height: 300px;
+             height: 100%; /* Important for flex layout */
+             background: var(--input-bg);
+             border-radius: 0 0 4px 4px;
+        }
+        .input-section .textarea-container:has(#textInput:focus) {
+            background: var(--input-focus-bg);
+        }
+
+        .highlight-area {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            min-height: 300px;
+            height: 100%;
             padding: 16px;
             border: none;
             outline: none;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             font-size: 14px;
-            resize: vertical;
             line-height: 1.5;
-            background: var(--input-bg);
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: transparent;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden; /* Hides scrollbar on highlight area */
+        }
+
+        #textInput {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 16px;
+            border: none;
+            outline: none;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 14px;
+            resize: none; /* Removed vertical resize */
+            line-height: 1.5;
+            background: transparent;
             color: var(--text-primary);
+            z-index: 2;
         }
-
-        .text-area:focus {
-            background: var(--input-focus-bg);
+        
+        .highlight-match {
+            background-color: #ff0;
+            color: #000;
+            border-radius: 2px;
         }
-
-        .text-area::placeholder {
-            color: var(--text-secondary);
-        }
-
+        /* End highlight adjustments */
+        
         .stats-section {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -182,7 +267,7 @@
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(2, 1fr); /* More compact quick stats */
             gap: 0;
         }
 
@@ -193,20 +278,20 @@
             text-align: center;
         }
 
-        .stat-item:last-child {
-            border-right: none;
-        }
+        .stat-item:nth-child(2n) { border-right: none; } /* Remove right border on every second item */
+        .stat-item:nth-last-child(-n + 2) { border-bottom: none; } /* Remove bottom border on last two items */
+
 
         .stat-value {
             display: block;
-            font-size: 2rem;
+            font-size: 1.5rem; /* Smaller for compactness */
             font-weight: 300;
             color: var(--text-primary);
             margin-bottom: 4px;
         }
 
         .stat-label {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -217,6 +302,7 @@
             border: 1px solid var(--border-color);
             border-radius: 4px;
             overflow: hidden;
+            margin-bottom: 30px; /* Keep margin here */
         }
 
         .detailed-header {
@@ -226,6 +312,36 @@
             font-weight: 500;
             color: var(--text-primary);
             font-size: 14px;
+        }
+        
+        /* NEW: Tab Styles */
+        .tab-bar {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--card-bg);
+        }
+
+        .tab-button {
+            flex-grow: 1;
+            text-align: center;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: var(--card-bg);
+            border: none;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .tab-button:hover {
+            color: var(--text-primary);
+        }
+
+        .tab-button.active {
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--text-primary);
         }
 
         .detailed-content {
@@ -255,21 +371,18 @@
             font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
         }
 
-        .reading-stats {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
-        }
+        /* Removed .reading-stats empty ruleset as it's now a separate tab content */
 
         .reading-title {
             font-weight: 500;
             margin-bottom: 12px;
             color: var(--text-primary);
+            display: none; /* Hide internal title as tab provides context */
         }
 
         .reading-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(2, 1fr); /* 2x2 grid is better here */
             gap: 16px;
         }
 
@@ -299,53 +412,39 @@
             font-size: 14px;
             padding: 40px 20px;
         }
+        
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
 
+        /* Responsive Adjustments */
+        @media (max-width: 1000px) {
+            .main-grid {
+                grid-template-columns: 1fr; /* Stack columns on smaller screens */
+                gap: 20px;
+            }
+            .stat-item:nth-child(2n) { border-right: 1px solid var(--border-color); } /* Re-add borders for single column */
+            .stat-item:nth-child(3n) { border-right: none; }
+            .stat-item:nth-last-child(-n + 2) { border-bottom: 1px solid var(--border-color); }
+            .stat-item:last-child { border-bottom: none; }
+            
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
         @media (max-width: 768px) {
             .container {
                 padding: 20px 16px;
             }
             
-            .header h1 {
-                font-size: 1.5rem;
-                padding-right: 50px;
-            }
-
-            .theme-toggle {
-                top: -10px;
-                right: 0;
-            }
-
-            .input-header {
-                flex-direction: column;
-                gap: 12px;
-                align-items: stretch;
-            }
-
-            .file-upload-wrapper {
-                justify-content: center;
-            }
-
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
-
-            .stat-item {
-                border-right: none;
-            }
-
-            .stat-value {
-                font-size: 1.5rem;
-            }
-
-            .detail-row {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 4px;
-            }
-
-            .reading-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+            .stat-item:nth-child(2n) { border-right: none; }
         }
 
         @media (max-width: 480px) {
@@ -368,75 +467,142 @@
             <h1>Text Counter</h1>
             <p>Count words, characters, lines and analyze your text</p>
         </div>
+        
+        <div class="main-grid">
+            <div class="left-column">
+                
+                <div class="search-section">
+                    <input 
+                        type="text" 
+                        id="search-input" 
+                        class="search-input" 
+                        placeholder="Search text..." 
+                        oninput="updateStats()"
+                    />
+                    <span id="search-status" class="search-status">0 matches</span>
+                </div>
 
-        <div class="input-section">
-            <div class="input-header">
-                <span>Enter or Paste Your Text</span>
-                <div class="file-upload-wrapper">
-                    <div class="file-input-wrapper">
-                        <input type="file" id="textFile" class="file-input" accept=".txt,.md,.csv,.json,.xml,.html,.css,.js,.py,.java,.cpp,.c,.h" onchange="loadFile(event)">
-                        <label for="textFile" class="file-input-label">Upload File</label>
+                <div class="input-section" style="flex-grow: 1;">
+                    <div class="input-header">
+                        <span>Enter or Paste Your Text</span>
+                        <div class="file-upload-wrapper">
+                            <div class="file-input-wrapper">
+                                <input type="file" id="textFile" class="file-input" accept=".txt,.md,.csv,.json,.xml,.html,.css,.js,.py,.java,.cpp,.c,.h" onchange="loadFile(event)">
+                                <label for="textFile" class="file-input-label">Upload File</label>
+                            </div>
+                            <button class="btn" onclick="clearText()">Clear</button>
+                            <button class="btn" onclick="pasteFromClipboard()">Paste</button>
+                        </div>
                     </div>
-                    <button class="btn" onclick="clearText()">Clear</button>
-                    <button class="btn" onclick="pasteFromClipboard()">Paste</button>
+                    
+                    <div class="textarea-container">
+                        <pre id="highlight-area" class="highlight-area"></pre>
+                        <textarea 
+                            id="textInput" 
+                            class="text-area text-area-with-highlight" 
+                            placeholder="Start typing or paste your text here to see live statistics..." 
+                            oninput="updateStats()"
+                        ></textarea>
+                    </div>
                 </div>
+
             </div>
-            <textarea 
-                id="textInput" 
-                class="text-area" 
-                placeholder="Start typing or paste your text here to see live statistics..." 
-                oninput="updateStats()"
-            ></textarea>
+            
+            <div class="right-column">
+                
+                <div class="stats-section">
+                    <div class="stats-header">Quick Statistics</div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span id="characterCount" class="stat-value">0</span>
+                            <span class="stat-label">Chars</span>
+                        </div>
+                        <div class="stat-item">
+                            <span id="characterNoSpaceCount" class="stat-value">0</span>
+                            <span class="stat-label">Chars (no space)</span>
+                        </div>
+                        <div class="stat-item">
+                            <span id="wordCount" class="stat-value">0</span>
+                            <span class="stat-label">Words</span>
+                        </div>
+                        <div class="stat-item">
+                            <span id="lineCount" class="stat-value">0</span>
+                            <span class="stat-label">Lines</span>
+                        </div>
+                        <div class="stat-item">
+                            <span id="paragraphCount" class="stat-value">0</span>
+                            <span class="stat-label">Paragraphs</span>
+                        </div>
+                        <div class="stat-item">
+                            <span id="sentenceCount" class="stat-value">0</span>
+                            <span class="stat-label">Sentences</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detailed-stats" id="detailedStats">
+                    <div class="detailed-header">Detailed Analysis</div>
+                    <div class="tab-bar">
+                        <button class="tab-button active" data-tab="analysis-tab">Content Details</button>
+                        <button class="tab-button" data-tab="reading-tab">Reading Time</button>
+                    </div>
+                    
+                    <div class="detailed-content">
+                        <div id="analysis-tab" class="tab-content active">
+                            <div id="detailsContentAnalysis" class="empty-state">
+                                Enter some text to see content analysis
+                            </div>
+                        </div>
+
+                        <div id="reading-tab" class="tab-content">
+                             <div id="detailsContentReading" class="empty-state">
+                                Enter some text to see reading time estimates
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+        </div>
         </div>
 
-        <div class="stats-section">
-            <div class="stats-header">Quick Statistics</div>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <span id="characterCount" class="stat-value">0</span>
-                    <span class="stat-label">Characters</span>
-                </div>
-                <div class="stat-item">
-                    <span id="characterNoSpaceCount" class="stat-value">0</span>
-                    <span class="stat-label">Characters (no spaces)</span>
-                </div>
-                <div class="stat-item">
-                    <span id="wordCount" class="stat-value">0</span>
-                    <span class="stat-label">Words</span>
-                </div>
-                <div class="stat-item">
-                    <span id="lineCount" class="stat-value">0</span>
-                    <span class="stat-label">Lines</span>
-                </div>
-                <div class="stat-item">
-                    <span id="paragraphCount" class="stat-value">0</span>
-                    <span class="stat-label">Paragraphs</span>
-                </div>
-                <div class="stat-item">
-                    <span id="sentenceCount" class="stat-value">0</span>
-                    <span class="stat-label">Sentences</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="detailed-stats" id="detailedStats">
-            <div class="detailed-header">Detailed Analysis</div>
-            <div class="detailed-content">
-                <div id="detailsContent" class="empty-state">
-                    Enter some text to see detailed analysis
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="toggle.js"></script>
+    <script src="../toggle.js"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script>
+        // Global references
+        const textInput = document.getElementById('textInput');
+        const highlightArea = document.getElementById('highlight-area');
+        const searchInput = document.getElementById('search-input');
+        const searchStatus = document.getElementById('search-status');
+
+        // NEW: Tab Logic
+        function setupTabs() {
+            const tabs = document.querySelectorAll('.tab-button');
+            const contents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetId = tab.dataset.tab;
+                    
+                    // Deactivate all tabs and contents
+                    tabs.forEach(t => t.classList.remove('active'));
+                    contents.forEach(c => c.classList.remove('active'));
+
+                    // Activate selected tab and content
+                    tab.classList.add('active');
+                    document.getElementById(targetId).classList.add('active');
+                });
+            });
+        }
+        // END NEW Tab Logic
+
+
         function updateStats() {
-            const text = document.getElementById('textInput').value;
+            const text = textInput.value;
             
             if (!text.trim()) {
                 displayEmptyStats();
+                highlightArea.textContent = '';
+                searchStatus.textContent = '0 matches';
                 return;
             }
 
@@ -444,15 +610,45 @@
             const stats = calculateStats(text);
             
             // Update quick stats
-            document.getElementById('characterCount').textContent = stats.characters;
-            document.getElementById('characterNoSpaceCount').textContent = stats.charactersNoSpaces;
-            document.getElementById('wordCount').textContent = stats.words;
-            document.getElementById('lineCount').textContent = stats.lines;
-            document.getElementById('paragraphCount').textContent = stats.paragraphs;
-            document.getElementById('sentenceCount').textContent = stats.sentences;
+            document.getElementById('characterCount').textContent = stats.characters.toLocaleString();
+            document.getElementById('characterNoSpaceCount').textContent = stats.charactersNoSpaces.toLocaleString();
+            document.getElementById('wordCount').textContent = stats.words.toLocaleString();
+            document.getElementById('lineCount').textContent = stats.lines.toLocaleString();
+            document.getElementById('paragraphCount').textContent = stats.paragraphs.toLocaleString();
+            document.getElementById('sentenceCount').textContent = stats.sentences.toLocaleString();
 
             // Update detailed stats
             displayDetailedStats(text, stats);
+
+            // Run search/highlighting on every text update
+            performSearch();
+        }
+
+        // Search and Highlight Function
+        function performSearch() {
+            const text = textInput.value;
+            const searchTerm = searchInput.value.trim();
+            
+            if (!searchTerm || !text) {
+                highlightArea.textContent = text;
+                searchStatus.textContent = '0 matches';
+                return;
+            }
+
+            // Escape special characters for regex construction
+            const escapedSearchTerm = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(escapedSearchTerm, 'gi');
+            let matchCount = 0;
+            
+            // Replace matches with a span for highlighting
+            const highlightedText = text.replace(regex, (match) => {
+                matchCount++;
+                // Check if the match is part of a word to ensure accurate highlighting display
+                return `<span class="highlight-match">${match}</span>`;
+            });
+            
+            highlightArea.innerHTML = highlightedText;
+            searchStatus.textContent = `${matchCount.toLocaleString()} matches`;
         }
 
         function calculateStats(text) {
@@ -467,7 +663,8 @@
             stats.words = words.length;
 
             // Line count
-            stats.lines = text.split('\n').length;
+            // Use split('\n') for visible lines, then filter out empty lines if needed
+            stats.lines = text.split('\n').length; 
 
             // Paragraph count (separated by double newlines or more)
             const paragraphs = text.trim().split(/\n\s*\n/).filter(p => p.trim().length > 0);
@@ -478,7 +675,7 @@
             stats.sentences = sentences.length;
 
             // Additional stats
-            stats.spaces = text.split(' ').length - 1;
+            stats.spaces = (text.match(/ /g) || []).length;
             stats.whitespace = (text.match(/\s/g) || []).length;
             stats.digits = (text.match(/\d/g) || []).length;
             stats.letters = (text.match(/[a-zA-Z]/g) || []).length;
@@ -493,7 +690,10 @@
         }
 
         function displayDetailedStats(text, stats) {
-            const content = document.getElementById('detailsContent');
+            const contentAnalysis = document.getElementById('detailsContentAnalysis');
+            const contentReading = document.getElementById('detailsContentReading');
+            
+            // --- Analysis Tab Content ---
             
             // Most common words
             const words = text.toLowerCase().match(/\b\w+\b/g) || [];
@@ -508,10 +708,7 @@
                 .sort((a, b) => b[1] - a[1])
                 .slice(0, 5);
 
-            // Reading time estimates
-            const readingStats = calculateReadingStats(stats);
-
-            let html = `
+            let analysisHtml = `
                 <div class="detail-row">
                     <span class="detail-label">Total characters (with spaces)</span>
                     <span class="detail-value">${stats.characters.toLocaleString()}</span>
@@ -537,37 +734,43 @@
                     <span class="detail-value">${stats.punctuation.toLocaleString()}</span>
                 </div>
                 <div class="detail-row">
-                    <span class="detail-label">Average words per sentence</span>
+                    <span class="detail-label">Avg words per sentence</span>
                     <span class="detail-value">${stats.avgWordsPerSentence}</span>
                 </div>
                 <div class="detail-row">
-                    <span class="detail-label">Average characters per word</span>
+                    <span class="detail-label">Avg characters per word</span>
                     <span class="detail-value">${stats.avgCharsPerWord}</span>
                 </div>
                 <div class="detail-row">
-                    <span class="detail-label">Average words per line</span>
+                    <span class="detail-label">Avg words per line</span>
                     <span class="detail-value">${stats.avgWordsPerLine}</span>
                 </div>
             `;
-
             if (topWords.length > 0) {
-                html += `
+                analysisHtml += `
                     <div class="detail-row">
-                        <span class="detail-label">Most common words</span>
+                        <span class="detail-label">Top 5 common words</span>
                         <span class="detail-value">${topWords.map(([word, count]) => `${word} (${count})`).join(', ')}</span>
+                    </div>
+                `;
+            } else {
+                 analysisHtml += `
+                    <div class="detail-row">
+                        <span class="detail-label">Top 5 common words</span>
+                        <span class="detail-value">N/A</span>
                     </div>
                 `;
             }
 
-            // Reading time section
-            html += `
+            contentAnalysis.innerHTML = analysisHtml;
+
+
+            // --- Reading Time Tab Content ---
+
+            const readingStats = calculateReadingStats(stats);
+            let readingHtml = `
                 <div class="reading-stats">
-                    <div class="reading-title">Reading Time Estimates</div>
                     <div class="reading-grid">
-                        <div class="reading-item">
-                            <span class="reading-value">${readingStats.slowReading}</span>
-                            <span class="reading-label">Slow reading<br>(150 WPM)</span>
-                        </div>
                         <div class="reading-item">
                             <span class="reading-value">${readingStats.averageReading}</span>
                             <span class="reading-label">Average reading<br>(250 WPM)</span>
@@ -577,20 +780,24 @@
                             <span class="reading-label">Fast reading<br>(400 WPM)</span>
                         </div>
                         <div class="reading-item">
+                            <span class="reading-value">${readingStats.slowReading}</span>
+                            <span class="reading-label">Slow reading<br>(150 WPM)</span>
+                        </div>
+                        <div class="reading-item">
                             <span class="reading-value">${readingStats.speaking}</span>
                             <span class="reading-label">Speaking pace<br>(130 WPM)</span>
                         </div>
                     </div>
                 </div>
             `;
-
-            content.innerHTML = html;
+             contentReading.innerHTML = readingHtml;
         }
 
         function calculateReadingStats(stats) {
             const words = stats.words;
             
             const formatTime = (minutes) => {
+                if (words === 0) return '0 min';
                 if (minutes < 1) {
                     return '< 1 min';
                 } else if (minutes < 60) {
@@ -619,8 +826,10 @@
             document.getElementById('paragraphCount').textContent = '0';
             document.getElementById('sentenceCount').textContent = '0';
 
-            // Reset detailed stats
-            document.getElementById('detailsContent').innerHTML = '<div class="empty-state">Enter some text to see detailed analysis</div>';
+            // Reset detailed stats with empty state message
+            const emptyMessage = '<div class="empty-state">Enter some text to see analysis</div>';
+            document.getElementById('detailsContentAnalysis').innerHTML = emptyMessage;
+            document.getElementById('detailsContentReading').innerHTML = emptyMessage;
         }
 
         function loadFile(event) {
@@ -629,14 +838,14 @@
 
             const reader = new FileReader();
             reader.onload = function(e) {
-                document.getElementById('textInput').value = e.target.result;
+                textInput.value = e.target.result;
                 updateStats();
             };
             reader.readAsText(file);
         }
 
         function clearText() {
-            document.getElementById('textInput').value = '';
+            textInput.value = '';
             document.getElementById('textFile').value = '';
             updateStats();
         }
@@ -644,7 +853,7 @@
         async function pasteFromClipboard() {
             try {
                 const text = await navigator.clipboard.readText();
-                document.getElementById('textInput').value = text;
+                textInput.value = text;
                 updateStats();
             } catch (err) {
                 // Fallback for browsers that don't support clipboard API
@@ -652,9 +861,10 @@
             }
         }
 
-        // Initialize with empty stats and theme
+        // Initialize with empty stats, theme, and tabs
         window.addEventListener('load', () => {
             updateStats();
+            setupTabs(); // Initialize tab switching logic
             lucide.createIcons();
         });
     </script>

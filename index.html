@@ -6,443 +6,7 @@
     <title>Simply Tools</title>
     <link rel="icon" type="image/x-icon" href="public/logo.ico">
     <link href="https://cdn.jsdelivr.net/npm/lucide@0.284.0/dist/umd/lucide.js" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --bg-color: #e6e6e6;
-            --card-bg: #ededed;
-            --text-primary: #222;
-            --text-secondary: #555;
-            --border-color: #cccccc;
-            --hover-bg: #e0e0e0;
-            --suggestion-hover: rgba(0,0,0,0.02);
-        }
-
-        [data-theme="dark"] {
-            --bg-color: #1a1a1a;
-            --card-bg: #2a2a2a;
-            --text-primary: #e0e0e0;
-            --text-secondary: #b0b0b0;
-            --border-color: #404040;
-            --hover-bg: #333;
-            --suggestion-hover: rgba(255,255,255,0.05);
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--bg-color);
-            color: var(--text-primary);
-            line-height: 1.6;
-            transition: background 0.3s ease, color 0.3s ease;
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            position: relative;
-        }
-
-        .header h1 {
-            font-size: 2rem;
-            font-weight: 300;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-        }
-
-        .header p {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        .header-controls {
-            position: absolute;
-            top: 0;
-            right: 0;
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .search-container {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .search-input {
-            width: 200px;
-            padding: 8px 12px 8px 36px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            background: var(--card-bg);
-            color: var(--text-primary);
-            font-size: 13px;
-            transition: all 0.2s ease;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateX(20px);
-        }
-
-        .search-input.active {
-            opacity: 1;
-            visibility: visible;
-            transform: translateX(0);
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: var(--text-secondary);
-            background: var(--hover-bg);
-        }
-
-        .search-input::placeholder {
-            color: var(--text-secondary);
-        }
-
-        .search-icon-input {
-            position: absolute;
-            left: 10px;
-            width: 16px;
-            height: 16px;
-            color: var(--text-secondary);
-            pointer-events: none;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.2s ease;
-        }
-
-        .search-input.active + .search-icon-input {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .search-toggle, .theme-toggle {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .search-toggle:hover, .theme-toggle:hover {
-            background: var(--hover-bg);
-            border-color: var(--text-secondary);
-        }
-
-        .search-icon, .theme-icon {
-            width: 18px;
-            height: 18px;
-            color: var(--text-secondary);
-            transition: color 0.2s ease;
-        }
-
-        .search-toggle:hover .search-icon, 
-        .theme-toggle:hover .theme-icon {
-            color: var(--text-primary);
-        }
-
-        .clear-search {
-            position: absolute;
-            right: 8px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 2px;
-            border-radius: 2px;
-            color: var(--text-secondary);
-            display: none;
-        }
-
-        .clear-search:hover {
-            color: var(--text-primary);
-            background: var(--hover-bg);
-        }
-
-        .clear-search.visible {
-            display: block;
-        }
-
-        .search-results {
-            text-align: center;
-            margin-bottom: 20px;
-            color: var(--text-secondary);
-            font-size: 13px;
-        }
-        
-        /* New Styles for Grouping */
-        .category-heading {
-            font-size: 1.5rem;
-            font-weight: 500;
-            color: var(--text-primary);
-            margin-top: 40px;
-            margin-bottom: 15px;
-            padding-bottom: 5px;
-            border-bottom: 1px solid var(--border-color);
-            text-align: left;
-        }
-
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            /* margin-bottom: 40px; -- REMOVED from base to manage spacing with categories */
-        }
-        
-        .tools-grid.category-grid {
-            margin-bottom: 40px; /* Re-added margin to separate categories */
-        }
-
-        .tool-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 24px;
-            text-decoration: none;
-            color: var(--text-primary);
-            transition: all 0.2s ease;
-            display: block;
-        }
-
-        .tool-card:hover {
-            border-color: var(--text-secondary);
-            background: var(--hover-bg);
-        }
-
-        .tool-card.hidden {
-            display: none;
-        }
-
-        .tool-icon {
-            width: 32px;
-            height: 32px;
-            margin-bottom: 12px;
-            color: var(--text-secondary);
-            stroke-width: 1.5;
-        }
-
-        .tool-title {
-            font-size: 1.2rem;
-            font-weight: 500;
-            margin-bottom: 8px;
-            color: var(--text-primary);
-        }
-
-        .tool-description {
-            color: var(--text-secondary);
-            font-size: 13px;
-            line-height: 1.4;
-        }
-
-        .highlight {
-            background: rgba(255, 235, 59, 0.3);
-            padding: 1px 2px;
-            border-radius: 2px;
-        }
-
-        [data-theme="dark"] .highlight {
-            background: rgba(255, 193, 7, 0.2);
-        }
-
-        .no-results {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-secondary);
-            display: none;
-        }
-
-        .no-results.visible {
-            display: block;
-        }
-
-        .no-results-icon {
-            width: 48px;
-            height: 48px;
-            margin: 0 auto 16px auto;
-            color: var(--text-secondary);
-            opacity: 0.5;
-        }
-
-        .suggestion-section {
-            margin: 60px 0 20px 0;
-            text-align: center;
-        }
-
-        .suggestion-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 400;
-            padding: 8px 12px;
-            border-radius: 20px;
-            transition: all 0.2s ease;
-            border: 1px solid transparent;
-        }
-
-        .suggestion-link:hover {
-            color: var(--text-primary);
-            background: var(--suggestion-hover);
-            border-color: var(--border-color);
-        }
-
-        .suggestion-icon {
-            width: 14px;
-            height: 14px;
-            opacity: 0.6;
-        }
-
-        .suggestion-link:hover .suggestion-icon {
-            opacity: 1;
-        }
-
-        .footer {
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 13px;
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        /* Logo and title styles */
-        .logo-title {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 8px;
-        }
-
-        .logo-img {
-            height: 40px;
-            width: 40px;
-            object-fit: contain;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            /* Remove background for logo */
-            background: transparent;
-        }
-
-        .logo-title h1 {
-            font-size: 2rem;
-            font-weight: 300;
-            color: var(--text-primary);
-            margin: 0;
-            padding: 0;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px 16px;
-            }
-            
-            .header {
-                position: relative;
-            }
-            
-            .header-controls {
-                position: static;
-                flex-direction: row;
-                justify-content: center;
-                gap: 16px;
-                margin-bottom: 16px;
-            }
-            
-            .search-toggle, .theme-toggle {
-                padding: 16px;
-                min-width: 44px;
-                min-height: 44px;
-                font-size: 18px;
-                border-radius: 50%;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            }
-            .search-container {
-                flex: 1;
-                min-width: 0;
-            }
-            .search-input {
-                width: 100%;
-                min-width: 120px;
-                font-size: 16px;
-                padding: 12px 16px 12px 40px;
-            }
-            .search-icon-input {
-                left: 16px;
-                width: 20px;
-                height: 20px;
-            }
-            
-            .header h1 {
-                font-size: 1.5rem;
-                padding-right: 50px;
-            }
-            
-            .tools-grid {
-                grid-template-columns: 1fr;
-                gap: 16px;
-            }
-            
-            .tool-card {
-                padding: 20px;
-            }
-            
-            .tool-icon {
-                width: 28px;
-                height: 28px;
-            }
-            
-            .tool-title {
-                font-size: 1.1rem;
-            }
-
-            .category-heading {
-                font-size: 1.3rem;
-                margin-top: 30px;
-                margin-bottom: 12px;
-            }
-
-            .suggestion-section {
-                margin: 40px 0 16px 0;
-            }
-
-            .logo-title {
-                gap: 8px;
-            }
-
-            .logo-img {
-                height: 32px;
-                width: 32px;
-            }
-
-            .logo-title h1 {
-                font-size: 1.5rem;
-            }
-        }
-
-        /* Theme transition animations */
-        * {
-            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-        }
-    </style>
+    <link rel="stylesheet" href="/index.css">
 </head>
 <body>
     <div class="container">
@@ -476,7 +40,7 @@
             <h2 class="category-heading">Data & Markup</h2>
             <div class="tools-grid category-grid" data-category="data-markup">
                 
-                <a href="/json" class="tool-card" data-search="json viewer parse syntax highlighting collapsible structure">
+                <a href="src/tools/json" class="tool-card" data-search="json viewer parse syntax highlighting collapsible structure">
                     <i data-lucide="file-json" class="tool-icon"></i>
                     <h3 class="tool-title">JSON Viewer</h3>
                     <p class="tool-description">
@@ -484,7 +48,7 @@
                     </p>
                 </a>
 
-                <a href="/csv" class="tool-card" data-search="csv viewer table format search pagination">
+                <a href="src/tools/csv" class="tool-card" data-search="csv viewer table format search pagination">
                     <i data-lucide="table" class="tool-icon"></i>
                     <h3 class="tool-title">CSV Viewer</h3>
                     <p class="tool-description">
@@ -492,7 +56,7 @@
                     </p>
                 </a>
                 
-                <a href="/yaml" class="tool-card" data-search="yaml viewer convert json conversion support">
+                <a href="src/tools/yaml" class="tool-card" data-search="yaml viewer convert json conversion support">
                     <i data-lucide="file-text" class="tool-icon"></i>
                     <h3 class="tool-title">YAML Viewer</h3>
                     <p class="tool-description">
@@ -500,7 +64,7 @@
                     </p>
                 </a>
 
-                <a href="/xml" class="tool-card" data-search="xml viewer parse display formatting structure">
+                <a href="src/tools/xml" class="tool-card" data-search="xml viewer parse display formatting structure">
                     <i data-lucide="code" class="tool-icon"></i>
                     <h3 class="tool-title">XML Viewer</h3>
                     <p class="tool-description">
@@ -508,7 +72,7 @@
                     </p>
                 </a>
                 
-                <a href="/sql" class="tool-card" data-search="sql formatter beautify queries dialects">
+                <a href="src/tools/sql" class="tool-card" data-search="sql formatter beautify queries dialects">
                     <i data-lucide="database" class="tool-icon"></i>
                     <h3 class="tool-title">SQL Formatter</h3>
                     <p class="tool-description">
@@ -521,7 +85,7 @@
             <h2 class="category-heading">Media & Design</h2>
             <div class="tools-grid category-grid" data-category="design-media">
                 
-                <a href="/imgconv" class="tool-card" data-search="image converter jpg png webp convert photo">
+                <a href="src/tools/imgconv" class="tool-card" data-search="image converter jpg png webp convert photo">
                     <i data-lucide="image" class="tool-icon"></i>
                     <h3 class="tool-title">Image Converter</h3>
                     <p class="tool-description">
@@ -529,7 +93,7 @@
                     </p>
                 </a>
 
-                <a href="/pallete" class="tool-card" data-search="color palette generator pick colors images base color">
+                <a href="src/tools/pallete" class="tool-card" data-search="color palette generator pick colors images base color">
                     <i data-lucide="palette" class="tool-icon"></i>
                     <h3 class="tool-title">Color Palette Generator</h3>
                     <p class="tool-description">
@@ -537,7 +101,7 @@
                     </p>
                 </a>
 
-                <a href="/construction.html" class="tool-card" data-search="gradient generator css color stops linear radial">
+                <a href="src/tools/gradientgen" class="tool-card" data-search="gradient generator css color stops linear radial">
                     <i data-lucide="brush" class="tool-icon"></i>
                     <h3 class="tool-title">Gradient Generator</h3>
                     <p class="tool-description">
@@ -545,7 +109,7 @@
                     </p>
                 </a>
                 
-                <a href="/qr" class="tool-card" data-search="qr code generator text urls data download">
+                <a href="src/tools/qr" class="tool-card" data-search="qr code generator text urls data download">
                     <i data-lucide="qr-code" class="tool-icon"></i>
                     <h3 class="tool-title">QR Code Generator</h3>
                     <p class="tool-description">
@@ -553,7 +117,7 @@
                     </p>
                 </a>
 
-                <a href="/imgtopdf" class="tool-card" data-search="image to pdf jpg png convert merge export">
+                <a href="src/tools/imgtopdf" class="tool-card" data-search="image to pdf jpg png convert merge export">
                     <i data-lucide="file-image" class="tool-icon"></i>
                     <h3 class="tool-title">Image to PDF</h3>
                     <p class="tool-description">
@@ -561,11 +125,19 @@
                     </p>
                 </a>
 
-                <a href="/pdftoimg" class="tool-card" data-search="pdf to image split extract convert png zip">
+                <a href="src/tools/pdftoimg" class="tool-card" data-search="pdf to image split extract convert png zip">
                     <i data-lucide="file-archive" class="tool-icon"></i>
                     <h3 class="tool-title">PDF to Images</h3>
                     <p class="tool-description">
                         Split a PDF into individual PNG images and download them as a ZIP file.
+                    </p>
+                </a>
+
+                <a href="src/tools/imgmeta" class="tool-card" data-search="image metadata viewer exif data camera model date gps iso exposure">
+                    <i data-lucide="info" class="tool-icon"></i>
+                    <h3 class="tool-title">Image Metadata Viewer</h3>
+                    <p class="tool-description">
+                        View EXIF data from uploaded images, including camera details, GPS, and more.
                     </p>
                 </a>
 
@@ -574,7 +146,7 @@
             <h2 class="category-heading">Text & Utility</h2>
             <div class="tools-grid category-grid" data-category="text-utility">
                 
-                <a href="/regex" class="tool-card" data-search="regex tester regular expressions matching groups">
+                <a href="src/tools/regex" class="tool-card" data-search="regex tester regular expressions matching groups">
                     <i data-lucide="search" class="tool-icon"></i>
                     <h3 class="tool-title">Regex Tester</h3>
                     <p class="tool-description">
@@ -582,15 +154,15 @@
                     </p>
                 </a>
 
-                <a href="/textdiff" class="tool-card" data-search="text diff compare files highlighted differences">
+                <a href="src/tools/textdiff" class="tool-card" data-search="text diff compare files highlighted differences">
                     <i data-lucide="git-compare" class="tool-icon"></i>
                     <h3 class="tool-title">Text Difference</h3>
                     <p class="tool-description">
                         Compare two text files with highlighted differences.
                     </p>
                 </a>
-                
-                <a href="/markdown" class="tool-card" data-search="markdown editor preview live rendering syntax highlighting">
+
+                <a href="src/tools/markdown" class="tool-card" data-search="markdown editor preview live rendering syntax highlighting">
                     <i data-lucide="file-edit" class="tool-icon"></i>
                     <h3 class="tool-title">Markdown Editor</h3>
                     <p class="tool-description">
@@ -598,15 +170,15 @@
                     </p>
                 </a>
 
-                <a href="/counter" class="tool-card" data-search="text counter words characters lines analyze reading time">
+                <a href="src/tools/analysis" class="tool-card" data-search="text counter words characters lines analyze reading time">
                     <i data-lucide="hash" class="tool-icon"></i>
-                    <h3 class="tool-title">Text Counter</h3>
+                    <h3 class="tool-title">Text Analysis</h3>
                     <p class="tool-description">
-                        Count words, characters, lines and analyze text with reading time estimates.
+                        Count and Search words, characters, lines and analyze text with reading time estimates.
                     </p>
                 </a>
                 
-                <a href="/convert" class="tool-card" data-search="unit converter length weight temperature units">
+                <a href="src/tools/convert" class="tool-card" data-search="unit converter length weight temperature units">
                     <i data-lucide="repeat" class="tool-icon"></i>
                     <h3 class="tool-title">Unit Converter</h3>
                     <p class="tool-description">
@@ -614,11 +186,27 @@
                     </p>
                 </a>
 
-                <a href="/base64" class="tool-card" data-search="base64 encode decode converter text binary">
+                <a href="src/tools/base64" class="tool-card" data-search="base64 encode decode converter text binary">
                     <i data-lucide="omega" class="tool-icon"></i>
                     <h3 class="tool-title">Base64 Converter</h3>
                     <p class="tool-description">
                         Encode text to Base64 or decode Base64 back to text instantly.
+                    </p>
+                </a>
+
+                <a href="src/tools/textgen" class="tool-card" data-search="lorem ipsum generator placeholder text paragraphs sentences words">
+                    <i data-lucide="type" class="tool-icon"></i>
+                    <h3 class="tool-title">Lorem Ipsum Generator</h3>
+                    <p class="tool-description">
+                        Generate placeholder text in paragraphs, sentences, or words.
+                    </p>
+                </a>
+
+                <a href="src/tools/timestamp" class="tool-card" data-search="timestamp converter unix iso rfc2822 locale date time">
+                    <i data-lucide="clock" class="tool-icon"></i>
+                    <h3 class="tool-title">Timestamp Converter</h3>
+                    <p class="tool-description">
+                        Convert between different timestamp formats like Unix, ISO, and RFC 2822.
                     </p>
                 </a>
 
@@ -634,7 +222,7 @@
         </div>
 
         <div class="suggestion-section">
-            <a href="mailto:zendexino@gmail.com?subject=Simple Tools - Feature Suggestion&body=Hi,%0A%0AI have a suggestion for a new tool:%0A%0A[Describe the tool you'd like to see]%0A%0AThanks!" class="suggestion-link">
+            <a href="mailto:zendexino@gmail.com?subject=Simply Tools - Suggestion or Issue&body=Hi,%0A%0AI have a suggestion for a new tool or an issue to report:%0A%0A[Describe here]%0A%0AThanks!" class="suggestion-link">
                 <i data-lucide="plus-circle" class="suggestion-icon"></i>
                 Suggest a tool or Report a issue
             </a>
@@ -680,17 +268,13 @@
             searchResults.innerHTML = '';
             noResults.classList.remove('visible');
             
-            // Show all categories
             categoryHeadings.forEach(h => h.style.display = '');
             categoryGrids.forEach(g => g.style.display = 'grid');
 
-            // Show all cards
             document.querySelectorAll('.tool-card').forEach(card => {
                 card.classList.remove('hidden');
-                // Remove highlights
                 const title = card.querySelector('.tool-title');
                 const description = card.querySelector('.tool-description');
-                // Use innerHTML = textContent to safely remove highlights
                 title.innerHTML = title.textContent;
                 description.innerHTML = description.textContent;
             });
@@ -706,7 +290,6 @@
             
             if (!query.trim()) {
                 clearSearch();
-                // Show all categories when search is cleared
                 categoryHeadings.forEach(h => h.style.display = '');
                 categoryGrids.forEach(g => g.style.display = 'grid');
                 return;
@@ -717,7 +300,6 @@
             const searchTerm = query.toLowerCase();
             let visibleCount = 0;
             
-            // Map to track visible cards per category grid
             const visibleCardsPerGrid = {};
             categoryGrids.forEach(grid => visibleCardsPerGrid[grid.dataset.category] = 0);
             
@@ -754,11 +336,9 @@
             // Hide categories that have no visible tools
             categoryGrids.forEach(grid => {
                 const categoryName = grid.dataset.category;
-                // Use a standard query selector for the heading based on its relative position
                 const heading = grid.previousElementSibling; 
                 
                 if (visibleCardsPerGrid[categoryName] === 0) {
-                    // Check if the previous element is actually a heading before hiding
                     if (heading && heading.classList.contains('category-heading')) {
                         heading.style.display = 'none';
                     }

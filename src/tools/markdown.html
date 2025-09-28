@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Markdown Editor</title>
-    <link rel="icon" type="image/x-icon" href="public/logo.ico">
-    <link rel="stylesheet" href="toggle.css">
+    <link rel="icon" type="image/x-icon" href="../../public/logo.ico">
+    <link rel="stylesheet" href="../toggle.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet">
     <style>
         * {
@@ -533,7 +533,6 @@
                 
                 <button class="btn" onclick="downloadMarkdown()">Download MD</button>
                 <button class="btn" onclick="downloadHTML()">Download HTML</button>
-                <button class="btn btn-primary" onclick="downloadPDF()" id="pdfBtn">Download PDF</button>
                 <button class="btn" onclick="clearEditor()">Clear</button>
                 
                 <div class="view-toggle">
@@ -599,7 +598,7 @@ function hello() {
         <div id="pdfContainer" style="position: absolute; left: -9999px;"></div>
     </div>
 
-    <script src="toggle.js"></script>
+    <script src="../toggle.js"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
@@ -773,43 +772,6 @@ ${html}
                 showNotification("HTML file downloaded!");
             } catch (error) {
                 showNotification("Error generating HTML: " + error.message, true);
-            }
-        }
-
-        async function downloadPDF() {
-            const markdown = document.getElementById('markdownInput').value;
-            if (!markdown.trim()) {
-                showNotification("Nothing to download!", true);
-                return;
-            }
-
-            const pdfBtn = document.getElementById('pdfBtn');
-            pdfBtn.disabled = true;
-            pdfBtn.textContent = 'Generating...';
-
-            try {
-                const html = marked.parse(markdown);
-                const pdfContainer = document.getElementById('pdfContainer');
-                
-                pdfContainer.innerHTML = html;
-                pdfContainer.className = 'pdf-content';
-
-                const opt = {
-                    margin: [10, 10, 10, 10],
-                    filename: 'markdown_document.pdf',
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2 },
-                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                };
-
-                await html2pdf().set(opt).from(pdfContainer).save();
-                showNotification("PDF downloaded successfully!");
-            } catch (error) {
-                showNotification("PDF generation failed: " + error.message, true);
-            } finally {
-                pdfBtn.disabled = false;
-                pdfBtn.textContent = 'Download PDF';
-                document.getElementById('pdfContainer').innerHTML = '';
             }
         }
 

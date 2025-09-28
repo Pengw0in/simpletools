@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lorem Ipsum Generator</title>
+    <link rel="icon" type="image/x-icon" href="../../public/logo.ico">
+    <link rel="stylesheet" href="../toggle.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 900px; 
+            margin: 0 auto;
+            padding: 80px 40px; 
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 70px;
+            position: relative;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 200;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        .header p {
+            color: var(--text-secondary);
+            font-size: 16px;
+            font-weight: 300;
+        }
+        .theme-toggle {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: none;
+            border: none;
+            padding: 8px;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            z-index: 100;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+        }
+        .theme-toggle:hover {
+            color: var(--text-primary);
+            background: var(--hover-bg);
+            border-radius: 4px;
+        }
+        .input-section, .output-section {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 30px; /* Slight reduction for compactness */
+            margin-bottom: 40px; 
+        }
+        
+        /* ---------------------------------------------------- */
+        /* NEW STYLES FOR COMPACT INPUT SECTION                 */
+        /* ---------------------------------------------------- */
+
+        /* 1. FLEX LAYOUT FOR SIDE-BY-SIDE INPUTS */
+        .controls-row {
+            display: flex;
+            gap: 20px; /* Space between the two input groups */
+            margin-bottom: 25px;
+        }
+        .controls-row .input-group {
+            flex: 1; /* Make both groups take equal width */
+            margin-bottom: 0; /* Remove vertical margin from input groups */
+        }
+        
+        /* 2. TIGHTER INPUT/LABEL SPACING */
+        .input-label {
+            display: block;
+            font-size: 13px; /* Slightly smaller label text */
+            font-weight: 400;
+            color: var(--text-secondary);
+            margin-bottom: 6px; /* Reduced vertical space */
+        }
+        
+        /* 3. TIGHTER INPUT FIELD PADDING */
+        .input-field {
+            width: 100%;
+            padding: 10px 0; /* Reduced vertical padding */
+            border: none;
+            border-bottom: 1px solid var(--border-color);
+            border-radius: 0;
+            background: transparent;
+            color: var(--text-primary);
+            font-size: 16px; 
+            outline: none;
+            transition: border-bottom-color 0.2s;
+        }
+        .input-field:focus {
+            border-bottom-color: var(--text-primary);
+        }
+        
+        /* 4. BUTTON STYLING (Slightly reduced padding) */
+        .generate-btn {
+            width: 100%;
+            padding: 14px; /* Reduced to 14px */
+            background: var(--text-primary);
+            color: var(--bg-color);
+            border: none;
+            border-radius: 4px; 
+            cursor: pointer;
+            font-size: 15px; 
+            font-weight: 500;
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 10px; /* Reduced space above button */
+        }
+        .generate-btn:hover {
+            background: var(--text-secondary);
+        }
+        
+        /* OUTPUT AREA STYLES (Retained from previous minimalist version) */
+        .output-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+        .output-text {
+            width: 100%;
+            padding: 20px; 
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--code-bg);
+            color: var(--text-primary);
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            min-height: 280px;
+            resize: vertical;
+            outline: none;
+        }
+        .copy-btn {
+            margin-top: 15px; 
+            padding: 8px 16px; 
+            border: 1px solid var(--border-color);
+            background: transparent;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--text-primary);
+            transition: background 0.2s;
+        }
+        .copy-btn:hover {
+            background: var(--hover-bg);
+            border-color: var(--text-primary);
+        }
+        
+        /* RESPONSIVE: Stack inputs vertically on small screens */
+        @media (max-width: 600px) {
+            .container {
+                padding: 40px 20px; 
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+            .controls-row {
+                flex-direction: column;
+                gap: 15px; /* Reduced gap when stacked */
+                margin-bottom: 20px;
+            }
+            .input-group {
+                /* When stacked, add a little margin between them */
+                margin-bottom: 0 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                <i data-lucide="sun" class="theme-icon" id="theme-icon"></i>
+            </button>
+            <h1>Lorem Ipsum Generator</h1>
+            <p>Generate placeholder text for clean design mockups.</p>
+        </div>
+
+        <div class="input-section">
+            <div class="controls-row">
+                <div class="input-group">
+                    <label class="input-label" for="type">TYPE OF CONTENT</label>
+                    <select id="type" class="input-field">
+                        <option value="paragraphs">Paragraphs</option>
+                        <option value="sentences">Sentences</option>
+                        <option value="words">Words</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label class="input-label" for="count">COUNT (1-100)</label>
+                    <input type="number" id="count" class="input-field" value="3" min="1" max="100" placeholder="e.g., 5">
+                </div>
+            </div>
+            <button class="generate-btn" onclick="generateLoremIpsum()">Generate Text</button>
+        </div>
+
+        <div class="output-section">
+            <label class="output-label">GENERATED TEXT OUTPUT</label>
+            <textarea id="output" class="output-text" readonly placeholder="Your generated Lorem Ipsum text will appear here..."></textarea>
+            <button class="copy-btn" onclick="copyToClipboard()">Copy to Clipboard</button>
+        </div>
+
+        <div id="status-message" class="status-message" style="display: none;"></div>
+    </div>
+
+    <script src="../toggle.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script>
+        // JavaScript logic remains unchanged, as it was already clean.
+        const loremWords = [
+            "lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit", "sed", "do", "eiusmod", "tempor", "incididunt", "ut", "labore", "et", "dolore", "magna", "aliqua", "ut", "enim", "ad", "minim", "veniam", "quis", "nostrud", "exercitation", "ullamco", "laboris", "nisi", "ut", "aliquip", "ex", "ea", "commodo", "consequat", "duis", "aute", "irure", "dolor", "in", "reprehenderit", "in", "voluptate", "velit", "esse", "cillum", "dolore", "eu", "fugiat", "nulla", "pariatur", "excepteur", "sint", "occaecat", "cupidatat", "non", "proident", "sunt", "in", "culpa", "qui", "officia", "deserunt", "mollit", "anim", "id", "est", "laborum"
+        ];
+
+        function generateLoremIpsum() {
+            const type = document.getElementById('type').value;
+            const countInput = document.getElementById('count');
+            const count = parseInt(countInput.value);
+
+            if (isNaN(count) || count < 1 || count > 100) {
+                showStatus('Count must be a number between 1 and 100', 'error');
+                if (isNaN(count)) countInput.value = 3; 
+                return;
+            }
+
+            let text = '';
+
+            if (type === 'paragraphs') {
+                for (let i = 0; i < count; i++) {
+                    text += generateParagraph() + '\n\n';
+                }
+            } else if (type === 'sentences') {
+                text = generateSentences(count);
+            } else if (type === 'words') {
+                text = generateWords(count);
+            }
+
+            document.getElementById('output').value = text.trim();
+        }
+
+        function generateParagraph() {
+            const sentenceCount = Math.floor(Math.random() * 5) + 3;
+            return generateSentences(sentenceCount);
+        }
+
+        function generateSentences(count) {
+            let sentences = [];
+            for (let i = 0; i < count; i++) {
+                sentences.push(generateSentence());
+            }
+            return sentences.join(' ');
+        }
+
+        function generateSentence() {
+            const wordCount = Math.floor(Math.random() * 10) + 5;
+            let sentence = generateWords(wordCount);
+            return sentence.charAt(0).toUpperCase() + sentence.slice(1) + '.';
+        }
+
+        function generateWords(count) {
+            let words = [];
+            for (let i = 0; i < count; i++) {
+                words.push(loremWords[Math.floor(Math.random() * loremWords.length)]);
+            }
+            return words.join(' ');
+        }
+
+        function copyToClipboard() {
+            const text = document.getElementById('output').value;
+            if (!text) {
+                showStatus('Nothing to copy', 'error');
+                return;
+            }
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showStatus('Copied to clipboard! 🎉', 'success');
+                }).catch(() => {
+                    copyFallback(text);
+                });
+            } else {
+                copyFallback(text);
+            }
+        }
+        
+        function copyFallback(text) {
+             try {
+                const outputEl = document.getElementById('output');
+                outputEl.select();
+                document.execCommand('copy');
+                showStatus('Copied to clipboard! (Fallback)', 'success');
+            } catch (err) {
+                showStatus('Failed to copy. Please copy manually.', 'error');
+            }
+        }
+
+        function showStatus(message, type = 'info') {
+            const statusEl = document.getElementById('status-message');
+            statusEl.textContent = message;
+            statusEl.className = `status-message ${type}`;
+            statusEl.style.display = 'block';
+            setTimeout(() => {
+                statusEl.style.display = 'none';
+            }, 3000);
+        }
+
+        window.onload = function() {
+            lucide.createIcons();
+            generateLoremIpsum();
+        };
+    </script>
+</body>
+</html>

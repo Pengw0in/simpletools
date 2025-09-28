@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Text Difference Tool</title>
-    <link rel="icon" type="image/x-icon" href="public/logo.ico">
-    <link rel="stylesheet" href="toggle.css">
+    <link rel="icon" type="image/x-icon" href="../../public/logo.ico">
+    <link rel="stylesheet" href="../toggle.css">
     <style>
         * {
             margin: 0;
@@ -20,15 +20,16 @@
             line-height: 1.6;
         }
 
+        /* 1. INCREASE CONTAINER AND HEADER SPACING */
         .container {
-            max-width: 1200px;
+            max-width: 1400px; /* Increased max width */
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 60px 40px; /* Increased padding */
         }
 
         .header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 60px; /* Increased bottom margin */
             position: relative;
         }
 
@@ -75,10 +76,11 @@
             margin-bottom: 30px;
         }
 
+        /* 2. ADJUST INPUT ROW SPACING */
         .input-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 30px; /* Adjusted gap */
             margin-bottom: 20px;
         }
 
@@ -99,10 +101,11 @@
             font-size: 14px;
         }
 
+        /* 2. ADJUST TEXT INPUT PADDING */
         .text-input {
             width: 100%;
             min-height: 200px;
-            padding: 16px;
+            padding: 20px; /* Increased padding */
             border: none;
             outline: none;
             font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
@@ -156,8 +159,9 @@
             background: var(--text-secondary);
         }
 
+        /* 2. ADJUST CONTROLS SPACING */
         .controls {
-            margin-bottom: 20px;
+            margin-bottom: 40px; /* Increased bottom margin */
             display: flex;
             gap: 12px;
             justify-content: center;
@@ -191,6 +195,7 @@
             border-color: var(--text-secondary);
         }
 
+        /* 3. ADJUST STATS SPACING */
         .stats {
             background: var(--card-bg);
             padding: 16px;
@@ -198,7 +203,7 @@
             margin-bottom: 16px;
             border: 1px solid var(--border-color);
             display: flex;
-            gap: 24px;
+            gap: 32px; /* Increased gap */
             font-size: 13px;
             flex-wrap: wrap;
         }
@@ -247,8 +252,9 @@
             border-right: none;
         }
 
+        /* 3. ADJUST DIFF CONTENT MAX HEIGHT */
         .diff-content {
-            max-height: 60vh;
+            max-height: 65vh; /* Slightly increased height */
             overflow: auto;
         }
 
@@ -484,18 +490,54 @@
         </div>
     </div>
 
-    <script src="toggle.js"></script>
+    <script src="../toggle.js"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script>
         let currentView = 'side';
         let diffResult = null;
+        
+        const text1El = document.getElementById('text1');
+        const text2El = document.getElementById('text2');
+        const MIN_HEIGHT = 200; // Matches CSS min-height
 
         document.getElementById('file1').addEventListener('change', (e) => loadFile(e, 'text1', 'label1'));
         document.getElementById('file2').addEventListener('change', (e) => loadFile(e, 'text2', 'label2'));
         
         // Auto-compare when text changes
-        document.getElementById('text1').addEventListener('input', debounce(compareTexts, 500));
-        document.getElementById('text2').addEventListener('input', debounce(compareTexts, 500));
+        text1El.addEventListener('input', debounce(compareTexts, 500));
+        text2El.addEventListener('input', debounce(compareTexts, 500));
+        
+        // --- TEXTAREA RESIZE SYNC LOGIC (MutationObserver for manual resize) ---
+
+        function syncTextareaHeights(source, target) {
+            const height = source.clientHeight;
+            
+            if (target.clientHeight !== height) {
+                target.style.height = height + 'px';
+            }
+        }
+        
+        // Function to observe changes to the style attribute (height)
+        function createResizeObserver(source, target) {
+            const observer = new MutationObserver((mutationsList, observer) => {
+                for(const mutation of mutationsList) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                        // Debounce the sync to prevent performance issues during dragging
+                        debounce(() => {
+                            // Only sync if the source has a height style applied (meaning the user dragged it)
+                            if (source.style.height) {
+                                syncTextareaHeights(source, target);
+                            }
+                        }, 50)();
+                    }
+                }
+            });
+
+            // Start observing the target's style attribute changes
+            observer.observe(source, { attributes: true, attributeFilter: ['style'] });
+        }
+
+        // --- END OF SYNC LOGIC ---
 
         function loadFile(event, textAreaId, labelId) {
             const file = event.target.files[0];
@@ -503,16 +545,29 @@
 
             const reader = new FileReader();
             reader.onload = function(e) {
-                document.getElementById(textAreaId).value = e.target.result;
+                const textEl = document.getElementById(textAreaId);
+                textEl.value = e.target.result;
                 document.getElementById(labelId).textContent = file.name;
+                
+                // 1. Reset height to auto to calculate scrollHeight correctly
+                textEl.style.height = 'auto'; 
+                // 2. Set height based on content or MIN_HEIGHT
+                const newHeight = Math.max(textEl.scrollHeight, MIN_HEIGHT);
+                textEl.style.height = newHeight + 'px';
+
+                // 3. Force sync after loading file content
+                const source = textEl;
+                const target = source === text1El ? text2El : text1El;
+                syncTextareaHeights(source, target);
+                
                 compareTexts();
             };
             reader.readAsText(file);
         }
 
         function compareTexts() {
-            const text1 = document.getElementById('text1').value;
-            const text2 = document.getElementById('text2').value;
+            const text1 = text1El.value;
+            const text2 = text2El.value;
 
             if (!text1 && !text2) {
                 document.getElementById('results').style.display = 'none';
@@ -763,26 +818,40 @@
         }
 
         function clearTexts() {
-            document.getElementById('text1').value = '';
-            document.getElementById('text2').value = '';
+            text1El.value = '';
+            text2El.value = '';
             document.getElementById('label1').textContent = 'Original Text';
             document.getElementById('label2').textContent = 'Modified Text';
             document.getElementById('file1').value = '';
             document.getElementById('file2').value = '';
             document.getElementById('results').style.display = 'none';
             diffResult = null;
+            
+            // Reset heights to min-height (200px) after clear
+            text1El.style.height = MIN_HEIGHT + 'px';
+            text2El.style.height = MIN_HEIGHT + 'px';
         }
 
         function swapTexts() {
-            const text1 = document.getElementById('text1').value;
-            const text2 = document.getElementById('text2').value;
+            const text1 = text1El.value;
+            const text2 = text2El.value;
             const label1 = document.getElementById('label1').textContent;
             const label2 = document.getElementById('label2').textContent;
             
-            document.getElementById('text1').value = text2;
-            document.getElementById('text2').value = text1;
+            text1El.value = text2;
+            text2El.value = text1;
             document.getElementById('label1').textContent = label2;
             document.getElementById('label2').textContent = label1;
+            
+            // Re-calculate heights based on new content and sync
+            text1El.style.height = 'auto'; 
+            text2El.style.height = 'auto'; 
+            const newHeight1 = Math.max(text1El.scrollHeight, MIN_HEIGHT);
+            const newHeight2 = Math.max(text2El.scrollHeight, MIN_HEIGHT);
+            
+            const syncHeight = Math.max(newHeight1, newHeight2);
+            text1El.style.height = syncHeight + 'px';
+            text2El.style.height = syncHeight + 'px';
             
             compareTexts();
         }
@@ -861,6 +930,13 @@
         // Initialize theme and icons
         window.addEventListener('load', () => {
             lucide.createIcons();
+            
+            // Set initial heights explicitly and create observers
+            text1El.style.height = MIN_HEIGHT + 'px';
+            text2El.style.height = MIN_HEIGHT + 'px';
+            
+            createResizeObserver(text1El, text2El);
+            createResizeObserver(text2El, text1El);
         });
     </script>
 </body>

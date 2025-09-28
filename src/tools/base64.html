@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Base64 Converter Tool</title>
-    <link rel="icon" type="image/x-icon" href="public/logo.ico">
-    <link rel="stylesheet" href="toggle.css">
+    <link rel="icon" type="image/x-icon" href="../../public/logo.ico">
+    <link rel="stylesheet" href="../toggle.css">
     <style>
         /* Global Reset and Variables */
         * {
@@ -27,21 +27,22 @@
         }
         .header {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
+            flex-direction: column; /* Changed to column to stack title/desc and center */
+            align-items: center; /* Center horizontally */
+            text-align: center; /* Center text within the header block */
             margin-bottom: 32px;
             position: relative;
         }
         .header-title-row {
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: center; /* Center the icon and H1 */
             gap: 12px;
             margin-bottom: 8px;
         }
         .header h1 {
             font-size: 2.2rem;
-            font-weight: 600;
+            font-weight: 300;
             color: var(--text-primary);
             margin: 0;
         }
@@ -132,7 +133,7 @@
         .text-area:focus {
             background: var(--input-focus-bg);
             outline: none;
-            border-color: var(--text-primary); /* Use text-primary for focus border */
+            border-color: var(--text-primary);
         }
         .text-area::placeholder {
             color: var(--text-secondary);
@@ -153,17 +154,17 @@
             gap: 6px;
         }
         
-        /* Primary Button: Reverting to original color scheme */
+        /* Primary Button */
         .btn-primary {
             background: var(--text-primary);
             color: var(--card-bg);
         }
         .btn-primary:hover:not(:disabled) {
             background: var(--text-secondary);
-            color: var(--card-bg); /* Keeping the text white/light for contrast */
+            color: var(--card-bg);
         }
         
-        /* Secondary Button: For Clear/Copy buttons */
+        /* Secondary Button */
         .btn-secondary {
             background: var(--input-bg);
             color: var(--text-secondary);
@@ -179,7 +180,7 @@
         .btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
-            background: var(--border-color); /* Added disabled background for clarity */
+            background: var(--border-color);
             color: var(--text-secondary);
         }
 
@@ -246,8 +247,8 @@
 </head>
 <body>
     <div class="container">
-        <div class="header" style="display: flex; align-items: center; justify-content: space-between;">
-            <div style="flex: 1;">
+        <div class="header">
+            <div>
                 <div class="header-title-row">
                     <i data-lucide="omega" style="width: 36px; height: 36px; color: var(--text-secondary);"></i>
                     <h1>Base64 Converter</h1>
@@ -278,7 +279,6 @@
                     <i data-lucide="refresh-cw" style="width:16px;height:16px;"></i>
                     Convert (Auto Detect)
                 </button>
-                <!--<i data-lucide="arrow-down" style="width:20px;height:20px; color: var(--text-secondary);"></i>-->
             </div>
             
             <div class="panel" id="output-panel">
@@ -302,9 +302,10 @@
         <div class="status-container">
             <div id="status-message" class="status-message info"></div>
         </div>
+
     </div>
     
-    <script src="toggle.js"></script>
+    <script src="../toggle.js"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script>
         // Global references to elements
@@ -316,7 +317,7 @@
         const clearOutputButton = document.getElementById('clear-output-button');
         const statusMessage = document.getElementById('status-message');
 
-        const DEFAULT_STATUS = "Ready. Enter text to begin conversion.";
+        //const DEFAULT_STATUS = "Ready. Enter text to begin conversion.";
 
         // --- Utility Functions ---
 

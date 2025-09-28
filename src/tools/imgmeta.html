@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Metadata Viewer</title>
+    <link rel="icon" type="image/x-icon" href="../../public/logo.ico">
+    <link rel="stylesheet" href="../toggle.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        .header p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 8px;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            z-index: 100;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            line-height: 0;
+        }
+        .theme-toggle:hover {
+            background: var(--hover-bg);
+            border-color: var(--text-secondary);
+            color: var(--text-primary);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+        }
+        .upload-section {
+            background: var(--card-bg);
+            border: 2px dashed var(--border-color); 
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            text-align: center;
+            box-shadow: none; 
+        }
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            margin: 0 auto;
+        }
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        .file-input-label {
+            display: inline-block;
+            padding: 12px 24px;
+            background: var(--text-primary);
+            color: var(--card-bg);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        .file-input-label:hover {
+            background: var(--text-secondary);
+        }
+        .file-name {
+            margin-top: 12px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+        .btn:hover {
+            background: var(--hover-bg);
+            border-color: var(--text-secondary);
+        }
+        .btn-primary {
+            background: var(--text-primary);
+            color: var(--card-bg);
+            border-color: var(--text-primary);
+        }
+        .btn-primary:hover {
+            background: var(--text-secondary);
+            border-color: var(--text-secondary);
+        }
+        .viewer {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 24px;
+        }
+        .stats {
+            background: var(--card-bg);
+            padding: 16px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            gap: 24px;
+            font-size: 13px;
+            flex-wrap: wrap;
+        }
+        .stat-item {
+            color: var(--text-secondary);
+        }
+        .stat-value {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        .metadata-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .metadata-group {
+            margin-bottom: 0;
+        }
+        .metadata-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        .metadata-value {
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--code-bg);
+            color: var(--text-primary);
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+            font-size: 13px;
+            word-break: break-all;
+        }
+        .status-message {
+            margin-top: 16px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            text-align: center;
+        }
+        .status-message.success {
+            background: var(--success-color);
+            color: #fff;
+        }
+        .status-message.error {
+            background: var(--error-color);
+            color: #fff;
+        }
+        .status-message.info {
+            background: var(--notification-bg);
+            color: var(--card-bg);
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px 16px;
+            }
+            .header h1 {
+                font-size: 1.5rem;
+                padding-right: 50px;
+            }
+            .theme-toggle {
+                top: -10px;
+                right: 0;
+            }
+            .controls {
+                flex-wrap: wrap;
+            }
+            .stats {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                <i data-lucide="sun" class="theme-icon" id="theme-icon"></i>
+            </button>
+            <h1>Image Metadata Viewer</h1>
+            <p>View EXIF data from uploaded images</p>
+        </div>
+
+        <div class="upload-section">
+            <div class="file-input-wrapper">
+                <input type="file" id="imageFile" class="file-input" accept="image/*" onchange="handleFileSelect(event)">
+                <label for="imageFile" class="file-input-label">Choose Image File</label>
+            </div>
+            <div class="file-name" id="fileName"></div>
+        </div>
+
+        <div class="controls" style="display: none;" id="controls">
+            </div>
+
+        <div class="viewer" id="viewer" style="display: none;">
+            <div class="stats" id="stats"></div>
+            <div class="metadata-section" id="metadataSection"></div>
+        </div>
+
+        <div id="status-message" class="status-message" style="display: none;"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/exif-js@2.3.0/exif.js"></script>
+    <script src="../toggle.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script>
+        const METADATA_FIELDS = [
+            { label: "File Name", property: "fileName" },
+            { label: "File Size", property: "fileSize" },
+            { label: "Dimensions", property: "dimensions" },
+            { label: "Camera Model", property: ["Make", "Model"], formatter: 'camera' },
+            { label: "Date Taken", property: ["DateTimeOriginal", "DateTime"] },
+            { label: "GPS Location", property: "GPSData", formatter: 'gps' },
+            { label: "ISO", property: "ISOSpeedRatings" },
+            { label: "Exposure Time", property: "ExposureTime", formatter: 'exposure' },
+            { label: "F-Stop", property: "FNumber", formatter: 'fstop' },
+            { label: "Focal Length", property: "FocalLength", formatter: 'focal' }
+        ];
+
+        function showStatus(message, type = 'info') {
+            const statusEl = document.getElementById('status-message');
+            statusEl.textContent = message;
+            statusEl.className = `status-message ${type}`;
+            statusEl.style.display = 'block';
+            setTimeout(() => {
+                statusEl.style.display = 'none';
+            }, 3000);
+        }
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function convertDMSToDD(dms, ref) {
+            const degrees = dms[0];
+            const minutes = dms[1];
+            const seconds = dms[2];
+            let dd = degrees + minutes / 60 + seconds / 3600;
+            if (ref === 'S' || ref === 'W') {
+                dd = dd * -1;
+            }
+            return dd;
+        }
+
+        function createMetadataGroupHTML(label, value) {
+            const displayValue = value === null || value === undefined || value === '' ? 'Not available' : value;
+
+            return `
+                <div class="metadata-group">
+                    <label class="metadata-label">${label}</label>
+                    <div class="metadata-value">${displayValue}</div>
+                </div>
+            `;
+        }
+
+        function showStats(availableFields) {
+            const statsHtml = `
+                <div class="stat-item">Total Fields: <span class="stat-value">${METADATA_FIELDS.length}</span></div>
+                <div class="stat-item">Available: <span class="stat-value">${availableFields}</span></div>
+                <div class="stat-item">Missing: <span class="stat-value">${METADATA_FIELDS.length - availableFields}</span></div>
+            `;
+            document.getElementById('stats').innerHTML = statsHtml;
+        }
+
+        function populateMetadata(file, img, exifData) {
+            const metadataSection = document.getElementById('metadataSection');
+            let htmlContent = '';
+            let availableFields = 0;
+
+            METADATA_FIELDS.forEach(field => {
+                let value = null;
+                const property = field.property;
+
+                if (property === 'fileName') value = file.name;
+                else if (property === 'fileSize') value = formatBytes(file.size);
+                else if (property === 'dimensions') value = `${img.width} x ${img.height} pixels`;
+
+                else if (property === 'GPSData') {
+                    if (exifData.GPSLatitude && exifData.GPSLongitude) {
+                        const lat = convertDMSToDD(exifData.GPSLatitude, exifData.GPSLatitudeRef);
+                        const lon = convertDMSToDD(exifData.GPSLongitude, exifData.GPSLongitudeRef);
+                        value = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+                    }
+                }
+
+                else {
+                    const tags = Array.isArray(property) ? property : [property];
+                    const rawValue = tags.map(tag => exifData[tag]).find(val => val !== undefined);
+
+                    if (rawValue !== undefined) {
+                        switch (field.formatter) {
+                            case 'camera':
+                                value = tags.map(tag => exifData[tag]).filter(Boolean).join(' ');
+                                if (value === '') value = null;
+                                break;
+                            case 'exposure':
+                                value = rawValue > 0 ? `1/${Math.round(1 / rawValue)}s` : rawValue;
+                                break;
+                            case 'fstop':
+                                value = `f/${rawValue}`;
+                                break;
+                            case 'focal':
+                                value = `${rawValue}mm`;
+                                break;
+                            default:
+                                value = rawValue;
+                        }
+                    }
+                }
+
+                if (value !== null && value !== undefined && value !== '' && value !== 'Not available') {
+                    availableFields++;
+                }
+
+                htmlContent += createMetadataGroupHTML(field.label, value);
+            });
+
+            metadataSection.innerHTML = htmlContent;
+            showStats(availableFields);
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) {
+                document.getElementById('viewer').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('fileName').textContent = `Selected: ${file.name}`;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    EXIF.getData(img, function() {
+                        const exifData = EXIF.getAllTags(this);
+                        populateMetadata(file, img, exifData);
+                        document.getElementById('controls').style.display = 'flex';
+                        document.getElementById('viewer').style.display = 'block';
+                        showStatus('Metadata extracted successfully', 'success');
+                    });
+                };
+                img.onerror = function() {
+                    showStatus('Could not load image file.', 'error');
+                };
+                img.src = e.target.result;
+            };
+            reader.onerror = function() {
+                showStatus('Error reading file.', 'error');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        window.onload = function() {
+            lucide.createIcons();
+        };
+    </script>
+</body>
+</html>
