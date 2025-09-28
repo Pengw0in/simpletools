@@ -366,6 +366,43 @@
             color: #66b3ff;
         }
 
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 20px;
+            background: var(--notification-bg);
+            color: var(--card-bg);
+            border-radius: 4px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .notification.error {
+            background: var(--error-color);
+        }
+
+        [data-theme="dark"] .notification {
+            background: #fafafa;
+            color: #222;
+        }
+        [data-theme="dark"] .notification.error {
+            background: #ff6b6b;
+            color: #fff;
+        }
+
+        .notification.show {
+            opacity: 1;
+        }
+
+        .hidden {
+            display: none;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 20px 16px;
@@ -486,6 +523,8 @@
                 <span class="example-description">Date with groups (YYYY-MM-DD)</span>
             </div>
         </div>
+
+        <div id="notification" class="notification"></div>
     </div>
 
     <script src="../toggle.js"></script>
@@ -658,10 +697,17 @@
         }
 
         function displayError(message) {
+            const notif = document.getElementById('notification');
+            notif.textContent = `Regex Error: ${message}`;
+            notif.classList.remove('show');
+            notif.classList.add('error', 'show');
+            setTimeout(() => {
+                notif.classList.remove('show');
+            }, 3000);
+
+            // Reset the highlighted text to default
             const highlightedElement = document.getElementById('highlightedText');
-            highlightedElement.innerHTML = `<div class="error">
-                <strong>Regex Error:</strong> ${escapeHtml(message)}
-            </div>`;
+            highlightedElement.textContent = 'Enter a regex pattern and test string to see matches highlighted here.';
             
             document.getElementById('matchesSection').style.display = 'none';
             document.getElementById('groupsSection').style.display = 'none';

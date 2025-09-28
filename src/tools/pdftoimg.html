@@ -181,6 +181,75 @@
                 padding-right: 50px;
             }
         }
+        /* --- NEW STYLES FOR COMPACT GALLERY --- */
+        #pdf-preview-container {
+            margin-top: 16px;
+            margin-bottom: 24px;
+            padding: 8px 0;
+            white-space: nowrap;
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--input-bg);
+            display: none; /* Hide until PDF is selected and loaded */
+        }
+        #pdf-preview-container.visible {
+            display: block;
+        }
+        .pdf-preview-item {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px;
+            width: 140px;
+            margin-right: 8px;
+            vertical-align: top;
+            background: var(--card-bg);
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .preview-image-wrapper {
+            width: 120px;
+            height: 120px;
+            overflow: hidden;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+        }
+        .preview-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .page-info {
+            font-size: 10px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .rotation-controls button {
+            padding: 4px 6px;
+            margin: 0 2px;
+            background: var(--text-secondary);
+            color: var(--card-bg);
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 10px;
+            line-height: 1;
+            transition: background 0.2s;
+        }
+        .rotation-controls button:hover {
+            background: var(--text-primary);
+        }
+        /* --- END NEW STYLES --- */
+
         /* Hide the canvas element used for rendering */
         #render-canvas {
             display: none;
@@ -214,6 +283,10 @@
                 >
             </div>
             <div id="file-count" class="file-count">No file selected.</div>
+
+            <div id="pdf-preview-container">
+                <p style="text-align: center; color: var(--text-secondary); font-size: 14px;">PDF Page Previews will appear here.</p>
+            </div>
             <button
                 id="convert-button"
                 class="btn"
@@ -230,20 +303,133 @@
     <script src="../toggle.js"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script>
+        // Global variables
+        let pdfDoc = null;
+        let pageData = []; // Array to store data for each page, including rotation
+
         if (typeof pdfjsLib !== 'undefined') {
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
         }
-        function updateFileCount() {
+
+        async function updateFileCount() {
             const input = document.getElementById('pdf-file');
             const button = document.getElementById('convert-button');
             const fileCount = document.getElementById('file-count');
             const statusMessage = document.getElementById('status-message');
+            const previewContainer = document.getElementById('pdf-preview-container');
             const hasFile = input.files.length === 1;
             fileCount.textContent = hasFile ? `${input.files[0].name} selected.` : 'No file selected.';
             button.disabled = !hasFile;
             statusMessage.className = 'status-message';
             statusMessage.textContent = '';
+            
+            // Clear preview and PDF doc
+            previewContainer.classList.remove('visible');
+            previewContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary); font-size: 14px;">PDF Page Previews will appear here.</p>';
+            pdfDoc = null;
+
+            if (hasFile) {
+                await loadPdfAndRenderPreviews(input.files[0]);
+            }
         }
+
+        async function loadPdfAndRenderPreviews(file) {
+            const previewContainer = document.getElementById('pdf-preview-container');
+            showStatus('Loading PDF and generating previews...', 'info');
+
+            try {
+                const arrayBuffer = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.onerror = (e) => reject(new Error("Failed to read PDF file."));
+                    reader.readAsArrayBuffer(file);
+                });
+                pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                const numPages = pdfDoc.numPages;
+                showStatus(`PDF loaded. Generating previews for ${numPages} page(s)...`, 'info');
+
+                // Clear and prepare preview container
+                previewContainer.innerHTML = '';
+                pageData = []; // Reset page data
+                if (numPages > 3) {
+                    previewContainer.innerHTML = '<p style="font-size: 12px; color: var(--text-secondary); text-align: center; margin-bottom: 8px;">(Scroll right to see all pages)</p>';
+                }
+
+                for (let i = 1; i <= numPages; i++) {
+                    const imageData = await renderPageThumbnail(i, 0); // Initial rotation 0
+
+                    // Store page data
+                    pageData.push({ rotation: 0 });
+
+                    // Create preview item
+                    const item = document.createElement('div');
+                    item.className = 'pdf-preview-item';
+                    item.innerHTML = `
+                        <div class="page-info">Page ${i}</div>
+                        <div class="preview-image-wrapper">
+                            <img class="preview-image" id="preview-img-${i-1}" src="${imageData}" alt="Page ${i}">
+                        </div>
+                        <div class="rotation-controls">
+                            <button onclick="rotatePage(${i-1}, -90)">↺</button>
+                            <button onclick="rotatePage(${i-1}, 90)">↻</button>
+                        </div>
+                    `;
+                    previewContainer.appendChild(item);
+                }
+
+                previewContainer.classList.add('visible');
+                showStatus(`Previews generated for ${numPages} page(s). Adjust orientations as needed.`, 'info');
+            } catch (error) {
+                console.error("PDF Load Error:", error);
+                showStatus(`Failed to load PDF. Error: ${error.message}.`, 'error');
+            }
+        }
+
+        async function renderPageThumbnail(pageNum, rotation) {
+            const canvas = document.getElementById('render-canvas');
+            const context = canvas.getContext('2d');
+            const page = await pdfDoc.getPage(pageNum);
+            const thumbnailScale = 0.5;
+            const viewport = page.getViewport({ scale: thumbnailScale });
+
+            // Adjust canvas size for rotation if needed
+            if (rotation % 180 !== 0) {
+                canvas.width = viewport.height;
+                canvas.height = viewport.width;
+            } else {
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+            }
+
+            context.save();
+            context.translate(canvas.width / 2, canvas.height / 2);
+            context.rotate((rotation * Math.PI) / 180);
+            context.translate(-viewport.width / 2, -viewport.height / 2);
+
+            const renderContext = {
+                canvasContext: context,
+                viewport: viewport
+            };
+            await page.render(renderContext).promise;
+            context.restore();
+
+            return canvas.toDataURL('image/png');
+        }
+
+        function rotatePage(index, degrees) {
+            const data = pageData[index];
+            if (!data) return;
+
+            data.rotation = (data.rotation + degrees) % 360;
+            if (data.rotation < 0) data.rotation += 360;
+
+            // Re-render the thumbnail with new rotation
+            renderPageThumbnail(index + 1, data.rotation).then(imageData => {
+                const imgElement = document.getElementById(`preview-img-${index}`);
+                if (imgElement) imgElement.src = imageData;
+            });
+        }
+
         function showStatus(message, type = 'info') {
             const statusMessage = document.getElementById('status-message');
             statusMessage.textContent = message;
@@ -266,6 +452,10 @@
             if (typeof lucide !== 'undefined') lucide.createIcons();
         }
         async function splitPdfToImages() {
+            if (!pdfDoc) {
+                showStatus('Please select a PDF file first.', 'error');
+                return;
+            }
             const fileInput = document.getElementById('pdf-file');
             const files = fileInput.files;
             if (files.length !== 1) {
@@ -295,17 +485,33 @@
                     const page = await pdfDoc.getPage(i);
                     const scale = 3;
                     const viewport = page.getViewport({ scale: scale });
-                    canvas.height = viewport.height;
-                    canvas.width = viewport.width;
+                    const rotation = pageData[i-1].rotation;
+
+                    // Adjust canvas size for rotation
+                    if (rotation % 180 !== 0) {
+                        canvas.width = viewport.height;
+                        canvas.height = viewport.width;
+                    } else {
+                        canvas.width = viewport.width;
+                        canvas.height = viewport.height;
+                    }
+
+                    context.save();
+                    context.translate(canvas.width / 2, canvas.height / 2);
+                    context.rotate((rotation * Math.PI) / 180);
+                    context.translate(-viewport.width / 2, -viewport.height / 2);
+
                     const renderContext = {
                         canvasContext: context,
                         viewport: viewport
                     };
                     await page.render(renderContext).promise;
+                    context.restore();
+
                     const imageData = canvas.toDataURL('image/png');
                     const base64Data = imageData.split(',')[1];
                     zip.file(`${pdfFile.name.replace(/\.pdf$/i, '')}_page_${i}.png`, base64Data, { base64: true });
-                    showStatus(`Page ${i} of ${numPages} rendered and added to ZIP...`, 'info');
+                    showStatus(`Page ${i} of ${numPages} rendered (with rotation) and added to ZIP...`, 'info');
                 }
                 showStatus('Compressing files and generating ZIP...', 'info');
                 const zipBlob = await zip.generateAsync({

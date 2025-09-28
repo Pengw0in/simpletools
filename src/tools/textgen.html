@@ -180,6 +180,43 @@
                 margin-bottom: 0 !important;
             }
         }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 20px;
+            background: var(--notification-bg);
+            color: var(--card-bg);
+            border-radius: 4px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .notification.error {
+            background: var(--error-color);
+        }
+
+        [data-theme="dark"] .notification {
+            background: #fafafa;
+            color: #222;
+        }
+        [data-theme="dark"] .notification.error {
+            background: #ff6b6b;
+            color: #fff;
+        }
+
+        .notification.show {
+            opacity: 1;
+        }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -216,7 +253,7 @@
             <button class="copy-btn" onclick="copyToClipboard()">Copy to Clipboard</button>
         </div>
 
-        <div id="status-message" class="status-message" style="display: none;"></div>
+        <div id="notification" class="notification"></div>
     </div>
 
     <script src="../toggle.js"></script>
@@ -310,12 +347,15 @@
         }
 
         function showStatus(message, type = 'info') {
-            const statusEl = document.getElementById('status-message');
-            statusEl.textContent = message;
-            statusEl.className = `status-message ${type}`;
-            statusEl.style.display = 'block';
+            const notif = document.getElementById('notification');
+            notif.textContent = message;
+            notif.classList.remove('error', 'show');
+            if (type === 'error') {
+                notif.classList.add('error');
+            }
+            notif.classList.add('show');
             setTimeout(() => {
-                statusEl.style.display = 'none';
+                notif.classList.remove('show');
             }, 3000);
         }
 

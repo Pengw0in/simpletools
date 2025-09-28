@@ -194,41 +194,41 @@
         }
         
         /* Status Message */
-        .status-container {
+        .notification {
             position: fixed;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 1000;
-            min-width: 300px;
-            text-align: center;
-        }
-        .status-message {
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 500;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            opacity: 0;
-            transition: opacity 0.3s, transform 0.3s;
-            transform: translateY(10px);
-        }
-        .status-message.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        /* Color mapping for status messages */
-        .status-message.success {
-            background: var(--success-color, #4CAF50);
-            color: #fff;
-        }
-        .status-message.error {
-            background: var(--error-bg, #F44336);
-            color: #fff;
-        }
-        .status-message.info {
-            background: var(--text-secondary);
+            padding: 12px 20px;
+            background: var(--notification-bg);
             color: var(--card-bg);
+            border-radius: 4px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .notification.error {
+            background: var(--error-color);
+        }
+
+        [data-theme="dark"] .notification {
+            background: #fafafa;
+            color: #222;
+        }
+        [data-theme="dark"] .notification.error {
+            background: #ff6b6b;
+            color: #fff;
+        }
+
+        .notification.show {
+            opacity: 1;
+        }
+
+        .hidden {
+            display: none;
         }
 
         /* Media Queries */
@@ -299,9 +299,7 @@
             </div>
         </div>
 
-        <div class="status-container">
-            <div id="status-message" class="status-message info"></div>
-        </div>
+        <div id="notification" class="notification"></div>
 
     </div>
     
@@ -352,19 +350,16 @@
         }
 
         function displayStatus(message, type = 'info') {
-            statusMessage.textContent = message;
-            statusMessage.className = 'status-message ' + type;
+            const notif = document.getElementById('notification');
+            notif.textContent = message;
+            notif.classList.remove('error', 'show');
+            if (type === 'error') {
+                notif.classList.add('error');
+            }
+            notif.classList.add('show');
             setTimeout(() => {
-                statusMessage.classList.add('visible');
-            }, 50);
-
-            setTimeout(() => {
-                statusMessage.classList.remove('visible');
-                setTimeout(() => {
-                    statusMessage.textContent = DEFAULT_STATUS;
-                    statusMessage.className = 'status-message info';
-                }, 300);
-            }, 4000);
+                notif.classList.remove('show');
+            }, 3000);
         }
         
         // --- Event Handlers and Main Logic ---

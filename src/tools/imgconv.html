@@ -197,6 +197,42 @@
         @keyframes spin {
             100% { transform: rotate(360deg);}
         }
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 20px;
+            background: var(--notification-bg);
+            color: var(--card-bg);
+            border-radius: 4px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .notification.error {
+            background: var(--error-color);
+        }
+
+        [data-theme="dark"] .notification {
+            background: #fafafa;
+            color: #222;
+        }
+        [data-theme="dark"] .notification.error {
+            background: #ff6b6b;
+            color: #fff;
+        }
+
+        .notification.show {
+            opacity: 1;
+        }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -228,6 +264,7 @@
             <div id="statusMessage" class="status-message"></div>
             <canvas id="conversionCanvas" style="display:none;"></canvas>
         </div>
+        <div id="notification" class="notification"></div>
     </div>
     <script src="../toggle.js"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
@@ -269,14 +306,16 @@
 
         // Status message utility
         function setStatus(message, type) {
-            statusMessage.textContent = message;
-            statusMessage.className = `status-message visible ${type}`;
-            clearTimeout(statusMessage.timer);
-            if (type !== 'info') {
-                statusMessage.timer = setTimeout(() => {
-                    statusMessage.classList.remove('visible');
-                }, 5000);
+            const notif = document.getElementById('notification');
+            notif.textContent = message;
+            notif.classList.remove('error', 'show');
+            if (type === 'error') {
+                notif.classList.add('error');
             }
+            notif.classList.add('show');
+            setTimeout(() => {
+                notif.classList.remove('show');
+            }, 3000);
         }
 
         // Event listener for file selection

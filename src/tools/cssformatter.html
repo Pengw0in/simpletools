@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Minifier/Unminifier</title>
+    <link rel="icon" type="image/x-icon" href="../../public/logo.ico">
+    <link rel="stylesheet" href="../toggle.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        .header p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 8px;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            z-index: 100;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            line-height: 0;
+        }
+        .theme-toggle:hover {
+            background: var(--hover-bg);
+            border-color: var(--text-secondary);
+            color: var(--text-primary);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+        }
+        .editor-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .editor-group {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .editor-header {
+            padding: 12px 16px;
+            background: var(--code-bg);
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .css-textarea {
+            width: 100%;
+            min-height: 500px;
+            padding: 16px;
+            border: none;
+            outline: none;
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+            font-size: 14px;
+            resize: vertical;
+            line-height: 1.5;
+            background: var(--input-bg);
+            color: var(--text-primary);
+        }
+        .css-textarea:focus {
+            background: var(--input-focus-bg);
+        }
+        .css-textarea::placeholder {
+            color: var(--text-secondary);
+        }
+        .controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+        .btn:hover {
+            background: var(--hover-bg);
+            border-color: var(--text-secondary);
+        }
+        .btn-primary {
+            background: var(--text-primary);
+            color: var(--card-bg);
+            border-color: var(--text-primary);
+        }
+        .btn-primary:hover {
+            background: var(--text-secondary);
+            border-color: var(--text-secondary);
+        }
+        .status-message {
+            margin-top: 16px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            text-align: center;
+        }
+        .status-message.success {
+            background: var(--success-color);
+            color: var(--text-primary);
+        }
+        .status-message.error {
+            background: var(--error-color);
+            color: #fff;
+        }
+        .status-message.info {
+            background: var(--notification-bg);
+            color: #fff;
+        }
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 20px;
+            background: var(--notification-bg);
+            color: var(--card-bg);
+            border-radius: 4px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .notification.error {
+            background: var(--error-color);
+        }
+
+        [data-theme="dark"] .notification {
+            background: #fafafa;
+            color: #222;
+        }
+        [data-theme="dark"] .notification.error {
+            background: #ff6b6b;
+            color: #fff;
+        }
+
+        .notification.show {
+            opacity: 1;
+        }
+
+        .hidden {
+            display: none;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 16px;
+            }
+            .header h1 {
+                font-size: 1.5rem;
+                padding-right: 50px;
+            }
+            .theme-toggle {
+                top: -10px;
+                right: 0;
+            }
+            .editor-section {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            .css-textarea {
+                min-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                <i data-lucide="sun" class="theme-icon" id="theme-icon"></i>
+            </button>
+            <h1>CSS Minifier/Unminifier</h1>
+            <p>Minify or beautify your CSS code</p>
+        </div>
+
+        <div class="editor-section">
+            <div class="editor-group">
+                <div class="editor-header">
+                    <span>Input CSS</span>
+                    <button class="btn" onclick="clearInput()">Clear</button>
+                </div>
+                <textarea class="css-textarea" id="inputCss" placeholder="Paste your CSS here..."></textarea>
+            </div>
+            <div class="editor-group">
+                <div class="editor-header">
+                    <span>Output CSS</span>
+                    <button class="btn" onclick="copyOutput()">Copy</button>
+                </div>
+                <textarea class="css-textarea" id="outputCss" readonly placeholder="Output will appear here..."></textarea>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="minifyCss()">Minify CSS</button>
+            <button class="btn btn-primary" onclick="unminifyCss()">Unminify CSS</button>
+        </div>
+
+        <div id="notification" class="notification"></div>
+    </div>
+
+    <script src="../toggle.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.7/beautify-css.min.js"></script>
+    <script>
+        function minifyCss() {
+            const input = document.getElementById('inputCss').value;
+            if (!input.trim()) {
+                showStatus('Please enter CSS to minify.', 'error');
+                return;
+            }
+            try {
+                // Simple minification: remove extra spaces, newlines, and comments
+                let minified = input
+                    .replace(/\/\*[\s\S]*?\*\//g, '') // Remove comments
+                    .replace(/\s+/g, ' ') // Collapse whitespace
+                    .replace(/\s*{\s*/g, '{') // Remove spaces around {
+                    .replace(/\s*}\s*/g, '}') // Remove spaces around }
+                    .replace(/\s*;\s*/g, ';') // Remove spaces around ;
+                    .replace(/\s*:\s*/g, ':') // Remove spaces around :
+                    .replace(/;\s*}/g, '}') // Remove ; before }
+                    .trim();
+                document.getElementById('outputCss').value = minified;
+                showStatus('CSS minified successfully!', 'success');
+            } catch (error) {
+                showStatus('Error minifying CSS: ' + error.message, 'error');
+            }
+        }
+
+        function unminifyCss() {
+            const input = document.getElementById('inputCss').value;
+            if (!input.trim()) {
+                showStatus('Please enter CSS to unminify.', 'error');
+                return;
+            }
+            try {
+                // Use css_beautify (correct function name) for proper formatting with indentation
+                const beautified = css_beautify(input, {
+                    indent_size: 4, // 4 spaces
+                    indent_char: ' ',
+                    max_preserve_newlines: 1,
+                    preserve_newlines: true,
+                    keep_array_indentation: false,
+                    break_chained_methods: false,
+                    indent_scripts: 'normal',
+                    brace_style: 'collapse',
+                    space_before_conditional: true,
+                    unescape_strings: false,
+                    jslint_happy: false,
+                    end_with_newline: false,
+                    wrap_line_length: 0,
+                    indent_inner_html: false,
+                    comma_first: false,
+                    e4x: false,
+                    indent_empty_lines: false
+                });
+                document.getElementById('outputCss').value = beautified;
+                showStatus('CSS unminified successfully!', 'success');
+            } catch (error) {
+                showStatus('Error unminifying CSS: ' + error.message, 'error');
+            }
+        }
+
+        function clearInput() {
+            document.getElementById('inputCss').value = '';
+            document.getElementById('outputCss').value = '';
+            showStatus('Input cleared.', 'info');
+        }
+
+        function copyOutput() {
+            const output = document.getElementById('outputCss');
+            output.select();
+            document.execCommand('copy');
+            showStatus('Output copied to clipboard!', 'success');
+        }
+
+        function showStatus(message, type = 'info') {
+            const notif = document.getElementById('notification');
+            notif.textContent = message;
+            notif.classList.remove('error', 'show');
+            if (type === 'error') {
+                notif.classList.add('error');
+            }
+            notif.classList.add('show');
+            setTimeout(() => {
+                notif.classList.remove('show');
+            }, 3000);
+        }
+
+        /**
+         * Function to synchronize the height of two textareas when one is manually resized.
+         * It uses MutationObserver to watch for style changes (which occur during manual resize).
+         */
+        function syncTextareaHeights(sourceId, targetId) {
+            const source = document.getElementById(sourceId);
+            const target = document.getElementById(targetId);
+
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    // Check if the 'style' attribute was changed
+                    if (mutation.attributeName === 'style') {
+                        // The browser sets the height property in the element's inline style on manual resize
+                        const newHeight = source.style.height;
+                        if (newHeight && target.style.height !== newHeight) {
+                            target.style.height = newHeight;
+                        }
+                    }
+                });
+            });
+
+            // Start observing the source element's style attribute for changes
+            observer.observe(source, { attributes: true });
+        }
+
+        window.onload = function() {
+            lucide.createIcons();
+            // Start synchronization in both directions
+            syncTextareaHeights('inputCss', 'outputCss');
+            syncTextareaHeights('outputCss', 'inputCss');
+        };
+    </script>
+</body>
+</html>
