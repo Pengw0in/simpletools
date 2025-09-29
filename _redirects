@@ -1,5 +1,47 @@
-# Redirect root to index
-/ /index.html 200
+# Active tools - redirect clean URLs to .html files
+/json /tool/json.html 200
+/csv /tool/csv.html 200
+/yaml /tool/yaml.html 200
+/xml /tool/xml.html 200
+/sql /tool/sql.html 200
+/cssformatter /tool/cssformatter.html 200
+/jsformatter /tool/jsformatter.html 200
+/imgconv /tool/imgconv.html 200
+/pallete /tool/pallete.html 200
+/gradientgen /tool/gradientgen.html 200
+/qr /tool/qr.html 200
+/imgtopdf /tool/imgtopdf.html 200
+/pdftoimg /tool/pdftoimg.html 200
+/imgmeta /tool/imgmeta.html 200
+/regex /tool/regex.html 200
+/textdiff /tool/textdiff.html 200
+/markdown /tool/markdown.html 200
+/analysis /tool/analysis.html 200
+/convert /tool/convert.html 200
+/base64 /tool/base64.html 200
+/textgen /tool/textgen.html 200
+/timestamp /tool/timestamp.html 200
 
-# Redirect all tool paths to the loader (catches /json, /csv, etc.)
-/* /tool.html 200
+# Redirect .html URLs to clean URLs (301 permanent redirect)
+/tool/json.html /json 301
+/tool/csv.html /csv 301
+/tool/yaml.html /yaml 301
+/tool/xml.html /xml 301
+/tool/sql.html /sql 301
+/tool/cssformatter.html /cssformatter 301
+/tool/jsformatter.html /jsformatter 301
+/tool/imgconv.html /imgconverter 301
+/tool/pallete.html /pallete 301
+/tool/gradientgen.html /gradientgen 301
+/tool/qr.html /qr 301
+/tool/imgtopdf.html /imgtopdf 301
+/tool/pdftoimg.html /pdftoimg 301
+/tool/imgmeta.html /imgmeta 301
+/tool/regex.html /regex 301
+/tool/textdiff.html /textdifference 301
+/tool/markdown.html /markdown 301
+/tool/analysis.html /analysis 301
+/tool/convert.html /convert 301
+/tool/base64.html /base64 301
+/tool/textgen.html /textgen 301
+/tool/timestamp.html /timestamp 301

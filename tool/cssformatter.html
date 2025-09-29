@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JavaScript Minifier/Unminifier</title>
+    <title>CSS Minifier/Unminifier</title>
     <link rel="icon" type="image/x-icon" href="../../public/logo.ico">
-    <link rel="stylesheet" href="/src/toggle.css">
+    <link rel="stylesheet" href="/components/toggle.css">
     <style>
         * {
             margin: 0;
@@ -87,7 +87,7 @@
             justify-content: space-between;
             align-items: center;
         }
-        .js-textarea { /* Changed class name to reflect JS */
+        .css-textarea {
             width: 100%;
             min-height: 500px;
             padding: 16px;
@@ -100,10 +100,10 @@
             background: var(--input-bg);
             color: var(--text-primary);
         }
-        .js-textarea:focus {
+        .css-textarea:focus {
             background: var(--input-focus-bg);
         }
-        .js-textarea::placeholder {
+        .css-textarea::placeholder {
             color: var(--text-secondary);
         }
         .controls {
@@ -136,23 +136,23 @@
             border-color: var(--text-secondary);
         }
         .status-message {
-            margin-top: 8px; /* Reduced from 16px */
-            padding: 4px 8px; /* Reduced from 8px 12px */
+            margin-top: 16px;
+            padding: 8px 12px;
             border-radius: 4px;
-            font-size: 12px; /* Reduced from 13px */
+            font-size: 13px;
             text-align: center;
         }
         .status-message.success {
             background: var(--success-color);
-            color: #fff;
+            color: var(--text-primary);
         }
         .status-message.error {
             background: var(--error-color);
             color: #fff;
         }
         .status-message.info {
-            background: #fff;
-            color: var(--notification-bg);
+            background: var(--notification-bg);
+            color: #fff;
         }
         .notification {
             position: fixed;
@@ -206,7 +206,7 @@
                 grid-template-columns: 1fr;
                 gap: 16px;
             }
-            .js-textarea { /* Changed class name to reflect JS */
+            .css-textarea {
                 min-height: 300px;
             }
         }
@@ -218,99 +218,105 @@
             <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
                 <i data-lucide="sun" class="theme-icon" id="theme-icon"></i>
             </button>
-            <h1>JavaScript Minifier/Unminifier</h1>
-            <p>Minify or beautify your JavaScript code</p>
+            <h1>CSS Minifier/Unminifier</h1>
+            <p>Minify or beautify your CSS code</p>
         </div>
 
         <div class="editor-section">
             <div class="editor-group">
                 <div class="editor-header">
-                    <span>Input JavaScript</span>
+                    <span>Input CSS</span>
                     <button class="btn" onclick="clearInput()">Clear</button>
                 </div>
-                <textarea class="js-textarea" id="inputJs" placeholder="Paste your JavaScript here..."></textarea>
+                <textarea class="css-textarea" id="inputCss" placeholder="Paste your CSS here..."></textarea>
             </div>
             <div class="editor-group">
                 <div class="editor-header">
-                    <span>Output JavaScript</span>
+                    <span>Output CSS</span>
                     <button class="btn" onclick="copyOutput()">Copy</button>
                 </div>
-                <textarea class="js-textarea" id="outputJs" readonly placeholder="Output will appear here..."></textarea>
+                <textarea class="css-textarea" id="outputCss" readonly placeholder="Output will appear here..."></textarea>
             </div>
         </div>
 
         <div class="controls">
-            <button class="btn btn-primary" onclick="minifyJs()">Minify JS</button>
-            <button class="btn btn-primary" onclick="unminifyJs()">Unminify JS</button>
+            <button class="btn btn-primary" onclick="minifyCss()">Minify CSS</button>
+            <button class="btn btn-primary" onclick="unminifyCss()">Unminify CSS</button>
         </div>
 
         <div id="notification" class="notification"></div>
     </div>
 
-    <script src="../toggle.js"></script>
+    <script src="/components/toggle.js"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.7/beautify.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.7/beautify-css.min.js"></script>
     <script>
-        function minifyJs() {
-            const input = document.getElementById('inputJs').value;
+        function minifyCss() {
+            const input = document.getElementById('inputCss').value;
             if (!input.trim()) {
-                showStatus('Please enter JavaScript to minify.', 'error');
+                showStatus('Please enter CSS to minify.', 'error');
                 return;
             }
             try {
-                // Minification: Simple replacement of unnecessary whitespace and comments.
-                // NOTE: For true, safe, production-grade minification (like UglifyJS/Terser), 
-                // a server-side tool is required. This is a basic, client-side implementation.
+                // Simple minification: remove extra spaces, newlines, and comments
                 let minified = input
-                    .replace(/\/\*[\s\S]*?\*\//g, '') // Remove multi-line comments
-                    .replace(/\/\/.*$/gm, '')           // Remove single-line comments
-                    .replace(/;[\r\n]+/g, ';')          // Remove newlines after semicolon
-                    .replace(/[\r\n]+/g, '')            // Remove remaining newlines
-                    .replace(/\s{2,}/g, ' ')            // Collapse multiple spaces
-                    .replace(/ ?([=;:{},()&|^!]) ?/g, '$1') // Remove spaces around operators/delimiters
-                    .replace(/;$/, '')                  // Remove trailing semicolon
+                    .replace(/\/\*[\s\S]*?\*\//g, '') // Remove comments
+                    .replace(/\s+/g, ' ') // Collapse whitespace
+                    .replace(/\s*{\s*/g, '{') // Remove spaces around {
+                    .replace(/\s*}\s*/g, '}') // Remove spaces around }
+                    .replace(/\s*;\s*/g, ';') // Remove spaces around ;
+                    .replace(/\s*:\s*/g, ':') // Remove spaces around :
+                    .replace(/;\s*}/g, '}') // Remove ; before }
                     .trim();
-                    
-                document.getElementById('outputJs').value = minified;
-                showStatus('JavaScript minified successfully! (Basic Client-Side)', 'success');
+                document.getElementById('outputCss').value = minified;
+                showStatus('CSS minified successfully!', 'success');
             } catch (error) {
-                showStatus('Error minifying JavaScript: ' + error.message, 'error');
+                showStatus('Error minifying CSS: ' + error.message, 'error');
             }
         }
 
-        function unminifyJs() {
-            const input = document.getElementById('inputJs').value;
+        function unminifyCss() {
+            const input = document.getElementById('inputCss').value;
             if (!input.trim()) {
-                showStatus('Please enter JavaScript to unminify.', 'error');
+                showStatus('Please enter CSS to unminify.', 'error');
                 return;
             }
             try {
-                // Use js_beautify for proper formatting with indentation
-                // The function name is now js_beautify (from beautify.min.js)
-                const beautified = js_beautify(input, {
+                // Use css_beautify (correct function name) for proper formatting with indentation
+                const beautified = css_beautify(input, {
                     indent_size: 4, // 4 spaces
                     indent_char: ' ',
                     max_preserve_newlines: 1,
                     preserve_newlines: true,
-                    brace_style: 'collapse', // Example: function() { ... }
-                    space_before_conditional: true
-                    // Many other options are available in js-beautify
+                    keep_array_indentation: false,
+                    break_chained_methods: false,
+                    indent_scripts: 'normal',
+                    brace_style: 'collapse',
+                    space_before_conditional: true,
+                    unescape_strings: false,
+                    jslint_happy: false,
+                    end_with_newline: false,
+                    wrap_line_length: 0,
+                    indent_inner_html: false,
+                    comma_first: false,
+                    e4x: false,
+                    indent_empty_lines: false
                 });
-                document.getElementById('outputJs').value = beautified;
-                showStatus('JavaScript unminified successfully!', 'success');
+                document.getElementById('outputCss').value = beautified;
+                showStatus('CSS unminified successfully!', 'success');
             } catch (error) {
-                showStatus('Error unminifying JavaScript: ' + error.message, 'error');
+                showStatus('Error unminifying CSS: ' + error.message, 'error');
             }
         }
 
         function clearInput() {
-            document.getElementById('inputJs').value = '';
-            document.getElementById('outputJs').value = '';
+            document.getElementById('inputCss').value = '';
+            document.getElementById('outputCss').value = '';
             showStatus('Input cleared.', 'info');
         }
 
         function copyOutput() {
-            const output = document.getElementById('outputJs');
+            const output = document.getElementById('outputCss');
             output.select();
             document.execCommand('copy');
             showStatus('Output copied to clipboard!', 'success');
@@ -331,7 +337,7 @@
 
         /**
          * Function to synchronize the height of two textareas when one is manually resized.
-         * It uses MutationObserver to watch for style changes.
+         * It uses MutationObserver to watch for style changes (which occur during manual resize).
          */
         function syncTextareaHeights(sourceId, targetId) {
             const source = document.getElementById(sourceId);
@@ -339,7 +345,9 @@
 
             const observer = new MutationObserver((mutations) => {
                 mutations.forEach((mutation) => {
+                    // Check if the 'style' attribute was changed
                     if (mutation.attributeName === 'style') {
+                        // The browser sets the height property in the element's inline style on manual resize
                         const newHeight = source.style.height;
                         if (newHeight && target.style.height !== newHeight) {
                             target.style.height = newHeight;
@@ -354,9 +362,9 @@
 
         window.onload = function() {
             lucide.createIcons();
-            // Start synchronization for both directions, using the new element IDs
-            syncTextareaHeights('inputJs', 'outputJs');
-            syncTextareaHeights('outputJs', 'inputJs');
+            // Start synchronization in both directions
+            syncTextareaHeights('inputCss', 'outputCss');
+            syncTextareaHeights('outputCss', 'inputCss');
         };
     </script>
 </body>
