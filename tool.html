@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading Tool...</title>
+    <link rel="icon" type="image/x-icon" href="public/logo.ico">
+    <!-- Include shared styles/scripts if needed (e.g., toggle.css is loaded dynamically) -->
+</head>
+<body>
+    <div id="loading">Loading tool...</div>
+    <script>
+        // Get the tool name from the URL path (e.g., '/json' -> 'json')
+        const path = window.location.pathname;
+        const tool = path.slice(1); // Remove leading '/'
+        
+        // Handle root path or invalid tools
+        if (!tool || tool === 'index' || tool === '') {
+            window.location.href = '/'; // Redirect to home
+            return;
+        }
+        
+        // Fetch the tool's HTML
+        fetch(`/src/tools/${tool}.html`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Tool "${tool}" not found`);
+                }
+                return response.text();
+            })
+            .then(html => {
+                // Parse the fetched HTML
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                // Update the document title
+                const title = doc.querySelector('title');
+                if (title) {
+                    document.title = title.textContent;
+                }
+                
+                // Replace the body content
+                document.body.innerHTML = doc.body.innerHTML;
+                
+                // Append any styles/scripts from head (if not already included)
+                const headStyles = doc.querySelectorAll('link[rel="stylesheet"]');
+                headStyles.forEach(style => {
+                    if (!document.querySelector(`link[href="${style.href}"]`)) {
+                        document.head.appendChild(style.cloneNode(true));
+                    }
+                });
+                
+                const headScripts = doc.querySelectorAll('script');
+                headScripts.forEach(script => {
+                    if (!document.querySelector(`script[src="${script.src}"]`)) {
+                        document.head.appendChild(script.cloneNode(true));
+                    }
+                });
+                
+                // Re-run any initialization (e.g., Lucide icons, theme toggle)
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+                // Call any tool-specific init if needed (tools can handle their own onload)
+            })
+            .catch(error => {
+                document.body.innerHTML = `
+                    <div style="text-align: center; padding: 40px;">
+                        <h1>Tool Not Found</h1>
+                        <p>${error.message}</p>
+                        <a href="/">Back to Home</a>
+                    </div>
+                `;
+            });
+    </script>
+</body>
+</html>
