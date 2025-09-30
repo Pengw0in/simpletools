@@ -12,32 +12,38 @@
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: var(--bg-color);
             color: var(--text-primary);
             line-height: 1.6;
         }
+
         .container {
-            max-width: 500px;
+            max-width: 768px;
             margin: 0 auto;
             padding: 40px 20px;
         }
+
         .header {
             text-align: center;
             margin-bottom: 40px;
             position: relative;
         }
+
         .header h1 {
             font-size: 2rem;
-            font-weight: 300;
+            font-weight: 200;
             color: var(--text-primary);
             margin-bottom: 8px;
         }
+
         .header p {
             color: var(--text-secondary);
             font-size: 14px;
         }
+
         .theme-toggle {
             position: fixed;
             top: 20px;
@@ -58,22 +64,26 @@
             box-sizing: border-box;
             line-height: 0;
         }
+
         .theme-toggle:hover {
             background: var(--hover-bg);
             border-color: var(--text-secondary);
             color: var(--text-primary);
             box-shadow: 0 2px 5px rgba(0,0,0,0.08);
         }
+
         .card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            padding: 32px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            padding: 32px;
         }
+
         .form-group {
             margin-bottom: 24px;
         }
+
         .form-label {
             font-size: 14px;
             font-weight: 500;
@@ -81,171 +91,106 @@
             margin-bottom: 8px;
             display: block;
         }
-        .file-input, .select-input {
+
+        .select-input {
             width: 100%;
             padding: 8px;
             border: 1px solid var(--border-color);
-            border-radius: 4px;
+            border-radius: 6px;
             background: var(--input-bg);
             color: var(--text-primary);
             font-size: 14px;
+            transition: border-color 0.2s;
         }
-        .file-input:focus, .select-input:focus {
+
+        .select-input:focus {
             outline: none;
             border-color: var(--text-primary);
-            background: var(--input-focus-bg);
+            box-shadow: 0 0 0 1px var(--text-primary);
         }
+
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.3s, border-color 0.3s;
+            position: relative;
+            margin-bottom: 24px;
+            user-select: none;
+        }
+
+        .drop-zone:hover {
+            border-color: var(--text-primary);
+            background: var(--hover-bg);
+        }
+
+        .drop-zone.dragover {
+            border-color: var(--text-primary);
+            background: var(--hover-bg);
+            opacity: 0.8;
+        }
+
+        .drop-zone input {
+            display: none;
+        }
+
+        .drop-zone-text {
+            color: var(--text-secondary);
+            font-size: 16px;
+            font-weight: 300;
+            margin-top: 10px;
+        }
+
         .file-count {
-            font-size: 13px;
+            font-size: 14px;
             color: var(--text-secondary);
             margin-bottom: 16px;
             text-align: center;
+            font-weight: 500;
         }
+
+        .file-count.hidden {
+            display: none;
+        }
+
         .btn {
             width: 100%;
             padding: 12px 0;
             background: var(--text-primary);
             color: var(--card-bg);
             border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: 500;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-            transition: background 0.2s, color 0.2s, transform 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background 0.2s, transform 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
         }
+
         .btn:disabled {
             background: var(--border-color);
             color: var(--text-secondary);
             cursor: not-allowed;
+            box-shadow: none;
         }
+
         .btn:hover:not(:disabled) {
             background: var(--text-secondary);
             color: var(--card-bg);
-            transform: scale(1.01);
+            transform: translateY(-1px);
         }
-        .status-message {
-            margin-top: 24px;
-            text-align: center;
-            padding: 12px 20px;
-            border-radius: 4px;
-            font-size: 14px;
-            border: 1px solid var(--border-color);
-            background: var(--notification-bg);
-            color: var(--card-bg);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .status-message.visible {
-            opacity: 1;
-        }
-        .status-message.success {
-            background: var(--success-color);
-            color: #fff;
-            border-color: var(--success-color);
-        }
-        .status-message.error {
-            background: var(--error-color);
-            color: #fff;
-            border-color: var(--error-color);
-        }
-        .status-message.info {
-            background: var(--notification-bg);
-            color: var(--card-bg);
-            border-color: var(--notification-bg);
-        }
+
         .btn-icon {
             width: 20px;
             height: 20px;
             color: inherit;
             vertical-align: middle;
-        }
-
-        /* --- NEW STYLES FOR COMPACT GALLERY --- */
-        #image-preview-container {
-            margin-top: 16px;
-            margin-bottom: 24px;
-            padding: 8px 0;
-            white-space: nowrap;
-            overflow-x: auto;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            background: var(--input-bg);
-            display: none; /* Hide until files are selected */
-        }
-        #image-preview-container.visible {
-            display: block;
-        }
-        .image-preview-item {
-            display: inline-flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 8px;
-            width: 140px; /* Increased from 100px to accommodate larger images */
-            margin-right: 8px;
-            vertical-align: top;
-            background: var(--card-bg);
-            border-radius: 4px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-        .preview-image-wrapper {
-            width: 120px; /* Increased from 80px */
-            height: 120px; /* Increased from 80px */
-            overflow: hidden;
-            margin-bottom: 8px;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #000;
-        }
-        .preview-image {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            transition: transform 0.3s ease;
-        }
-        .image-info {
-            font-size: 10px;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-            max-width: 100%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        .rotation-controls button {
-            padding: 4px 6px;
-            margin: 0 2px;
-            background: var(--text-secondary);
-            color: var(--card-bg);
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 10px;
-            line-height: 1;
-            transition: background 0.2s;
-        }
-        .rotation-controls button:hover {
-            background: var(--text-primary);
-        }
-        /* --- END NEW STYLES --- */
-
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px 8px;
-            }
-            .card {
-                padding: 16px 8px;
-            }
-            .header h1 {
-                font-size: 1.5rem;
-                padding-right: 50px;
-            }
         }
 
         .notification {
@@ -281,8 +226,164 @@
             opacity: 1;
         }
 
-        .hidden {
+        #image-preview-container {
+            margin-top: 16px;
+            margin-bottom: 24px;
+            padding: 8px 0;
+            white-space: nowrap;
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--input-bg);
             display: none;
+        }
+
+        #image-preview-container.visible {
+            display: block;
+        }
+
+        .image-preview-item {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px;
+            width: 130px;
+            margin: 0 4px;
+            vertical-align: top;
+            background: var(--card-bg);
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .preview-image-wrapper {
+            width: 100px;
+            height: 100px;
+            overflow: hidden;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+        }
+
+        .preview-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+        .image-info {
+            font-size: 10px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .controls-row {
+            display: flex;
+            justify-content: center;
+            gap: 2px;
+            margin-bottom: 4px;
+            width: 100%;
+        }
+
+        .controls-row button {
+            flex-grow: 1;
+            padding: 4px 6px;
+            background: var(--text-secondary);
+            color: var(--card-bg);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 10px;
+            line-height: 1;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .controls-row button:hover {
+            background: var(--text-primary);
+            transform: scale(1.02);
+        }
+
+        .delete-btn {
+            background: var(--error-color) !important;
+            color: white !important;
+        }
+
+        .delete-btn:hover {
+            background: var(--error-color) !important;
+            filter: brightness(1.1);
+        }
+
+        .spin {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg);}
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px 8px;
+            }
+            .card {
+                padding: 16px;
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2001;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 1);
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -295,21 +396,26 @@
                 <i data-lucide="sun" class="theme-icon" id="theme-icon"></i>
             </button>
             <h1>Image to PDF Converter</h1>
-            <p>Select multiple JPG or PNG files to combine them into a single PDF.</p>
+            <p>Combine multiple JPG or PNG files into a single PDF document.</p>
         </div>
         <div class="card">
-            <div class="form-group">
-                <label for="image-files" class="form-label">Select Images (JPG/PNG)</label>
+            
+            <div id="drop-zone" class="drop-zone" onclick="document.getElementById('image-files').click()">
+                <i data-lucide="upload-cloud" style="width: 32px; height: 32px; color: var(--text-secondary);"></i>
+                <p class="drop-zone-text">Drop images here or click to select files</p>
                 <input
                     type="file"
                     id="image-files"
-                    class="file-input"
                     accept="image/jpeg, image/png"
                     multiple
-                    onchange="updateFileCount()"
+                    onchange="handleFileSelect(this.files)"
                 >
             </div>
-            <div id="file-count" class="file-count">No files selected.</div>
+            
+            <div id="file-count" class="file-count hidden">No files selected.</div>
+
+            <div id="image-preview-container">
+                </div>
 
             <div class="form-group" id="orientation-group" style="display: none;">
                 <label for="pdf-orientation" class="form-label">PDF Page Orientation</label>
@@ -319,9 +425,6 @@
                 </select>
             </div>
             
-            <div id="image-preview-container">
-                <p style="text-align: center; color: var(--text-secondary); font-size: 14px;">Image Previews & Rotation Controls will appear here.</p>
-            </div>
             <button
                 id="convert-button"
                 class="btn"
@@ -335,6 +438,10 @@
         </div>
     </div>
     <div id="notification" class="notification"></div>
+    <div id="image-modal" class="modal">
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+        <img id="modal-image" class="modal-content" src="" alt="Image Preview">
+    </div>
     <script src="/components/toggle.js"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script>
@@ -369,42 +476,58 @@
             });
         }
         
-        // --- UI Update Functions ---
-        function updateFileCount() {
-            const input = document.getElementById('image-files');
+        // --- UI Update Functions (Centralized) ---
+        function handleFileSelect(files) {
+            const validFiles = Array.from(files).filter(file => file.type.match('image/(jpeg|png)'));
+            
+            if (validFiles.length === 0 && imageFilesData.length === 0) {
+                showStatus('Please select valid JPG or PNG files.', 'error');
+                return;
+            }
+            
+            // Collect all current files (including new ones) and pass to loader
+            const existingFiles = imageFilesData.map(d => d.file);
+            const combinedFiles = existingFiles.concat(validFiles);
+            
+            // Deduplicate files by name/size to handle accidental re-selection, 
+            // though simple concatenation is often fine for a utility app.
+            // For simplicity, we trust loadAndRenderImages will overwrite/refresh the global state.
+            
+            // Filter out duplicates if drag/drop is used repeatedly on the same files
+            const uniqueFiles = combinedFiles.reduce((acc, current) => {
+                const x = acc.find(item => item.name === current.name && item.size === current.size);
+                if (!x) {
+                    return acc.concat([current]);
+                } else {
+                    return acc;
+                }
+            }, []);
+
+            updateFileCount(uniqueFiles);
+            loadAndRenderImages(uniqueFiles);
+        }
+
+        function updateFileCount(filesArray) {
             const button = document.getElementById('convert-button');
-            const fileCount = document.getElementById('file-count');
-            const statusMessage = document.getElementById('status-message');
+            const fileCountEl = document.getElementById('file-count');
             const previewContainer = document.getElementById('image-preview-container');
             const orientationGroup = document.getElementById('orientation-group');
 
-            const count = input.files.length;
-            fileCount.textContent = count > 0 ? `${count} file(s) selected.` : 'No files selected.';
-            button.disabled = count === 0;
-            statusMessage.className = 'status-message';
-            statusMessage.textContent = '';
+            const count = filesArray.length;
             
-            // Toggle visibility of the preview gallery and orientation setting
+            fileCountEl.textContent = `${count} file(s) ready for conversion.`;
+            fileCountEl.classList.toggle('hidden', count === 0);
+            button.disabled = count === 0;
+            
             previewContainer.classList.toggle('visible', count > 0);
             orientationGroup.style.display = count > 0 ? 'block' : 'none';
-
-            // Clear and populate the image preview container
-            previewContainer.innerHTML = '';
-            imageFilesData = []; // Clear global data
-            if (count > 0) {
-                loadAndRenderImages(Array.from(input.files));
-            } else {
-                 previewContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary); font-size: 14px; padding: 16px;">Image Previews & Rotation Controls will appear here.</p>';
-            }
         }
         
         function showStatus(message, type = 'info') {
             const notif = document.getElementById('notification');
             notif.textContent = message;
-            notif.classList.remove('error', 'show');
-            if (type === 'error') {
-                notif.classList.add('error');
-            }
+            notif.classList.remove('error', 'success', 'show');
+            notif.classList.add(type);
             notif.classList.add('show');
             setTimeout(() => {
                 notif.classList.remove('show');
@@ -431,18 +554,25 @@
         // --- Image Loading and Preview Rendering ---
         async function loadAndRenderImages(files) {
             const previewContainer = document.getElementById('image-preview-container');
-            showStatus('Loading image previews and checking orientation...', 'info');
+            previewContainer.innerHTML = '';
+            imageFilesData = []; // Reset global data
 
-            // Add the "scroll left/right hint"
-            if(files.length > 3) {
-                previewContainer.innerHTML = '<p style="font-size: 12px; color: var(--text-secondary); text-align: center; margin-bottom: 8px;">(Scroll right to see all images)</p>';
+            if (files.length === 0) {
+                previewContainer.innerHTML = '';
+                return;
             }
+
+            showStatus('Loading image previews and checking orientation...', 'info');
 
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
+                // Check if file is already loaded (useful when handleFileSelect is called with combined files)
+                const existingData = imageFilesData.find(d => d.file.name === file.name && d.file.size === file.size);
+                if (existingData) continue; 
+                
                 const dataUrl = await fileToDataUrl(file);
-                let orientation = 1; // Default EXIF orientation
-
+                let orientation = 1; 
+                
                 // Read EXIF orientation
                 if (typeof EXIF !== 'undefined' && file.type === 'image/jpeg') {
                     await new Promise(resolve => {
@@ -454,45 +584,51 @@
                 }
 
                 const initialRotation = exifOrientationToDegrees(orientation);
+                const uniqueId = `file-${i}-${Date.now()}`;
 
-                // Store data for later use in PDF generation
+                // Store data
                 const fileData = {
                     file,
                     dataUrl,
                     exifOrientation: orientation,
                     rotation: initialRotation, 
-                    index: i
+                    id: uniqueId 
                 };
                 imageFilesData.push(fileData);
 
                 // Create UI elements
                 const item = document.createElement('div');
                 item.className = 'image-preview-item';
+                item.id = uniqueId; 
                 item.innerHTML = `
-                    <div class="image-info" title="${file.name}">#${i + 1}: ${file.name}</div>
-                    <div class="preview-image-wrapper">
-                        <img id="preview-img-${i}" class="preview-image" src="${dataUrl}" style="transform: rotate(${fileData.rotation}deg);">
-                    </div>
-                    <div class="rotation-controls">
-                        <button onclick="rotateImage(${i}, -90)" aria-label="Rotate left">
+                    <div class="controls-row">
+                        <button onclick="rotateImage('${uniqueId}', -90)" aria-label="Rotate left">
                              <i data-lucide="rotate-ccw" style="width: 12px; height: 12px; vertical-align: middle;"></i>
                         </button>
-                        <button onclick="rotateImage(${i}, 90)" aria-label="Rotate right">
+                        <button onclick="rotateImage('${uniqueId}', 90)" aria-label="Rotate right">
                              <i data-lucide="rotate-cw" style="width: 12px; height: 12px; vertical-align: middle;"></i>
                         </button>
+                        <button onclick="deleteImage('${uniqueId}')" class="delete-btn" aria-label="Remove image">
+                             <i data-lucide="x" style="width: 12px; height: 12px; vertical-align: middle;"></i>
+                        </button>
                     </div>
+                    <div class="preview-image-wrapper">
+                        <img id="preview-img-${uniqueId}" class="preview-image" src="${dataUrl}" style="transform: rotate(${fileData.rotation}deg);" onclick="openModal('${dataUrl}', '${file.name}')" alt="${file.name}">
+                    </div>
+                    <div class="image-info" title="${file.name}">#${imageFilesData.length}: ${file.name}</div>
                 `;
-                // Append the new item to the container
-                previewContainer.appendChild(item);
                 
-                // Re-initialize lucide icons for the new elements
+                previewContainer.appendChild(item);
                 if (typeof lucide !== 'undefined') lucide.createIcons(); 
             }
-            showStatus(`Loaded ${files.length} images. Adjust orientation as needed.`, 'info');
+            if (files.length > 0) {
+                showStatus(`Loaded ${imageFilesData.length} images. Adjust orientation as needed.`, 'info');
+            }
         }
 
-        function rotateImage(index, degrees) {
-            const data = imageFilesData[index];
+        // --- Image Manipulation Functions ---
+        function rotateImage(uniqueId, degrees) {
+            const data = imageFilesData.find(d => d.id === uniqueId);
             if (!data) return;
 
             data.rotation = (data.rotation + degrees) % 360;
@@ -500,14 +636,72 @@
                 data.rotation += 360;
             }
             
-            // Update the visual preview
-            const imgElement = document.getElementById(`preview-img-${index}`);
+            const imgElement = document.getElementById(`preview-img-${uniqueId}`); 
             if (imgElement) {
                 imgElement.style.transform = `rotate(${data.rotation}deg)`;
             }
         }
+        
+        function deleteImage(uniqueId) {
+            // 1. Remove from global array
+            const initialLength = imageFilesData.length;
+            imageFilesData = imageFilesData.filter(d => d.id !== uniqueId);
+            const newLength = imageFilesData.length;
 
-        // --- Main Conversion Logic ---
+            if (initialLength === newLength) return;
+
+            // 2. Remove from DOM
+            const itemElement = document.getElementById(uniqueId);
+            if (itemElement) {
+                itemElement.remove();
+            }
+
+            // 3. Update UI status
+            updateFileCount(imageFilesData.map(d => d.file));
+            updateImageNumbering();
+            
+            showStatus(`Image removed. ${newLength} images remaining.`, 'info');
+        }
+        
+        function updateImageNumbering() {
+            imageFilesData.forEach((data, index) => {
+                const infoElement = document.querySelector(`#${data.id} .image-info`);
+                if(infoElement) {
+                   infoElement.textContent = `#${index + 1}: ${data.file.name}`;
+                }
+            });
+        }
+        
+        // --- Drag and Drop Handlers ---
+        function setupDragAndDrop() {
+            const dropZone = document.getElementById('drop-zone');
+            
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false);
+            });
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false);
+            });
+
+            dropZone.addEventListener('drop', handleDrop, false);
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                handleFileSelect(files);
+            }
+        }
+
+
+        // --- Main Conversion Logic (Unchanged) ---
         async function convertImagesToPdf() {
             if (imageFilesData.length === 0) {
                 showStatus('Please select at least one image file.', 'error');
@@ -523,14 +717,11 @@
                     throw new Error("PDF generation library (jsPDF) failed to load.");
                 }
                 const { jsPDF } = window.jspdf;
-                // Use the selected orientation for the overall document
                 const doc = new jsPDF(pdfOrientation, 'mm', 'a4'); 
                 
                 let pdfWidth = doc.internal.pageSize.getWidth();
                 let pdfHeight = doc.internal.pageSize.getHeight();
                 
-                // If the orientation is set to Landscape, jspdf handles the swap
-                // but we fetch the dimensions again just in case of future jspdf changes
                 pdfWidth = doc.internal.pageSize.getWidth();
                 pdfHeight = doc.internal.pageSize.getHeight();
 
@@ -543,7 +734,6 @@
                     
                     const image = await loadImage(dataUrl); 
 
-                    // Get original dimensions
                     let imgWidth = image.naturalWidth;
                     let imgHeight = image.naturalHeight;
                     const format = file.type.split('/')[1].toUpperCase();
@@ -552,30 +742,22 @@
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
                     
-                    // Set canvas size: use max dimension for both width/height to avoid clipping
                     const maxSize = Math.max(imgWidth, imgHeight);
                     canvas.width = maxSize;
                     canvas.height = maxSize;
                     
-                    // Translate to center for rotation
                     ctx.translate(maxSize / 2, maxSize / 2);
-                    // Rotate
                     ctx.rotate(rotation * Math.PI / 180);
-                    
-                    // Draw the image, accounting for its original center
                     ctx.drawImage(image, -imgWidth / 2, -imgHeight / 2);
 
-                    // Get the rotated image data from the canvas
                     const rotatedDataUrl = canvas.toDataURL(file.type, 1.0);
 
-                    // We now use the rotated data to calculate its dimensions for PDF fitting
                     const tempImg = await loadImage(rotatedDataUrl);
                     const rotatedImgWidth = tempImg.naturalWidth;
                     const rotatedImgHeight = tempImg.naturalHeight;
                     
                     const aspectRatio = rotatedImgWidth / rotatedImgHeight;
 
-                    // Fit to PDF page dimensions (Portrait or Landscape A4)
                     let finalWidth = pdfWidth;
                     let finalHeight = finalWidth / aspectRatio;
                     
@@ -604,18 +786,38 @@
             }
         }
 
+        function openModal(src, alt) {
+            const modal = document.getElementById('image-modal');
+            const modalImg = document.getElementById('modal-image');
+            modalImg.src = src;
+            modalImg.alt = alt;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('image-modal');
+            modal.style.display = 'none';
+        }
+
+        // Close modal on ESC key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Close modal on click outside image
+        document.getElementById('image-modal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeModal();
+            }
+        });
+
         window.onload = function() {
-            updateFileCount();
+            setupDragAndDrop();
+            updateFileCount([]); // Initialize UI
             if (typeof lucide !== 'undefined') lucide.createIcons();
         };
     </script>
-    <style>
-        .spin {
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            100% { transform: rotate(360deg);}
-        }
-    </style>
 </body>
 </html>

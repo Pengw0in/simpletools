@@ -24,7 +24,7 @@
             min-height: 100vh;
         }
         .container {
-            max-width: 500px;
+            max-width: 768px;
             margin: 0 auto;
             padding: 40px 20px;
         }
@@ -72,9 +72,9 @@
         .card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            padding: 32px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            padding: 32px;
         }
         .form-group {
             margin-bottom: 24px;
@@ -90,21 +90,55 @@
             width: 100%;
             padding: 8px;
             border: 1px solid var(--border-color);
-            border-radius: 4px;
+            border-radius: 6px;
             background: var(--input-bg);
             color: var(--text-primary);
             font-size: 14px;
+            transition: border-color 0.2s;
         }
         .file-input:focus {
             outline: none;
             border-color: var(--text-primary);
-            background: var(--input-focus-bg);
+            box-shadow: 0 0 0 1px var(--text-primary);
+        }
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.3s, border-color 0.3s;
+            position: relative;
+            margin-bottom: 24px;
+            user-select: none;
+        }
+        .drop-zone:hover {
+            border-color: var(--text-primary);
+            background: var(--hover-bg);
+        }
+        .drop-zone.dragover {
+            border-color: var(--text-primary);
+            background: var(--hover-bg);
+            opacity: 0.8;
+        }
+        .drop-zone input {
+            display: none;
+        }
+        .drop-zone-text {
+            color: var(--text-secondary);
+            font-size: 16px;
+            font-weight: 500;
+            margin-top: 10px;
         }
         .file-count {
-            font-size: 13px;
+            font-size: 14px;
             color: var(--text-secondary);
             margin-bottom: 16px;
             text-align: center;
+            font-weight: 500;
+        }
+        .file-count.hidden {
+            display: none;
         }
         .btn {
             width: 100%;
@@ -112,29 +146,30 @@
             background: var(--text-primary);
             color: var(--card-bg);
             border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: 500;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-            transition: background 0.2s, color 0.2s, transform 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background 0.2s, transform 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
         }
         .btn:disabled {
             background: var(--border-color);
             color: var(--text-secondary);
             cursor: not-allowed;
+            box-shadow: none;
         }
         .btn:hover:not(:disabled) {
             background: var(--text-secondary);
             color: var(--card-bg);
-            transform: scale(1.01);
+            transform: translateY(-1px);
         }
         .status-message {
-            margin-top: 24px;
+            margin-top: 0px;
             text-align: center;
             padding: 12px 20px;
             border-radius: 4px;
@@ -148,11 +183,6 @@
         .status-message.visible {
             opacity: 1;
         }
-        .status-message.success {
-            background: var(--success-color);
-            color: #fff;
-            border-color: var(--success-color);
-        }
         .status-message.error {
             background: var(--error-color);
             color: #fff;
@@ -163,33 +193,29 @@
             color: var(--card-bg);
             border-color: var(--notification-bg);
         }
+        [data-theme="dark"] .status-message {
+            background: #fafafa;
+            color: #222;
+        }
+        [data-theme="dark"] .status-message.error {
+            background: #ff6b6b;
+            color: #fff;
+        }
         .btn-icon {
             width: 20px;
             height: 20px;
             color: inherit;
             vertical-align: middle;
         }
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px 8px;
-            }
-            .card {
-                padding: 16px 8px;
-            }
-            .header h1 {
-                font-size: 1.5rem;
-                padding-right: 50px;
-            }
-        }
         /* --- NEW STYLES FOR COMPACT GALLERY --- */
         #pdf-preview-container {
             margin-top: 16px;
-            margin-bottom: 24px;
+            margin-bottom: 0px; 
             padding: 8px 0;
             white-space: nowrap;
             overflow-x: auto;
             border: 1px solid var(--border-color);
-            border-radius: 6px;
+            border-radius: 8px;
             background: var(--input-bg);
             display: none; /* Hide until PDF is selected and loaded */
         }
@@ -201,16 +227,17 @@
             flex-direction: column;
             align-items: center;
             padding: 8px;
-            width: 140px;
-            margin-right: 8px;
+            width: 130px;
+            margin: 0 4px;
             vertical-align: top;
             background: var(--card-bg);
-            border-radius: 4px;
+            border-radius: 6px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            position: relative;
         }
         .preview-image-wrapper {
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             overflow: hidden;
             margin-bottom: 8px;
             border-radius: 4px;
@@ -223,6 +250,7 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
+            transition: transform 0.3s ease;
         }
         .page-info {
             font-size: 10px;
@@ -232,21 +260,30 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            text-align: center;
+        }
+        .rotation-controls {
+            display: flex;
+            justify-content: center;
+            gap: 2px;
+            margin-bottom: 4px;
+            width: 100%;
         }
         .rotation-controls button {
+            flex-grow: 1;
             padding: 4px 6px;
-            margin: 0 2px;
             background: var(--text-secondary);
             color: var(--card-bg);
             border: none;
-            border-radius: 3px;
+            border-radius: 4px;
             cursor: pointer;
             font-size: 10px;
             line-height: 1;
-            transition: background 0.2s;
+            transition: background 0.2s, transform 0.1s;
         }
         .rotation-controls button:hover {
             background: var(--text-primary);
+            transform: scale(1.02);
         }
         /* --- END NEW STYLES --- */
 
@@ -260,6 +297,17 @@
         @keyframes spin {
             100% { transform: rotate(360deg);}
         }
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px 8px;
+            }
+            .card {
+                padding: 16px;
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -272,21 +320,22 @@
             <p>Upload a PDF file to split it into individual PNG images and download them as a ZIP.</p>
         </div>
         <div class="card">
-            <div class="form-group">
-                <label for="pdf-file" class="form-label">Select PDF File</label>
+            <div id="drop-zone" class="drop-zone" onclick="document.getElementById('pdf-file').click()">
+                <i data-lucide="upload-cloud" style="width: 32px; height: 32px; color: var(--text-secondary);"></i>
+                <p class="drop-zone-text">Drop PDF here or click to select file</p>
                 <input
                     type="file"
                     id="pdf-file"
                     accept="application/pdf"
-                    class="file-input"
-                    onchange="updateFileCount()"
+                    onchange="handleFileSelect(this.files)"
                 >
             </div>
-            <div id="file-count" class="file-count">No file selected.</div>
+            
+            <div id="file-count" class="file-count hidden">No file selected.</div>
 
             <div id="pdf-preview-container">
-                <p style="text-align: center; color: var(--text-secondary); font-size: 14px;">PDF Page Previews will appear here.</p>
-            </div>
+                </div>
+
             <button
                 id="convert-button"
                 class="btn"
@@ -311,88 +360,66 @@
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
         }
 
-        async function updateFileCount() {
-            const input = document.getElementById('pdf-file');
-            const button = document.getElementById('convert-button');
-            const fileCount = document.getElementById('file-count');
-            const statusMessage = document.getElementById('status-message');
-            const previewContainer = document.getElementById('pdf-preview-container');
-            const hasFile = input.files.length === 1;
-            fileCount.textContent = hasFile ? `${input.files[0].name} selected.` : 'No file selected.';
-            button.disabled = !hasFile;
-            statusMessage.className = 'status-message';
-            statusMessage.textContent = '';
+        // --- UI Update Functions (Centralized) ---
+        function handleFileSelect(files) {
+            const validFiles = Array.from(files).filter(file => file.type === 'application/pdf');
             
-            // Clear preview and PDF doc
-            previewContainer.classList.remove('visible');
-            previewContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary); font-size: 14px;">PDF Page Previews will appear here.</p>';
-            pdfDoc = null;
-
-            if (hasFile) {
-                await loadPdfAndRenderPreviews(input.files[0]);
+            if (validFiles.length === 0) {
+                showStatus('Please select a valid PDF file.', 'error');
+                return;
             }
+            
+            const file = validFiles[0];
+            updateFileCount([file]);
+            loadPdfAndRenderPreviews(file);
         }
 
-        async function loadPdfAndRenderPreviews(file) {
+        function updateFileCount(filesArray) {
+            const button = document.getElementById('convert-button');
+            const fileCountEl = document.getElementById('file-count');
             const previewContainer = document.getElementById('pdf-preview-container');
-            showStatus('Loading PDF and generating previews...', 'info');
 
-            try {
-                const arrayBuffer = await new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = (e) => resolve(e.target.result);
-                    reader.onerror = (e) => reject(new Error("Failed to read PDF file."));
-                    reader.readAsArrayBuffer(file);
-                });
-                pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-                const numPages = pdfDoc.numPages;
-                showStatus(`PDF loaded. Generating previews for ${numPages} page(s)...`, 'info');
-
-                // Clear and prepare preview container
-                previewContainer.innerHTML = '';
-                pageData = []; // Reset page data
-                if (numPages > 3) {
-                    previewContainer.innerHTML = '<p style="font-size: 12px; color: var(--text-secondary); text-align: center; margin-bottom: 8px;">(Scroll right to see all pages)</p>';
-                }
-
-                for (let i = 1; i <= numPages; i++) {
-                    const imageData = await renderPageThumbnail(i, 0); // Initial rotation 0
-
-                    // Store page data
-                    pageData.push({ rotation: 0 });
-
-                    // Create preview item
-                    const item = document.createElement('div');
-                    item.className = 'pdf-preview-item';
-                    item.innerHTML = `
-                        <div class="page-info">Page ${i}</div>
-                        <div class="preview-image-wrapper">
-                            <img class="preview-image" id="preview-img-${i-1}" src="${imageData}" alt="Page ${i}">
-                        </div>
-                        <div class="rotation-controls">
-                            <button onclick="rotatePage(${i-1}, -90)">↺</button>
-                            <button onclick="rotatePage(${i-1}, 90)">↻</button>
-                        </div>
-                    `;
-                    previewContainer.appendChild(item);
-                }
-
-                previewContainer.classList.add('visible');
-                showStatus(`Previews generated for ${numPages} page(s). Adjust orientations as needed.`, 'info');
-            } catch (error) {
-                console.error("PDF Load Error:", error);
-                showStatus(`Failed to load PDF. Error: ${error.message}.`, 'error');
+            const count = filesArray.length;
+            
+            fileCountEl.textContent = `${filesArray[0].name} selected.`;
+            fileCountEl.classList.toggle('hidden', count === 0);
+            button.disabled = count === 0;
+            
+            previewContainer.classList.toggle('visible', count > 0);
+        }
+        
+        function showStatus(message, type = 'info') {
+            const statusMessage = document.getElementById('status-message');
+            statusMessage.textContent = message;
+            statusMessage.className = `status-message visible ${type}`;
+        }
+        
+        function setLoadingState(isLoading) {
+            const button = document.getElementById('convert-button');
+            const buttonText = document.getElementById('button-text');
+            const buttonIcon = document.getElementById('button-icon');
+            button.disabled = isLoading;
+            if (isLoading) {
+                buttonText.textContent = 'Processing PDF...';
+                buttonIcon.setAttribute('data-lucide', 'loader-2');
+                buttonIcon.classList.add('spin');
+            } else {
+                buttonText.textContent = 'Split PDF & Download ZIP';
+                buttonIcon.setAttribute('data-lucide', 'download');
+                buttonIcon.classList.remove('spin');
             }
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
+        // --- Image Loading and Preview Rendering ---
         async function renderPageThumbnail(pageNum, rotation) {
+            const page = await pdfDoc.getPage(pageNum);
+            const scale = 0.5; // Smaller scale for thumbnail
+            const viewport = page.getViewport({ scale: scale });
             const canvas = document.getElementById('render-canvas');
             const context = canvas.getContext('2d');
-            const page = await pdfDoc.getPage(pageNum);
-            const thumbnailScale = 0.5;
-            const viewport = page.getViewport({ scale: thumbnailScale });
-
-            // Adjust canvas size for rotation if needed
+            
+            // Adjust canvas size for rotation
             if (rotation % 180 !== 0) {
                 canvas.width = viewport.height;
                 canvas.height = viewport.width;
@@ -416,41 +443,118 @@
             return canvas.toDataURL('image/png');
         }
 
+        async function loadPdfAndRenderPreviews(file) {
+            const previewContainer = document.getElementById('pdf-preview-container');
+            previewContainer.innerHTML = '';
+            pageData = []; // Reset global data
+
+            if (!file) {
+                previewContainer.innerHTML = '';
+                return;
+            }
+
+            showStatus('Loading PDF and generating previews...', 'info');
+
+            try {
+                const arrayBuffer = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.onerror = (e) => reject(new Error("Failed to read PDF file."));
+                    reader.readAsArrayBuffer(file);
+                });
+                pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                const numPages = pdfDoc.numPages;
+                showStatus(`PDF loaded. Generating previews for ${numPages} page(s)...`, 'info');
+
+                // Clear and prepare preview container
+                if (numPages > 3) {
+                    previewContainer.innerHTML = '<p style="font-size: 12px; color: var(--text-secondary); text-align: center; margin-bottom: 8px;">(Scroll right to see all pages)</p>';
+                }
+
+                for (let i = 1; i <= numPages; i++) {
+                    const imageData = await renderPageThumbnail(i, 0); // Initial rotation 0
+
+                    // Store page data
+                    pageData.push({ rotation: 0 });
+
+                    // Create preview item
+                    const item = document.createElement('div');
+                    item.className = 'pdf-preview-item';
+                    item.innerHTML = `
+                        <div class="rotation-controls">
+                            <button onclick="rotatePage(${i-1}, -90)" aria-label="Rotate left">
+                                 <i data-lucide="rotate-ccw" style="width: 12px; height: 12px; vertical-align: middle;"></i>
+                            </button>
+                            <button onclick="rotatePage(${i-1}, 90)" aria-label="Rotate right">
+                                 <i data-lucide="rotate-cw" style="width: 12px; height: 12px; vertical-align: middle;"></i>
+                            </button>
+                        </div>
+                        <div class="preview-image-wrapper">
+                            <img class="preview-image" id="preview-img-${i-1}" src="${imageData}" alt="Page ${i}">
+                        </div>
+                        <div class="page-info">Page ${i}</div>
+                    `;
+                    
+                    previewContainer.appendChild(item);
+                    if (typeof lucide !== 'undefined') lucide.createIcons(); 
+                }
+                if (numPages > 0) {
+                    showStatus(`Previews generated for ${numPages} page(s). Adjust orientations as needed.`, 'info');
+                }
+            } catch (error) {
+                console.error("PDF Load Error:", error);
+                showStatus(`Failed to load PDF. Error: ${error.message}.`, 'error');
+            }
+        }
+
+        // --- Image Manipulation Functions ---
         function rotatePage(index, degrees) {
             const data = pageData[index];
             if (!data) return;
 
             data.rotation = (data.rotation + degrees) % 360;
-            if (data.rotation < 0) data.rotation += 360;
-
+            if (data.rotation < 0) {
+                data.rotation += 360;
+            }
+            
             // Re-render the thumbnail with new rotation
             renderPageThumbnail(index + 1, data.rotation).then(imageData => {
-                const imgElement = document.getElementById(`preview-img-${index}`);
-                if (imgElement) imgElement.src = imageData;
+                const imgElement = document.getElementById(`preview-img-${index}`); 
+                if (imgElement) {
+                    imgElement.style.transform = `rotate(${data.rotation}deg)`;
+                }
             });
         }
 
-        function showStatus(message, type = 'info') {
-            const statusMessage = document.getElementById('status-message');
-            statusMessage.textContent = message;
-            statusMessage.className = `status-message visible ${type}`;
-        }
-        function setLoadingState(isLoading) {
-            const button = document.getElementById('convert-button');
-            const buttonText = document.getElementById('button-text');
-            const buttonIcon = document.getElementById('button-icon');
-            button.disabled = isLoading;
-            if (isLoading) {
-                buttonText.textContent = 'Processing PDF...';
-                buttonIcon.setAttribute('data-lucide', 'loader-2');
-                buttonIcon.classList.add('spin');
-            } else {
-                buttonText.textContent = 'Split PDF & Download ZIP';
-                buttonIcon.setAttribute('data-lucide', 'download');
-                buttonIcon.classList.remove('spin');
+        // --- Drag and Drop Handlers ---
+        function setupDragAndDrop() {
+            const dropZone = document.getElementById('drop-zone');
+            
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false);
+            });
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false);
+            });
+
+            dropZone.addEventListener('drop', handleDrop, false);
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
             }
-            if (typeof lucide !== 'undefined') lucide.createIcons();
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                handleFileSelect(files);
+            }
         }
+
+        // --- Main Conversion Logic ---
         async function splitPdfToImages() {
             if (!pdfDoc) {
                 showStatus('Please select a PDF file first.', 'error');
@@ -482,6 +586,7 @@
                 const canvas = document.getElementById('render-canvas');
                 const context = canvas.getContext('2d');
                 for (let i = 1; i <= numPages; i++) {
+                    showStatus(`Processing page ${i} of ${numPages}...`, 'info');
                     const page = await pdfDoc.getPage(i);
                     const scale = 3;
                     const viewport = page.getViewport({ scale: scale });
@@ -511,7 +616,6 @@
                     const imageData = canvas.toDataURL('image/png');
                     const base64Data = imageData.split(',')[1];
                     zip.file(`${pdfFile.name.replace(/\.pdf$/i, '')}_page_${i}.png`, base64Data, { base64: true });
-                    showStatus(`Page ${i} of ${numPages} rendered (with rotation) and added to ZIP...`, 'info');
                 }
                 showStatus('Compressing files and generating ZIP...', 'info');
                 const zipBlob = await zip.generateAsync({
@@ -535,9 +639,11 @@
                 setLoadingState(false);
             }
         }
+
         window.onload = function() {
-            updateFileCount();
-            lucide.createIcons();
+            setupDragAndDrop();
+            updateFileCount([]); // Initialize UI
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         };
     </script>
 </body>
