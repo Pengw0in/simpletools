@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - Simply Tools</title>
+    <meta name="description" content="Privacy Policy for Simply Tools - Learn how we protect your data and privacy when using our web-based utilities.">
+    <link rel="icon" type="image/x-icon" href="public/logo.ico">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Global Reset and Retro Font */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            /* RESTORED: 'Press Start 2P' */
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        /* Basic Retro Color Palette */
+        :root {
+            --window-bg: #c0c0c0; 
+            --border-dark: #808080;
+            --border-light: #ffffff;
+            --text-color: #000000;
+            --button-face: #c0c0c0;
+            --button-pressed: #dfdfdf;
+            --input-bg: #ffffff;
+            --header-title: #000080;
+            --error-color: #ffcccc;
+            --success-color: #008000;
+            --accent-color: #008080;
+        }
+
+        body {
+            background: var(--window-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 27px;
+            min-height: 10vh;
+        }
+
+        .container {
+            max-width: 810px;
+            margin: 0 auto;
+            padding: 0; 
+        }
+
+        .title-bar {
+            background: var(--header-title);
+            color: var(--border-light);
+            padding: 7px 11px;
+            font-size: 14px; 
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-dark);
+        }
+
+        .back-button {
+            background: var(--button-face);
+            color: var(--text-color);
+            border-style: solid;
+            border-width: 2px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            padding: 4px 7px;
+            font-size: 11px;
+            text-decoration: none;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .back-button:active {
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 5px 6px 3px 8px;
+        }
+
+        .app-body {
+            padding: 18px;
+            background: var(--window-bg);
+        }
+
+        /* --- Header Section --- */
+        .header {
+            text-align: center;
+            margin-bottom: 27px;
+            padding-bottom: 18px;
+            border-bottom: 2px solid var(--border-dark);
+        }
+
+        .header h1 {
+            /* INCREASED: From 20px to 24px */
+            font-size: 22px; 
+            color: var(--header-title);
+            margin-bottom: 9px;
+            font-weight: normal;
+        }
+
+        .header p {
+            /* INCREASED: From 10px to 12px */
+            font-size: 11px; 
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+
+        /* --- Content Sections --- */
+        .content-section {
+            margin-bottom: 23px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--input-bg);
+            padding: 14px;
+        }
+
+        .section-title {
+            /* INCREASED: From 12px to 14px */
+            font-size: 13px; 
+            color: var(--header-title);
+            margin-bottom: 11px;
+            font-weight: normal;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .section-icon {
+            /* Adjusted size */
+            font-size: 14px; 
+        }
+
+        .content-text {
+            /* INCREASED: From 9px to 12px - Crucial readability fix */
+            font-size: 11px; 
+            line-height: 1.8; /* Increased line height for this pixel font */
+            margin-bottom: 14px;
+        }
+
+        .content-text:last-child {
+            margin-bottom: 0;
+        }
+
+        /* --- Lists --- */
+        .privacy-list {
+            list-style: none;
+            margin: 14px 0 14px 0;
+            padding-left: 18px;
+        }
+
+        .privacy-list li {
+            /* INCREASED: From 9px to 12px - Crucial readability fix */
+            font-size: 11px; 
+            margin-bottom: 7px;
+            position: relative;
+            line-height: 1.8; /* Increased line height for this pixel font */
+        }
+
+        .privacy-list li::before {
+            /* Replaced emoji with retro symbol */
+            content: "+"; 
+            color: var(--accent-color);
+            position: absolute;
+            left: -14px;
+            font-size: 13px;
+        }
+
+        /* --- Highlight Boxes --- */
+        .highlight-box {
+            background: var(--success-color);
+            color: white;
+            padding: 11px;
+            margin: 14px 0;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            /* INCREASED: From 9px to 12px */
+            font-size: 11px; 
+            line-height: 1.6;
+        }
+
+        .warning-box {
+            background: var(--error-color);
+            color: var(--text-color);
+            padding: 11px;
+            margin: 14px 0;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            /* INCREASED: From 9px to 12px */
+            font-size: 11px; 
+            line-height: 1.6;
+        }
+
+        /* --- Contact Section --- */
+        .contact-section {
+            background: var(--button-pressed);
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            padding: 18px;
+            text-align: center;
+            margin-top: 27px;
+        }
+
+        .contact-title {
+            /* INCREASED: From 12px to 14px */
+            font-size: 13px; 
+            color: var(--header-title);
+            margin-bottom: 9px;
+        }
+
+        .contact-text {
+            /* INCREASED: From 9px to 12px */
+            font-size: 11px; 
+            margin-bottom: 14px;
+            line-height: 1.6;
+        }
+
+        .contact-email {
+            background: var(--input-bg);
+            color: var(--accent-color);
+            padding: 7px 11px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            /* INCREASED: From 10px to 12px */
+            font-size: 11px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .contact-email:hover {
+            background: var(--button-pressed);
+        }
+
+        /* --- Footer --- */
+        .footer {
+            text-align: center;
+            margin-top: 36px;
+            padding-top: 18px;
+            border-top: 2px solid var(--border-dark);
+            /* INCREASED: From 8px to 10px */
+            font-size: 9px; 
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 768px) {
+            body {
+                padding: 14px;
+            }
+            
+            .app-body {
+                padding: 14px;
+            }
+
+            .header h1 {
+                font-size: 18px;
+            }
+
+            .section-title {
+                font-size: 12px;
+            }
+
+            .content-text, .privacy-list li {
+                font-size: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 9px;
+            }
+
+            .app-body {
+                padding: 9px;
+            }
+
+            .title-bar {
+                font-size: 13px;
+                padding: 5px 7px;
+            }
+
+            .back-button {
+                font-size: 9px;
+                padding: 3px 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container window-frame">
+        <div class="title-bar">
+            <div class="title-bar-text">Privacy Policy - Simply Tools</div>
+            <a href="index.html" class="back-button"><-- BACK</a>
+        </div>
+        
+        <div class="app-body">
+            <div class="header">
+                <h1>PRIVACY POLICY</h1>
+                <p>LAST UPDATED: OCTOBER 2025</p>
+            </div>
+
+            <div class="highlight-box">
+                <strong>+ QUICK SUMMARY:</strong> SIMPLY TOOLS PROCESSES ALL DATA LOCALLY IN YOUR BROWSER. WE DON'T COLLECT, STORE, OR TRANSMIT YOUR PERSONAL FILES OR DATA TO ANY SERVERS. YOUR PRIVACY IS OUR PRIORITY.
+            </div>
+
+            <div class="content-section">
+                <div class="section-title">
+                    <span class="section-icon">|--|</span>
+                    DATA CONTROLLER INFORMATION
+                </div>
+                <p class="content-text">
+                    THIS PRIVACY POLICY APPLIES TO SIMPLY TOOLS, A COLLECTION OF WEB-BASED UTILITIES HOSTED AT [YOUR-DOMAIN.COM]. FOR ANY PRIVACY-RELATED INQUIRIES, PLEASE CONTACT US USING THE INFORMATION PROVIDED AT THE END OF THIS POLICY.
+                </p>
+            </div>
+
+            <div class="content-section">
+                <div class="section-title">
+                    <span class="section-icon">|--|</span>
+                    WHAT DATA WE COLLECT
+                </div>
+                <p class="content-text">
+                    SIMPLY TOOLS IS DESIGNED WITH PRIVACY IN MIND. HERE'S WHAT WE DO AND DON'T COLLECT:
+                </p>
+                
+                <div class="highlight-box">
+                    <strong>+ WE DO NOT COLLECT:</strong><br>
+                    - YOUR UPLOADED FILES OR DOCUMENTS<br>
+                    - PERSONAL INFORMATION ENTERED INTO OUR TOOLS<br>
+                    - PROCESSED DATA OR CONVERSION RESULTS<br>
+                    - ACCOUNT INFORMATION (NO REGISTRATION REQUIRED)
+                </div>
+
+                <p class="content-text">
+                    <strong>WE MAY COLLECT LIMITED TECHNICAL DATA:</strong>
+                </p>
+                <ul class="privacy-list">
+                    <li>BASIC WEBSITE ANALYTICS (PAGE VIEWS, GENERAL LOCATION)</li>
+                    <li>ERROR LOGS FOR DEBUGGING PURPOSES</li>
+                    <li>BROWSER TYPE AND VERSION FOR COMPATIBILITY</li>
+                    <li>IP ADDRESS (ANONYMIZED IN ANALYTICS)</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <div class="section-title">
+                    <span class="section-icon">|--|</span>
+                    HOW OUR TOOLS WORK
+                </div>
+                <p class="content-text">
+                    ALL SIMPLY TOOLS OPERATE ENTIRELY WITHIN YOUR WEB BROWSER USING CLIENT-SIDE PROCESSING:
+                </p>
+                <ul class="privacy-list">
+                    <li><strong>LOCAL PROCESSING:</strong> FILES ARE PROCESSED DIRECTLY IN YOUR BROWSER USING JAVASCRIPT</li>
+                    <li><strong>NO SERVER UPLOAD:</strong> YOUR FILES NEVER LEAVE YOUR DEVICE OR GET UPLOADED TO OUR SERVERS</li>
+                    <li><strong>TEMPORARY STORAGE:</strong> DATA IS ONLY STORED TEMPORARILY IN BROWSER MEMORY DURING PROCESSING</li>
+                    <li><strong>AUTOMATIC CLEANUP:</strong> ALL DATA IS CLEARED WHEN YOU CLOSE THE TAB OR NAVIGATE AWAY</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <div class="section-title">
+                    <span class="section-icon">|--|</span>
+                    COOKIES AND LOCAL STORAGE
+                </div>
+                <p class="content-text">
+                    WE USE MINIMAL COOKIES AND LOCAL STORAGE FOR ESSENTIAL FUNCTIONALITY:
+                </p>
+                <ul class="privacy-list">
+                    <li><strong>FUNCTIONAL COOKIES:</strong> REMEMBER YOUR PREFERENCES (THEME, SETTINGS)</li>
+                    <li><strong>ANALYTICS COOKIES:</strong> BASIC USAGE STATISTICS (CAN BE DISABLED)</li>
+                    <li><strong>NO TRACKING:</strong> WE DON'T USE COOKIES FOR ADVERTISING OR CROSS-SITE TRACKING</li>
+                </ul>
+                <p class="content-text">
+                    YOU CAN DISABLE COOKIES IN YOUR BROWSER SETTINGS WITHOUT AFFECTING CORE TOOL FUNCTIONALITY.
+                </p>
+            </div>
+
+            <div class="content-section">
+                <div class="section-title">
+                    <span class="section-icon">|--|</span>
+                    ANALYTICS AND THIRD-PARTY SERVICES
+                </div>
+                <p class="content-text">
+                    WE MAY USE PRIVACY-FOCUSED ANALYTICS SERVICES TO UNDERSTAND HOW OUR TOOLS ARE USED:
+                </p>
+                <ul class="privacy-list">
+                    <li>GOOGLE ANALYTICS (ANONYMIZED IP, NO PERSONAL DATA)</li>
+                    <li>CONTENT DELIVERY NETWORKS (CDNS) FOR LOADING EXTERNAL LIBRARIES</li>
+                    <li>KO-FI FOR DONATION PROCESSING (ONLY IF YOU CHOOSE TO DONATE)</li>
+                </ul>
+                <p class="content-text">
+                    THESE SERVICES HAVE THEIR OWN PRIVACY POLICIES. WE CHOOSE PROVIDERS THAT RESPECT USER PRIVACY AND ALLOW YOU TO OPT OUT.
+                </p>
+            </div>
+
+            <div class="content-section">
+                <div class="section-title">
+                    <span class="section-icon">|--|</span>
+                    DATA SECURITY
+                </div>
+                <p class="content-text">
+                    SINCE WE DON'T STORE YOUR FILES OR PERSONAL DATA ON OUR SERVERS, THE SECURITY RISKS ARE MINIMAL:
+                </p>
+                <ul class="privacy-list">
+                    <li><strong>HTTPS ENCRYPTION:</strong> ALL COMMUNICATIONS ARE ENCRYPTED IN TRANSIT</li>
+                    <li><strong>NO DATA RETENTION:</strong> NO FILES OR PROCESSED DATA ARE STORED ON OUR SERVERS</li>
+                    <li><strong>BROWSER SECURITY:</strong> PROCESSING HAPPENS IN YOUR SECURE BROWSER ENVIRONMENT</li>
+                    <li><strong>REGULAR UPDATES:</strong> WE KEEP OUR CODE AND DEPENDENCIES UPDATED FOR SECURITY</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <div class="section-title">
+                    <span class="section-icon">|--|</span>
+                    YOUR RIGHTS (GDPR & CCPA COMPLIANCE)
+                </div>
+                <p class="content-text">
+                    UNDER APPLICABLE PRIVACY LAWS, YOU HAVE THE FOLLOWING RIGHTS:
+                </p>
+                <ul class="privacy-list">
+                    <li><strong>RIGHT TO ACCESS:</strong> REQUEST INFORMATION ABOUT DATA WE MAY HAVE COLLECTED</li>
+                    <li><strong>RIGHT TO DELETION:</strong> REQUEST DELETION OF ANY DATA (THOUGH WE STORE MINIMAL DATA)</li>
+                    <li><strong>RIGHT TO PORTABILITY:</strong> EXPORT ANY DATA WE MAY HAVE COLLECTED</li>
+                    <li><strong>RIGHT TO OPT-OUT:</strong> DISABLE ANALYTICS OR OTHER OPTIONAL FEATURES</li>
+                    <li><strong>RIGHT TO CORRECT:</strong> UPDATE ANY INCORRECT INFORMATION</li>
+                </ul>
+                <p class="content-text">
+                    TO EXERCISE THESE RIGHTS, CONTACT US USING THE INFORMATION BELOW.
+                </p>
+            </div>
+
+            <div class="content-section">
+                <div class="section-title">
+                    <span class="section-icon">|--|</span>
+                    CHILDREN'S PRIVACY
+                </div>
+                <p class="content-text">
+                    SIMPLY TOOLS DOES NOT KNOWINGLY COLLECT PERSONAL INFORMATION FROM CHILDREN UNDER 13 YEARS OF AGE. OUR TOOLS ARE DESIGNED TO BE SAFE FOR ALL USERS, INCLUDING CHILDREN, AS NO PERSONAL DATA IS COLLECTED OR STORED. IF YOU BELIEVE A CHILD HAS PROVIDED PERSONAL INFORMATION THROUGH OUR CONTACT FORMS, PLEASE NOTIFY US IMMEDIATELY.
+                </p>
+            </div>
+
+            <div class="content-section">
+                <div class="section-title">
+                    <span class="section-icon">|--|</span>
+                    INTERNATIONAL DATA TRANSFERS
+                </div>
+                <p class="content-text">
+                    SINCE ALL PROCESSING HAPPENS LOCALLY IN YOUR BROWSER, THERE ARE NO INTERNATIONAL DATA TRANSFERS OF YOUR FILES OR PROCESSED CONTENT. THE MINIMAL ANALYTICS DATA WE COLLECT MAY BE PROCESSED BY THIRD-PARTY SERVICES LOCATED IN DIFFERENT COUNTRIES, BUT THIS DATA IS ANONYMIZED AND CONTAINS NO PERSONAL INFORMATION.
+                </p>
+            </div>
+
+            <div class="content-section">
+                <div class="section-title">
+                    <span class="section-icon">|--|</span>
+                    CHANGES TO THIS POLICY
+                </div>
+                <p class="content-text">
+                    WE MAY UPDATE THIS PRIVACY POLICY OCCASIONALLY TO REFLECT CHANGES IN OUR PRACTICES OR FOR LEGAL REASONS. WHEN WE MAKE CHANGES:
+                </p>
+                <ul class="privacy-list">
+                    <li>WE'LL UPDATE THE "LAST UPDATED" DATE AT THE TOP OF THIS POLICY</li>
+                    <li>SIGNIFICANT CHANGES WILL BE HIGHLIGHTED ON OUR MAIN PAGE</li>
+                    <li>CONTINUED USE OF OUR TOOLS AFTER CHANGES INDICATES ACCEPTANCE</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <strong>- IMPORTANT WARNING:</strong> WHILE WE IMPLEMENT STRONG PRIVACY PROTECTIONS, NO METHOD OF TRANSMISSION OVER THE INTERNET IS 100% SECURE. USE OUR TOOLS RESPONSIBLY AND AVOID PROCESSING HIGHLY SENSITIVE INFORMATION WHEN POSSIBLE.
+            </div>
+
+            <div class="contact-section">
+                <div class="contact-title">>>> CONTACT US <<<</div>
+                <p class="contact-text">
+                    IF YOU HAVE QUESTIONS ABOUT THIS PRIVACY POLICY OR WANT TO EXERCISE YOUR PRIVACY RIGHTS, PLEASE CONTACT US:
+                </p>
+                <a href="mailto:privacy@yourdomain.com" class="contact-email">
+                    ZENDEXINO@GMAIL.COM
+                </a>
+                <p class="contact-text" style="margin-top: 15px;">
+                    WE AIM TO RESPOND TO ALL PRIVACY INQUIRIES WITHIN 48 HOURS.
+                </p>
+            </div>
+
+            <div class="footer">
+                <p>(C) 2025 SIMPLY TOOLS. THIS PRIVACY POLICY IS EFFECTIVE AS OF OCTOBER 2025.</p>
+                <p>BUILT WITH PRIVACY IN MIND - YOUR DATA STAYS ON YOUR DEVICE.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

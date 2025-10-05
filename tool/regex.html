@@ -4,226 +4,255 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Regex Tester</title>
-    <link rel="icon" type="image/x-icon" href="../../public/logo.ico">
-    <link rel="stylesheet" href="/components/toggle.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
     <style>
+        /* Global Reset and Retro Font */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        /* Basic Retro Color Palette */
+        :root {
+            --window-bg: #c0c0c0; 
+            --border-dark: #808080;
+            --border-light: #ffffff;
+            --text-color: #000000;
+            --button-face: #c0c0c0;
+            --button-pressed: #dfdfdf;
+            --input-bg: #ffffff;
+            --header-title: #000080;
+            --error-color: #ffcccc;
+            --success-color: #008000;
+            --highlight-match: #ffff00;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--bg-color);
-            color: var(--text-primary);
+            background: var(--window-bg);
+            color: var(--text-color);
             line-height: 1.6;
+            padding: 30px;
+        }
+
+        /* --- Classic Windows Border Mixin --- */
+        .window-frame {
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--window-bg);
+            padding: 3px; 
+            box-shadow: none;
         }
 
         .container {
             max-width: 1000px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 0; 
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            position: relative;
-        }
-
-        .header h1 {
-            font-size: 2rem;
-            font-weight: 300;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-        }
-
-        .header p {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 8px;
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
-            z-index: 100;
-            color: var(--text-secondary);
-            transition: all 0.2s ease;
+        /* --- Title Bar/Header --- */
+        .title-bar {
+            background: var(--header-title);
+            color: var(--border-light);
+            padding: 5px 8px;
+            font-size: 16px;
+            font-weight: bold;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            box-sizing: border-box;
-            line-height: 0;
-        }
-        .theme-toggle:hover {
-            background: var(--hover-bg);
-            border-color: var(--text-secondary);
-            color: var(--text-primary);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            border-bottom: 1px solid var(--border-dark);
         }
 
-        .input-section {
-            margin-bottom: 30px;
+        .title-bar-text {
+            white-space: nowrap;
         }
 
+        /* The main window body */
+        .app-body {
+            padding: 15px;
+        }
+
+        /* --- Section Styling (Sunken Panel) --- */
+        .section {
+            margin-bottom: 15px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--button-pressed);
+            padding: 1px;
+        }
+
+        .section-header {
+            padding: 6px 8px;
+            font-size: 11px;
+            font-weight: normal;
+            border-top: 1px solid var(--border-dark);
+            border-left: 1px solid var(--border-dark);
+            border-right: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-light);
+            background: #ffffff; 
+            display: inline-block;
+            margin-bottom: -1px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .section-content {
+            padding: 15px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--window-bg);
+            margin-top: -1px;
+        }
+
+        /* --- Input Styling --- */
         .input-group {
-            margin-bottom: 16px;
+            margin-bottom: 15px;
         }
 
         .input-label {
             display: block;
             margin-bottom: 6px;
-            font-weight: 500;
-            color: var(--text-primary);
-            font-size: 14px;
+            font-size: 10px;
+            font-weight: normal;
+            color: var(--text-color);
         }
 
         .regex-input-wrapper {
             display: flex;
             align-items: center;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 0;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--input-bg);
         }
 
         .regex-prefix {
-            padding: 8px 12px;
-            background: var(--code-bg);
-            border-right: 1px solid var(--border-color);
-            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
-            font-size: 14px;
-            color: var(--text-secondary);
+            padding: 6px 8px;
+            background: var(--button-pressed);
+            border-right: 1px solid var(--border-dark);
+            font-family: 'Press Start 2P', monospace;
+            font-size: 10px;
+            color: var(--text-color);
         }
 
         .regex-input {
             flex: 1;
-            padding: 8px 12px;
+            padding: 6px 8px;
             border: none;
             outline: none;
-            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
-            font-size: 14px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 9px;
             background: var(--input-bg);
-            color: var(--text-primary);
-        }
-
-        .regex-input:focus {
-            background: var(--input-focus-bg);
+            color: var(--text-color);
         }
 
         .flags-container {
             display: flex;
-            gap: 12px;
-            padding: 8px 12px;
-            border-left: 1px solid var(--border-color);
-            background: var(--code-bg);
+            gap: 8px;
+            padding: 6px 8px;
+            border-left: 1px solid var(--border-dark);
+            background: var(--button-pressed);
         }
 
         .flag-checkbox {
             display: flex;
             align-items: center;
-            gap: 4px;
-            font-size: 13px;
-            color: var(--text-secondary);
+            gap: 3px;
+            font-size: 9px;
+            color: var(--text-color);
         }
 
         .flag-checkbox input {
             margin: 0;
+            transform: scale(0.8);
         }
 
         .test-input {
             width: 100%;
             min-height: 120px;
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
-            font-size: 14px;
+            padding: 8px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            font-family: 'Press Start 2P', monospace;
+            font-size: 8px;
             resize: vertical;
             outline: none;
             background: var(--input-bg);
-            color: var(--text-primary);
+            color: var(--text-color);
+            line-height: 1.4;
         }
 
         .test-input:focus {
-            border-color: var(--text-primary);
-            background: var(--input-focus-bg);
+            box-shadow: 0 0 0 1px var(--text-color) inset;
         }
 
         .test-input::placeholder {
-            color: var(--text-secondary);
+            color: var(--border-dark);
         }
 
+        /* --- Controls --- */
         .controls {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             display: flex;
-            gap: 12px;
+            gap: 8px;
             justify-content: center;
             flex-wrap: wrap;
         }
 
         .btn {
-            padding: 8px 16px;
-            border: 1px solid var(--border-color);
-            background: var(--card-bg);
-            border-radius: 4px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--button-face);
+            color: var(--text-color);
+            padding: 6px 12px;
+            font-size: 10px;
+            text-align: center;
             cursor: pointer;
-            font-size: 13px;
-            color: var(--text-primary);
-            transition: all 0.2s;
+            transition: none;
+            box-shadow: none;
+            line-height: 1;
+            font-family: 'Press Start 2P', cursive;
         }
 
-        .btn:hover {
-            background: var(--hover-bg);
-            border-color: var(--text-secondary);
+        .btn:active {
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 7px 11px 5px 13px;
         }
 
         .btn-primary {
-            background: var(--text-primary);
-            color: var(--card-bg);
-            border-color: var(--text-primary);
+            background: var(--header-title);
+            color: var(--border-light);
         }
 
-        .btn-primary:hover {
-            background: var(--text-secondary);
-            border-color: var(--text-secondary);
-        }
-
-        .results-container {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
+        /* --- Stats Section --- */
         .stats {
-            background: var(--card-bg);
-            padding: 16px;
-            border-radius: 4px;
-            margin-bottom: 16px;
-            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            padding: 12px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            margin-bottom: 15px;
             display: flex;
-            gap: 24px;
-            font-size: 13px;
+            gap: 20px;
+            font-size: 10px;
+            flex-wrap: wrap;
         }
 
         .stat-item {
-            color: var(--text-secondary);
+            color: var(--text-color);
         }
 
         .stat-value {
-            font-weight: 500;
-            color: var(--text-primary);
+            font-weight: normal;
+            color: var(--header-title);
         }
 
         .stat-value.success {
@@ -231,93 +260,123 @@
         }
 
         .stat-value.error {
-            color: var(--error-color);
+            color: #cc0000;
         }
 
-        .matches-section {
-            margin-bottom: 20px;
+        /* --- Results Container --- */
+        .results-container {
+            background: var(--input-bg);
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 15px;
+            margin-bottom: 15px;
         }
 
         .section-title {
-            font-weight: 500;
-            margin-bottom: 12px;
-            color: var(--text-primary);
-            font-size: 16px;
+            font-size: 11px;
+            font-weight: normal;
+            margin-bottom: 10px;
+            color: var(--text-color);
+            padding: 4px;
+            background: var(--button-pressed);
+            border-style: solid;
+            border-width: 1px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            display: inline-block;
+        }
+
+        .highlighted-text {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 8px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            padding: 8px;
+            background: var(--input-bg);
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            margin-bottom: 15px;
+        }
+
+        .match-highlight {
+            background: var(--highlight-match);
+            color: var(--text-color);
+            padding: 1px 2px;
+        }
+
+        /* --- Matches Section --- */
+        .matches-section {
+            margin-bottom: 15px;
         }
 
         .match-item {
-            background: var(--code-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 12px;
+            background: var(--button-pressed);
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 8px;
             margin-bottom: 8px;
-            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
-            font-size: 13px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 8px;
         }
 
         .match-text {
             color: var(--success-color);
-            font-weight: 500;
+            font-weight: normal;
+            margin-bottom: 3px;
         }
 
         .match-details {
-            color: var(--text-secondary);
-            margin-top: 4px;
-            font-size: 12px;
+            color: var(--border-dark);
+            font-size: 7px;
         }
 
-        .highlighted-text {
-            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
-            font-size: 14px;
-            line-height: 1.6;
-            white-space: pre-wrap;
-            word-wrap: break-word;
+        /* --- Groups Section --- */
+        .groups-section {
+            margin-bottom: 15px;
         }
 
-        .match-highlight {
-            background: #fff3cd;
-            border: 1px solid #ffc107;
-            border-radius: 2px;
-            padding: 1px 2px;
+        .group-item {
+            background: #e6f3ff;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 6px 8px;
+            margin-bottom: 6px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 8px;
         }
 
-        [data-theme="dark"] .match-highlight {
-            background: rgba(255, 193, 7, 0.3);
-            border: 1px solid rgba(255, 193, 7, 0.5);
+        .group-index {
+            color: var(--header-title);
+            font-weight: normal;
         }
 
-        .error {
-            background: var(--error-bg);
-            color: var(--error-color);
-            padding: 16px;
-            border-radius: 4px;
-            border-left: 3px solid var(--error-border);
-            font-size: 14px;
-        }
-
+        /* --- Examples Section --- */
         .examples {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 20px;
-            margin-bottom: 20px;
+            background: var(--input-bg);
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 15px;
         }
 
         .example-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 8px 0;
-            border-bottom: 1px solid var(--border-color);
+            gap: 8px;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border-dark);
             cursor: pointer;
-            transition: background 0.2s;
+            transition: none;
         }
 
         .example-item:hover {
-            background: var(--hover-bg);
-            margin: 0 -12px;
-            padding: 8px 12px;
-            border-radius: 4px;
+            background: var(--button-pressed);
+            margin: 0 -8px;
+            padding: 6px 8px;
         }
 
         .example-item:last-child {
@@ -325,101 +384,55 @@
         }
 
         .example-regex {
-            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
-            background: var(--code-bg);
-            padding: 4px 8px;
-            border-radius: 3px;
-            font-size: 13px;
-            min-width: 120px;
+            font-family: 'Press Start 2P', monospace;
+            background: var(--button-pressed);
+            padding: 3px 6px;
+            border-style: solid;
+            border-width: 1px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            font-size: 8px;
+            min-width: 100px;
         }
 
         .example-description {
-            color: var(--text-secondary);
-            font-size: 13px;
+            color: var(--text-color);
+            font-size: 9px;
         }
 
-        .groups-section {
-            margin-top: 20px;
-        }
-
-        .group-item {
-            background: #f0f8ff;
-            border: 1px solid #b3d9ff;
-            border-radius: 4px;
-            padding: 8px 12px;
-            margin-bottom: 6px;
-            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
-            font-size: 13px;
-        }
-
-        [data-theme="dark"] .group-item {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-        }
-
-        .group-index {
-            color: #0066cc;
-            font-weight: 500;
-        }
-
-        [data-theme="dark"] .group-index {
-            color: #66b3ff;
-        }
-
-        .notification {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 12px 20px;
-            background: var(--notification-bg);
-            color: var(--card-bg);
-            border-radius: 4px;
-            font-size: 14px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-            z-index: 1000;
-        }
-
-        .notification.error {
+        /* --- Error Display --- */
+        .error {
             background: var(--error-color);
+            color: var(--text-color);
+            padding: 12px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            font-size: 10px;
+            margin: 15px 0;
         }
 
-        [data-theme="dark"] .notification {
-            background: #fafafa;
-            color: #222;
-        }
-        [data-theme="dark"] .notification.error {
-            background: #ff6b6b;
-            color: #fff;
-        }
-
-        .notification.show {
-            opacity: 1;
-        }
-
+        /* --- Hidden Elements --- */
         .hidden {
             display: none;
         }
 
+        /* --- Responsive Design --- */
         @media (max-width: 768px) {
-            .container {
-                padding: 20px 16px;
+            body {
+                padding: 10px;
             }
             
-            .header h1 {
-                font-size: 1.5rem;
-                padding-right: 50px;
+            .container {
+                max-width: 100%;
             }
 
-            .theme-toggle {
-                top: -10px;
-                right: 0;
+            .controls {
+                flex-direction: column;
+                align-items: center;
             }
             
-            .controls {
-                flex-wrap: wrap;
+            .btn {
+                width: 200px;
             }
             
             .stats {
@@ -429,106 +442,141 @@
 
             .flags-container {
                 flex-direction: column;
-                gap: 8px;
+                gap: 6px;
+            }
+
+            .example-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+
+            .test-input {
+                min-height: 100px;
+                font-size: 7px;
+            }
+
+            .highlighted-text {
+                font-size: 7px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .test-input {
+                font-size: 6px;
+            }
+
+            .highlighted-text {
+                font-size: 6px;
+            }
+
+            .match-item {
+                font-size: 7px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-                <i data-lucide="sun" class="theme-icon" id="theme-icon"></i>
-            </button>
-            <h1>Regex Tester</h1>
-            <p>Test regular expressions with real-time matching</p>
+    <div class="container window-frame">
+        <div class="title-bar">
+            <div class="title-bar-text">Regex Tester</div>
         </div>
-
-        <div class="input-section">
-            <div class="input-group">
-                <label class="input-label">Regular Expression</label>
-                <div class="regex-input-wrapper">
-                    <span class="regex-prefix">/</span>
-                    <input type="text" class="regex-input" id="regexInput" placeholder="Enter your regex pattern..." oninput="testRegex()">
-                    <div class="flags-container">
-                        <label class="flag-checkbox">
-                            <input type="checkbox" id="flagGlobal" onchange="testRegex()">
-                            <span>g</span>
-                        </label>
-                        <label class="flag-checkbox">
-                            <input type="checkbox" id="flagIgnoreCase" onchange="testRegex()">
-                            <span>i</span>
-                        </label>
-                        <label class="flag-checkbox">
-                            <input type="checkbox" id="flagMultiline" onchange="testRegex()">
-                            <span>m</span>
-                        </label>
+        
+        <div class="app-body">
+            <div class="section">
+                <div class="section-header">Regular Expression Input</div>
+                <div class="section-content">
+                    <div class="input-group">
+                        <label class="input-label">Regular Expression</label>
+                        <div class="regex-input-wrapper">
+                            <span class="regex-prefix">/</span>
+                            <input type="text" class="regex-input" id="regexInput" placeholder="Enter your regex pattern..." oninput="testRegex()">
+                            <div class="flags-container">
+                                <label class="flag-checkbox">
+                                    <input type="checkbox" id="flagGlobal" onchange="testRegex()">
+                                    <span>g</span>
+                                </label>
+                                <label class="flag-checkbox">
+                                    <input type="checkbox" id="flagIgnoreCase" onchange="testRegex()">
+                                    <span>i</span>
+                                </label>
+                                <label class="flag-checkbox">
+                                    <input type="checkbox" id="flagMultiline" onchange="testRegex()">
+                                    <span>m</span>
+                                </label>
+                            </div>
+                            <span class="regex-prefix">/</span>
+                        </div>
                     </div>
-                    <span class="regex-prefix">/</span>
+
+                    <div class="input-group">
+                        <label class="input-label">Test String</label>
+                        <textarea class="test-input" id="testInput" placeholder="Enter text to test against your regex..." oninput="testRegex()"></textarea>
+                    </div>
                 </div>
             </div>
 
-            <div class="input-group">
-                <label class="input-label">Test String</label>
-                <textarea class="test-input" id="testInput" placeholder="Enter text to test against your regex..." oninput="testRegex()"></textarea>
+            <div class="controls">
+                <button class="btn btn-primary" onclick="clearInputs()">Clear All</button>
+                <button class="btn" onclick="copyRegex(this)">Copy Regex</button>
+            </div>
+
+            <div class="stats" id="stats">
+                <div class="stat-item">Status: <span class="stat-value" id="statusValue">Ready</span></div>
+                <div class="stat-item">Matches: <span class="stat-value" id="matchCount">0</span></div>
+                <div class="stat-item">Groups: <span class="stat-value" id="groupCount">0</span></div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">Results</div>
+                <div class="section-content" style="padding: 0;">
+                    <div class="results-container">
+                        <div class="section-title">Highlighted Text</div>
+                        <div class="highlighted-text" id="highlightedText">Enter a regex pattern and test string to see matches highlighted here.</div>
+                        
+                        <div class="matches-section" id="matchesSection" style="display: none;">
+                            <div class="section-title">Matches</div>
+                            <div id="matchesList"></div>
+                        </div>
+
+                        <div class="groups-section" id="groupsSection" style="display: none;">
+                            <div class="section-title">Capture Groups</div>
+                            <div id="groupsList"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">Common Patterns</div>
+                <div class="section-content">
+                    <div class="examples">
+                        <div class="example-item" onclick="loadExample('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$', 'Email validation')">
+                            <code class="example-regex">^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$</code>
+                            <span class="example-description">Email validation</span>
+                        </div>
+                        <div class="example-item" onclick="loadExample('\\b\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\b', 'IP address matching')">
+                            <code class="example-regex">\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b</code>
+                            <span class="example-description">IP address matching</span>
+                        </div>
+                        <div class="example-item" onclick="loadExample('https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)', 'URL matching')">
+                            <code class="example-regex">https?://...</code>
+                            <span class="example-description">URL matching</span>
+                        </div>
+                        <div class="example-item" onclick="loadExample('\\b\\w+\\b', 'Word boundaries')">
+                            <code class="example-regex">\b\w+\b</code>
+                            <span class="example-description">Word boundaries</span>
+                        </div>
+                        <div class="example-item" onclick="loadExample('(\\d{4})-(\\d{2})-(\\d{2})', 'Date with groups (YYYY-MM-DD)')">
+                            <code class="example-regex">(\d{4})-(\d{2})-(\d{2})</code>
+                            <span class="example-description">Date with groups (YYYY-MM-DD)</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-
-        <div class="controls">
-            <button class="btn btn-primary" onclick="clearInputs()">Clear All</button>
-            <button class="btn" onclick="copyRegex(this)">Copy Regex</button>
-        </div>
-
-        <div class="stats" id="stats">
-            <div class="stat-item">Status: <span class="stat-value" id="statusValue">Ready</span></div>
-            <div class="stat-item">Matches: <span class="stat-value" id="matchCount">0</span></div>
-            <div class="stat-item">Groups: <span class="stat-value" id="groupCount">0</span></div>
-        </div>
-
-        <div class="results-container" id="results">
-            <div class="section-title">Results</div>
-            <div id="highlightedText">Enter a regex pattern and test string to see matches highlighted here.</div>
-            
-            <div class="matches-section" id="matchesSection" style="display: none;">
-                <div class="section-title">Matches</div>
-                <div id="matchesList"></div>
-            </div>
-
-            <div class="groups-section" id="groupsSection" style="display: none;">
-                <div class="section-title">Capture Groups</div>
-                <div id="groupsList"></div>
-            </div>
-        </div>
-
-        <div class="examples">
-            <div class="section-title">Common Patterns</div>
-            <div class="example-item" onclick="loadExample('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$', 'Email validation')">
-                <code class="example-regex">^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$</code>
-                <span class="example-description">Email validation</span>
-            </div>
-            <div class="example-item" onclick="loadExample('\\b\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\b', 'IP address matching')">
-                <code class="example-regex">\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b</code>
-                <span class="example-description">IP address matching</span>
-            </div>
-            <div class="example-item" onclick="loadExample('https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)', 'URL matching')">
-                <code class="example-regex">https?://...</code>
-                <span class="example-description">URL matching</span>
-            </div>
-            <div class="example-item" onclick="loadExample('\\b\\w+\\b', 'Word boundaries')">
-                <code class="example-regex">\b\w+\b</code>
-                <span class="example-description">Word boundaries</span>
-            </div>
-            <div class="example-item" onclick="loadExample('(\\d{4})-(\\d{2})-(\\d{2})', 'Date with groups (YYYY-MM-DD)')">
-                <code class="example-regex">(\d{4})-(\d{2})-(\d{2})</code>
-                <span class="example-description">Date with groups (YYYY-MM-DD)</span>
-            </div>
-        </div>
-
-        <div id="notification" class="notification"></div>
     </div>
 
-    <script src="/components/toggle.js"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script>
         let currentRegex = null;
         let testString = '';
@@ -604,7 +652,7 @@
             const matches = [...testString.matchAll(currentRegex)];
             
             if (matches.length === 0) {
-                highlightedElement.innerHTML = `<div class="highlighted-text">${escapeHtml(testString)}</div>`;
+                highlightedElement.innerHTML = escapeHtml(testString);
                 return;
             }
 
@@ -624,7 +672,7 @@
             // Add remaining text
             highlightedText += escapeHtml(testString.slice(lastIndex));
 
-            highlightedElement.innerHTML = `<div class="highlighted-text">${highlightedText}</div>`;
+            highlightedElement.innerHTML = highlightedText;
         }
 
         function showMatches() {
@@ -697,17 +745,9 @@
         }
 
         function displayError(message) {
-            const notif = document.getElementById('notification');
-            notif.textContent = `Regex Error: ${message}`;
-            notif.classList.remove('show');
-            notif.classList.add('error', 'show');
-            setTimeout(() => {
-                notif.classList.remove('show');
-            }, 3000);
-
-            // Reset the highlighted text to default
+            // Reset the highlighted text to show error
             const highlightedElement = document.getElementById('highlightedText');
-            highlightedElement.textContent = 'Enter a regex pattern and test string to see matches highlighted here.';
+            highlightedElement.innerHTML = `<div class="error">Regex Error: ${message}</div>`;
             
             document.getElementById('matchesSection').style.display = 'none';
             document.getElementById('groupsSection').style.display = 'none';
@@ -740,21 +780,29 @@
             const flags = getFlags();
             
             if (!regexPattern) {
-                alert('Enter a regex pattern first');
                 return;
             }
 
             const regexString = `/${regexPattern}/${flags}`;
             
-            navigator.clipboard.writeText(regexString).then(() => {
+            // Use fallback copy method
+            const tempInput = document.createElement('textarea');
+            tempInput.value = regexString;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            
+            try {
+                document.execCommand('copy');
                 const originalText = btn.textContent;
                 btn.textContent = 'Copied!';
                 setTimeout(() => {
                     btn.textContent = originalText;
                 }, 1500);
-            }).catch(() => {
-                alert('Failed to copy to clipboard');
-            });
+            } catch (err) {
+                console.error('Failed to copy text:', err);
+            }
+            
+            document.body.removeChild(tempInput);
         }
 
         function loadExample(pattern, description) {
@@ -803,8 +851,6 @@
                 
                 testRegex();
             }
-
-            lucide.createIcons();
         });
     </script>
 </body>

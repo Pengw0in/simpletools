@@ -3,148 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text Counter</title>
-    <link rel="icon" type="image/x-icon" href="../../public/logo.ico">
-    <link rel="stylesheet" href="/components/toggle.css">
+    <title>Text Analysis</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
     <style>
+        /* Global Reset and Retro Font */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        /* Basic Retro Color Palette */
+        :root {
+            --window-bg: #c0c0c0; 
+            --border-dark: #808080;
+            --border-light: #ffffff;
+            --text-color: #000000;
+            --button-face: #c0c0c0;
+            --button-pressed: #dfdfdf;
+            --input-bg: #ffffff;
+            --header-title: #000080;
+            --error-color: #ffcccc;
+            --success-color: #008000;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--bg-color);
-            color: var(--text-primary);
+            background: var(--window-bg);
+            color: var(--text-color);
             line-height: 1.6;
+            padding: 30px;
+        }
+
+        /* --- Classic Windows Border Mixin --- */
+        .window-frame {
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--window-bg);
+            padding: 3px; 
+            box-shadow: none;
         }
 
         .container {
-            max-width: 1200px; /* Increased max-width for the grid */
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 0; 
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            position: relative;
-        }
-
-        .header h1 {
-            font-size: 2rem;
-            font-weight: 300;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-        }
-
-        .header p {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 8px;
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
-            z-index: 100;
-            color: var(--text-secondary);
-            transition: all 0.2s ease;
+        /* --- Title Bar/Header --- */
+        .title-bar {
+            background: var(--header-title);
+            color: var(--border-light);
+            padding: 5px 8px;
+            font-size: 16px;
+            font-weight: bold;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            box-sizing: border-box;
-            line-height: 0;
-        }
-        .theme-toggle:hover {
-            background: var(--hover-bg);
-            border-color: var(--text-secondary);
-            color: var(--text-primary);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            border-bottom: 1px solid var(--border-dark);
         }
 
-        /* NEW: Main Grid Layout */
+        .title-bar-text {
+            white-space: nowrap;
+        }
+
+        /* The main window body */
+        .app-body {
+            padding: 15px;
+        }
+
+        /* --- Section Styling (Sunken Panel) --- */
+        .section {
+            margin-bottom: 15px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--button-pressed);
+            padding: 1px;
+        }
+
+        .section-header {
+            padding: 6px 8px;
+            font-size: 11px;
+            font-weight: normal;
+            border-top: 1px solid var(--border-dark);
+            border-left: 1px solid var(--border-dark);
+            border-right: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-light);
+            background: #ffffff; 
+            display: inline-block;
+            margin-bottom: -1px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .section-content {
+            padding: 15px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--window-bg);
+            margin-top: -1px;
+        }
+
+        /* --- Main Grid Layout --- */
         .main-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr; /* Text input is wider than stats */
-            gap: 30px;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
         }
         
         .left-column {
             display: flex;
             flex-direction: column;
+            gap: 15px;
         }
 
-        .input-section {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            margin-bottom: 30px;
-            overflow: hidden;
-            flex-grow: 1; /* Allows it to fill the height */
-        }
-        
-        .input-header {
-            padding: 12px 16px;
-            background: var(--code-bg);
-            border-bottom: 1px solid var(--border-color);
-            font-weight: 500;
-            color: var(--text-primary);
-            font-size: 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        /* New Styles for Search Functionality */
+        /* --- Search Section --- */
         .search-section {
             display: flex;
             align-items: center;
-            padding: 12px 16px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            margin-bottom: 30px;
-            gap: 10px;
+            gap: 8px;
+            margin-bottom: 8px;
         }
         
         .search-input {
-            flex-grow: 1;
-            padding: 8px 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            font-size: 14px;
+            flex: 1;
+            padding: 6px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            font-size: 10px;
             background: var(--input-bg);
-            color: var(--text-primary);
-            outline: none;
-            transition: border-color 0.2s, background 0.2s;
+            color: var(--text-color);
+            font-family: 'Press Start 2P', cursive;
         }
         
         .search-input:focus {
-            border-color: var(--text-secondary);
-            background: var(--input-focus-bg);
+            box-shadow: 0 0 0 1px var(--text-color) inset;
+            outline: none;
         }
 
         .search-status {
-            font-size: 14px;
-            color: var(--text-secondary);
-            font-weight: 500;
-            white-space: nowrap;
+            font-size: 9px;
+            color: var(--text-color);
+            padding: 6px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--input-bg);
+            min-width: 80px;
+            text-align: center;
         }
-        /* End New Styles */
 
+        /* --- File Upload Wrapper --- */
         .file-upload-wrapper {
             display: flex;
-            align-items: center;
-            gap: 12px;
+            gap: 8px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
         }
 
         .file-input-wrapper {
@@ -161,46 +181,55 @@
         }
 
         .file-input-label {
-            display: inline-block;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--button-face);
+            color: var(--text-color);
             padding: 6px 12px;
-            background: var(--text-primary);
-            color: var(--card-bg);
-            border-radius: 4px;
+            font-size: 10px;
+            text-align: center;
             cursor: pointer;
-            font-size: 12px;
-            transition: background 0.2s;
+            transition: none;
+            box-shadow: none;
+            line-height: 1;
+            display: inline-block;
         }
 
-        .file-input-label:hover {
-            background: var(--text-secondary);
+        .file-input-label:active {
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 7px 11px 5px 13px;
         }
 
         .btn {
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--button-face);
+            color: var(--text-color);
             padding: 6px 12px;
-            border: 1px solid var(--border-color);
-            background: var(--card-bg);
-            border-radius: 4px;
+            font-size: 10px;
+            text-align: center;
             cursor: pointer;
-            font-size: 12px;
-            color: var(--text-primary);
-            transition: all 0.2s;
+            transition: none;
+            box-shadow: none;
+            line-height: 1;
         }
 
-        .btn:hover {
-            background: var(--hover-bg);
-            border-color: var(--text-secondary);
+        .btn:active {
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 7px 11px 5px 13px;
         }
 
         /* --- Text Highlight Container --- */
         .textarea-container {
-             position: relative;
-             min-height: 300px;
-             height: 100%; /* Important for flex layout */
-             background: var(--input-bg);
-             border-radius: 0 0 4px 4px;
-        }
-        .input-section .textarea-container:has(#textInput:focus) {
-            background: var(--input-focus-bg);
+            position: relative;
+            flex: 1;
+            min-height: 400px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--input-bg);
         }
 
         .highlight-area {
@@ -209,18 +238,16 @@
             left: 0;
             width: 100%;
             height: 100%;
-            padding: 16px;
-            border: none;
-            outline: none;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            font-size: 14px;
+            padding: 8px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
             line-height: 1.5;
             white-space: pre-wrap;
             word-wrap: break-word;
+            overflow: auto;
             color: transparent;
             pointer-events: none;
             z-index: 1;
-            overflow: hidden; /* Hides scrollbar on highlight area */
         }
 
         #textInput {
@@ -229,123 +256,127 @@
             left: 0;
             width: 100%;
             height: 100%;
-            padding: 16px;
+            padding: 8px;
             border: none;
             outline: none;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            font-size: 14px;
-            resize: none; /* Removed vertical resize */
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            resize: none;
             line-height: 1.5;
             background: transparent;
-            color: var(--text-primary);
+            color: var(--text-color);
             z-index: 2;
         }
         
         .highlight-match {
-            background-color: #ff0;
-            color: #000;
-            border-radius: 2px;
-        }
-        /* End highlight adjustments */
-        
-        .stats-section {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            margin-bottom: 30px;
-            overflow: hidden;
+            background-color: #ffff00;
+            color: var(--text-color);
         }
 
+        /* --- Stats Section --- */
         .stats-header {
-            padding: 12px 16px;
-            background: var(--code-bg);
-            border-bottom: 1px solid var(--border-color);
-            font-weight: 500;
-            color: var(--text-primary);
-            font-size: 14px;
+            padding: 8px;
+            background: var(--button-pressed);
+            border-bottom: 2px solid var(--border-dark);
+            font-weight: normal;
+            color: var(--text-color);
+            font-size: 11px;
         }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* More compact quick stats */
-            gap: 0;
+            grid-template-columns: repeat(3, 1fr);
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--input-bg);
         }
 
         .stat-item {
-            padding: 16px;
-            border-right: 1px solid var(--border-color);
-            border-bottom: 1px solid var(--border-color);
+            padding: 12px;
             text-align: center;
+            border-right: 1px solid var(--border-dark);
+            border-bottom: 1px solid var(--border-dark);
         }
 
-        .stat-item:nth-child(2n) { border-right: none; } /* Remove right border on every second item */
-        .stat-item:nth-last-child(-n + 2) { border-bottom: none; } /* Remove bottom border on last two items */
-
+        .stat-item:nth-child(3n) { 
+            border-right: none; 
+        }
+        
+        .stat-item:nth-last-child(-n + 3) { 
+            border-bottom: none; 
+        }
 
         .stat-value {
-            display: block;
-            font-size: 1.5rem; /* Smaller for compactness */
-            font-weight: 300;
-            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: normal;
+            color: var(--header-title);
             margin-bottom: 4px;
         }
 
         .stat-label {
-            font-size: 12px;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-size: 9px;
+            color: var(--text-color);
         }
 
+        /* --- Detailed Stats --- */
         .detailed-stats {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 30px; /* Keep margin here */
+            margin-bottom: 15px;
         }
 
         .detailed-header {
-            padding: 12px 16px;
-            background: var(--code-bg);
-            border-bottom: 1px solid var(--border-color);
-            font-weight: 500;
-            color: var(--text-primary);
-            font-size: 14px;
+            padding: 8px;
+            background: var(--button-pressed);
+            border-bottom: 2px solid var(--border-dark);
+            font-weight: normal;
+            color: var(--text-color);
+            font-size: 11px;
         }
         
-        /* NEW: Tab Styles */
+        /* --- Tab Styles --- */
         .tab-bar {
             display: flex;
-            border-bottom: 1px solid var(--border-color);
-            background: var(--card-bg);
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--window-bg);
+            padding: 2px;
+            gap: 2px;
         }
 
         .tab-button {
-            flex-grow: 1;
-            text-align: center;
-            padding: 10px 15px;
+            flex: 1;
+            padding: 6px 8px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--button-face);
+            color: var(--text-color);
+            font-size: 10px;
             cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            background: var(--card-bg);
-            border: none;
-            border-bottom: 2px solid transparent;
-            transition: all 0.2s ease;
+            transition: none;
+            text-align: center;
         }
 
-        .tab-button:hover {
-            color: var(--text-primary);
+        .tab-button:active {
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 7px 7px 5px 9px;
         }
 
         .tab-button.active {
-            color: var(--text-primary);
-            border-bottom: 2px solid var(--text-primary);
+            background: var(--button-pressed);
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 7px 7px 5px 9px;
+            font-weight: bold;
         }
 
         .detailed-content {
-            padding: 20px;
+            padding: 12px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--input-bg);
+            min-height: 200px;
         }
 
         .detail-row {
@@ -353,8 +384,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 8px 0;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 13px;
+            border-bottom: 1px solid var(--border-dark);
         }
 
         .detail-row:last-child {
@@ -362,74 +392,78 @@
         }
 
         .detail-label {
-            color: var(--text-primary);
-            font-weight: 500;
+            font-size: 10px;
+            color: var(--text-color);
         }
 
         .detail-value {
-            color: var(--text-secondary);
-            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+            font-size: 10px;
+            color: var(--header-title);
+            font-weight: normal;
         }
 
-        /* Removed .reading-stats empty ruleset as it's now a separate tab content */
-
         .reading-title {
-            font-weight: 500;
+            font-size: 11px;
             margin-bottom: 12px;
-            color: var(--text-primary);
-            display: none; /* Hide internal title as tab provides context */
+            color: var(--text-color);
+            font-weight: normal;
         }
 
         .reading-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* 2x2 grid is better here */
-            gap: 16px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
         }
 
         .reading-item {
+            padding: 10px;
+            border-style: solid;
+            border-width: 2px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--window-bg);
             text-align: center;
-            padding: 12px;
-            background: var(--code-bg);
-            border-radius: 4px;
         }
 
-        .reading-value {
-            display: block;
-            font-size: 1.2rem;
-            font-weight: 500;
-            color: var(--text-primary);
+        .reading-item .stat-value {
+            font-size: 12px;
+            color: var(--header-title);
             margin-bottom: 4px;
         }
 
-        .reading-label {
-            font-size: 12px;
-            color: var(--text-secondary);
+        .reading-item .stat-label {
+            font-size: 8px;
+            color: var(--text-color);
         }
 
         .empty-state {
             text-align: center;
-            color: var(--text-secondary);
-            font-size: 14px;
-            padding: 40px 20px;
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
+            color: var(--border-dark);
+            font-size: 10px;
+            padding: 30px 15px;
         }
 
-        /* Responsive Adjustments */
+        .hidden {
+            display: none;
+        }
+
+        /* --- Responsive Design --- */
         @media (max-width: 1000px) {
             .main-grid {
-                grid-template-columns: 1fr; /* Stack columns on smaller screens */
-                gap: 20px;
+                grid-template-columns: 1fr;
+                gap: 15px;
             }
-            .stat-item:nth-child(2n) { border-right: 1px solid var(--border-color); } /* Re-add borders for single column */
-            .stat-item:nth-child(3n) { border-right: none; }
-            .stat-item:nth-last-child(-n + 2) { border-bottom: 1px solid var(--border-color); }
-            .stat-item:last-child { border-bottom: none; }
+            
+            .stat-item:nth-child(3n) { 
+                border-right: 1px solid var(--border-dark); 
+            }
+            
+            .stat-item:nth-last-child(-n + 3) { 
+                border-bottom: 1px solid var(--border-dark); 
+            }
+            
+            .stat-item:last-child { 
+                border-bottom: none; 
+            }
             
             .stats-grid {
                 grid-template-columns: repeat(3, 1fr);
@@ -437,399 +471,278 @@
         }
         
         @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
             .container {
-                padding: 20px 16px;
+                max-width: 100%;
             }
             
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
-            .stat-item:nth-child(2n) { border-right: none; }
+            
+            .stat-item:nth-child(2n) { 
+                border-right: none; 
+            }
         }
 
         @media (max-width: 480px) {
             .stats-grid {
                 grid-template-columns: 1fr;
             }
-
+            
+            .stat-item {
+                border-right: none;
+            }
+            
             .reading-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .file-upload-wrapper {
+                flex-direction: column;
+            }
+            
+            .file-input-label,
+            .btn {
+                width: 100%;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-                <i data-lucide="sun" class="theme-icon" id="theme-icon"></i>
-            </button>
-            <h1>Text Counter</h1>
-            <p>Count words, characters, lines and analyze your text</p>
+    <div class="container window-frame">
+        <div class="title-bar">
+            <div class="title-bar-text">Text Analysis</div>
         </div>
         
-        <div class="main-grid">
-            <div class="left-column">
-                
-                <div class="search-section">
-                    <input 
-                        type="text" 
-                        id="search-input" 
-                        class="search-input" 
-                        placeholder="Search text..." 
-                        oninput="updateStats()"
-                    />
-                    <span id="search-status" class="search-status">0 matches</span>
-                </div>
-
-                <div class="input-section" style="flex-grow: 1;">
-                    <div class="input-header">
-                        <span>Enter or Paste Your Text</span>
-                        <div class="file-upload-wrapper">
-                            <div class="file-input-wrapper">
-                                <input type="file" id="textFile" class="file-input" accept=".txt,.md,.csv,.json,.xml,.html,.css,.js,.py,.java,.cpp,.c,.h" onchange="loadFile(event)">
-                                <label for="textFile" class="file-input-label">Upload File</label>
+        <div class="app-body">
+            <div class="main-grid">
+                <div class="left-column">
+                    <div class="section">
+                        <div class="section-header">Text Input</div>
+                        <div class="section-content">
+                            <div class="search-section">
+                                <input 
+                                    type="text" 
+                                    id="search-input" 
+                                    class="search-input" 
+                                    placeholder="Search text..." 
+                                    oninput="updateStats()"
+                                />
+                                <span id="search-status" class="search-status">0 matches</span>
                             </div>
-                            <button class="btn" onclick="clearText()">Clear</button>
-                            <button class="btn" onclick="pasteFromClipboard()">Paste</button>
+                            
+                            <div class="file-upload-wrapper">
+                                <div class="file-input-wrapper">
+                                    <input type="file" id="textFile" class="file-input" accept=".txt,.md,.csv,.json,.xml,.html,.css,.js,.py,.java,.cpp,.c,.h" onchange="loadFile(event)">
+                                    <label for="textFile" class="file-input-label">Upload File</label>
+                                </div>
+                                <button class="btn" onclick="clearText()">Clear</button>
+                                <button class="btn" onclick="pasteFromClipboard()">Paste</button>
+                            </div>
+                            
+                            <div class="textarea-container">
+                                <pre id="highlight-area" class="highlight-area"></pre>
+                                <textarea 
+                                    id="textInput" 
+                                    placeholder="Start typing or paste your text here..." 
+                                    oninput="updateStats()"
+                                ></textarea>
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="textarea-container">
-                        <pre id="highlight-area" class="highlight-area"></pre>
-                        <textarea 
-                            id="textInput" 
-                            class="text-area text-area-with-highlight" 
-                            placeholder="Start typing or paste your text here to see live statistics..." 
-                            oninput="updateStats()"
-                        ></textarea>
+                </div>
+                
+                <div class="right-column">
+                    <div class="section">
+                        <div class="section-header">Quick Statistics</div>
+                        <div class="section-content" style="padding: 0;">
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <div class="stat-value" id="charCount">0</div>
+                                    <div class="stat-label">Characters</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="charNoSpaceCount">0</div>
+                                    <div class="stat-label">No Spaces</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="wordCount">0</div>
+                                    <div class="stat-label">Words</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="lineCount">0</div>
+                                    <div class="stat-label">Lines</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="sentenceCount">0</div>
+                                    <div class="stat-label">Sentences</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="paragraphCount">0</div>
+                                    <div class="stat-label">Paragraphs</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <div class="section-header">Detailed Analysis</div>
+                        <div class="section-content" style="padding: 0;">
+                            <div class="tab-bar">
+                                <button class="tab-button active" onclick="switchTab('analysis')">Analysis</button>
+                                <button class="tab-button" onclick="switchTab('reading')">Reading Time</button>
+                            </div>
+                            
+                            <div id="detailsContentAnalysis" class="detailed-content">
+                                <div class="empty-state">Enter some text to see analysis</div>
+                            </div>
+                            
+                            <div id="detailsContentReading" class="detailed-content hidden">
+                                <div class="empty-state">Enter some text to see reading time</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
             </div>
-            
-            <div class="right-column">
-                
-                <div class="stats-section">
-                    <div class="stats-header">Quick Statistics</div>
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <span id="characterCount" class="stat-value">0</span>
-                            <span class="stat-label">Chars</span>
-                        </div>
-                        <div class="stat-item">
-                            <span id="characterNoSpaceCount" class="stat-value">0</span>
-                            <span class="stat-label">Chars (no space)</span>
-                        </div>
-                        <div class="stat-item">
-                            <span id="wordCount" class="stat-value">0</span>
-                            <span class="stat-label">Words</span>
-                        </div>
-                        <div class="stat-item">
-                            <span id="lineCount" class="stat-value">0</span>
-                            <span class="stat-label">Lines</span>
-                        </div>
-                        <div class="stat-item">
-                            <span id="paragraphCount" class="stat-value">0</span>
-                            <span class="stat-label">Paragraphs</span>
-                        </div>
-                        <div class="stat-item">
-                            <span id="sentenceCount" class="stat-value">0</span>
-                            <span class="stat-label">Sentences</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="detailed-stats" id="detailedStats">
-                    <div class="detailed-header">Detailed Analysis</div>
-                    <div class="tab-bar">
-                        <button class="tab-button active" data-tab="analysis-tab">Content Details</button>
-                        <button class="tab-button" data-tab="reading-tab">Reading Time</button>
-                    </div>
-                    
-                    <div class="detailed-content">
-                        <div id="analysis-tab" class="tab-content active">
-                            <div id="detailsContentAnalysis" class="empty-state">
-                                Enter some text to see content analysis
-                            </div>
-                        </div>
-
-                        <div id="reading-tab" class="tab-content">
-                             <div id="detailsContentReading" class="empty-state">
-                                Enter some text to see reading time estimates
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                </div>
         </div>
-        </div>
+    </div>
 
-    <script src="/components/toggle.js"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script>
-        // Global references
         const textInput = document.getElementById('textInput');
-        const highlightArea = document.getElementById('highlight-area');
         const searchInput = document.getElementById('search-input');
-        const searchStatus = document.getElementById('search-status');
+        const highlightArea = document.getElementById('highlight-area');
 
-        // NEW: Tab Logic
-        function setupTabs() {
-            const tabs = document.querySelectorAll('.tab-button');
-            const contents = document.querySelectorAll('.tab-content');
-
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const targetId = tab.dataset.tab;
-                    
-                    // Deactivate all tabs and contents
-                    tabs.forEach(t => t.classList.remove('active'));
-                    contents.forEach(c => c.classList.remove('active'));
-
-                    // Activate selected tab and content
-                    tab.classList.add('active');
-                    document.getElementById(targetId).classList.add('active');
-                });
-            });
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
-        // END NEW Tab Logic
-
 
         function updateStats() {
             const text = textInput.value;
-            
-            if (!text.trim()) {
-                displayEmptyStats();
-                highlightArea.textContent = '';
-                searchStatus.textContent = '0 matches';
-                return;
-            }
+            const searchTerm = searchInput.value.toLowerCase();
 
-            // Basic counts
-            const stats = calculateStats(text);
-            
-            // Update quick stats
-            document.getElementById('characterCount').textContent = stats.characters.toLocaleString();
-            document.getElementById('characterNoSpaceCount').textContent = stats.charactersNoSpaces.toLocaleString();
-            document.getElementById('wordCount').textContent = stats.words.toLocaleString();
-            document.getElementById('lineCount').textContent = stats.lines.toLocaleString();
-            document.getElementById('paragraphCount').textContent = stats.paragraphs.toLocaleString();
-            document.getElementById('sentenceCount').textContent = stats.sentences.toLocaleString();
+            // Character count
+            const charCount = text.length;
+            document.getElementById('charCount').textContent = charCount.toLocaleString();
 
-            // Update detailed stats
-            displayDetailedStats(text, stats);
+            // Character count without spaces
+            const charNoSpace = text.replace(/\s/g, '').length;
+            document.getElementById('charNoSpaceCount').textContent = charNoSpace.toLocaleString();
 
-            // Run search/highlighting on every text update
-            performSearch();
-        }
-
-        // Search and Highlight Function
-        function performSearch() {
-            const text = textInput.value;
-            const searchTerm = searchInput.value.trim();
-            
-            if (!searchTerm || !text) {
-                highlightArea.textContent = text;
-                searchStatus.textContent = '0 matches';
-                return;
-            }
-
-            // Escape special characters for regex construction
-            const escapedSearchTerm = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            const regex = new RegExp(escapedSearchTerm, 'gi');
-            let matchCount = 0;
-            
-            // Replace matches with a span for highlighting
-            const highlightedText = text.replace(regex, (match) => {
-                matchCount++;
-                // Check if the match is part of a word to ensure accurate highlighting display
-                return `<span class="highlight-match">${match}</span>`;
-            });
-            
-            highlightArea.innerHTML = highlightedText;
-            searchStatus.textContent = `${matchCount.toLocaleString()} matches`;
-        }
-
-        function calculateStats(text) {
-            const stats = {};
-
-            // Character counts
-            stats.characters = text.length;
-            stats.charactersNoSpaces = text.replace(/\s/g, '').length;
-
-            // Word count (split by whitespace, filter empty)
+            // Word count
             const words = text.trim().split(/\s+/).filter(word => word.length > 0);
-            stats.words = words.length;
+            const wordCount = text.trim() === '' ? 0 : words.length;
+            document.getElementById('wordCount').textContent = wordCount.toLocaleString();
 
             // Line count
-            // Use split('\n') for visible lines, then filter out empty lines if needed
-            stats.lines = text.split('\n').length; 
+            const lines = text.split('\n');
+            const lineCount = text === '' ? 0 : lines.length;
+            document.getElementById('lineCount').textContent = lineCount.toLocaleString();
 
-            // Paragraph count (separated by double newlines or more)
-            const paragraphs = text.trim().split(/\n\s*\n/).filter(p => p.trim().length > 0);
-            stats.paragraphs = paragraphs.length;
-
-            // Sentence count (basic - split by . ! ?)
+            // Sentence count
             const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
-            stats.sentences = sentences.length;
+            const sentenceCount = sentences.length;
+            document.getElementById('sentenceCount').textContent = sentenceCount.toLocaleString();
 
-            // Additional stats
-            stats.spaces = (text.match(/ /g) || []).length;
-            stats.whitespace = (text.match(/\s/g) || []).length;
-            stats.digits = (text.match(/\d/g) || []).length;
-            stats.letters = (text.match(/[a-zA-Z]/g) || []).length;
-            stats.punctuation = (text.match(/[^\w\s]/g) || []).length;
+            // Paragraph count
+            const paragraphs = text.split(/\n\s*\n/).filter(p => p.trim().length > 0);
+            const paragraphCount = paragraphs.length;
+            document.getElementById('paragraphCount').textContent = paragraphCount.toLocaleString();
 
-            // Average calculations
-            stats.avgWordsPerSentence = stats.sentences > 0 ? (stats.words / stats.sentences).toFixed(1) : 0;
-            stats.avgCharsPerWord = stats.words > 0 ? (stats.charactersNoSpaces / stats.words).toFixed(1) : 0;
-            stats.avgWordsPerLine = stats.lines > 0 ? (stats.words / stats.lines).toFixed(1) : 0;
+            // Search highlighting - escape HTML first
+            let highlightedText = escapeHtml(text);
+            let matchCount = 0;
+            
+            if (searchTerm && searchTerm.length > 0) {
+                const regex = new RegExp(escapeRegex(searchTerm), 'gi');
+                const matches = text.match(regex);
+                matchCount = matches ? matches.length : 0;
+                
+                highlightedText = highlightedText.replace(regex, match => `<span class="highlight-match">${match}</span>`);
+            }
+            
+            highlightArea.innerHTML = highlightedText;
+            document.getElementById('search-status').textContent = `${matchCount} match${matchCount !== 1 ? 'es' : ''}`;
 
-            return stats;
+            // Update detailed stats
+            updateDetailedStats(text, words, wordCount);
         }
 
-        function displayDetailedStats(text, stats) {
-            const contentAnalysis = document.getElementById('detailsContentAnalysis');
-            const contentReading = document.getElementById('detailsContentReading');
-            
-            // --- Analysis Tab Content ---
-            
-            // Most common words
-            const words = text.toLowerCase().match(/\b\w+\b/g) || [];
-            const wordFreq = {};
-            words.forEach(word => {
-                if (word.length > 2) { // Filter out very short words
-                    wordFreq[word] = (wordFreq[word] || 0) + 1;
-                }
-            });
-            
-            const topWords = Object.entries(wordFreq)
-                .sort((a, b) => b[1] - a[1])
-                .slice(0, 5);
+        function escapeRegex(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
 
-            let analysisHtml = `
-                <div class="detail-row">
-                    <span class="detail-label">Total characters (with spaces)</span>
-                    <span class="detail-value">${stats.characters.toLocaleString()}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Total characters (no spaces)</span>
-                    <span class="detail-value">${stats.charactersNoSpaces.toLocaleString()}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Letters</span>
-                    <span class="detail-value">${stats.letters.toLocaleString()}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Digits</span>
-                    <span class="detail-value">${stats.digits.toLocaleString()}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Spaces</span>
-                    <span class="detail-value">${stats.spaces.toLocaleString()}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Punctuation marks</span>
-                    <span class="detail-value">${stats.punctuation.toLocaleString()}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Avg words per sentence</span>
-                    <span class="detail-value">${stats.avgWordsPerSentence}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Avg characters per word</span>
-                    <span class="detail-value">${stats.avgCharsPerWord}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Avg words per line</span>
-                    <span class="detail-value">${stats.avgWordsPerLine}</span>
-                </div>
-            `;
-            if (topWords.length > 0) {
-                analysisHtml += `
-                    <div class="detail-row">
-                        <span class="detail-label">Top 5 common words</span>
-                        <span class="detail-value">${topWords.map(([word, count]) => `${word} (${count})`).join(', ')}</span>
-                    </div>
-                `;
-            } else {
-                 analysisHtml += `
-                    <div class="detail-row">
-                        <span class="detail-label">Top 5 common words</span>
-                        <span class="detail-value">N/A</span>
-                    </div>
-                `;
+        function updateDetailedStats(text, words, wordCount) {
+            const detailsAnalysis = document.getElementById('detailsContentAnalysis');
+            const detailsReading = document.getElementById('detailsContentReading');
+
+            if (text.trim() === '') {
+                detailsAnalysis.innerHTML = '<div class="empty-state">Enter some text to see analysis</div>';
+                detailsReading.innerHTML = '<div class="empty-state">Enter some text to see reading time</div>';
+                return;
             }
 
-            contentAnalysis.innerHTML = analysisHtml;
+            // Analysis tab
+            const avgWordLength = wordCount > 0 ? (text.replace(/\s/g, '').length / wordCount).toFixed(2) : 0;
+            const uniqueWords = new Set(words.map(w => w.toLowerCase())).size;
+            const longestWord = words.reduce((a, b) => a.length > b.length ? a : b, '');
 
+            detailsAnalysis.innerHTML = `
+                <div class="detail-row">
+                    <span class="detail-label">Average Word Length</span>
+                    <span class="detail-value">${avgWordLength} chars</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Unique Words</span>
+                    <span class="detail-value">${uniqueWords.toLocaleString()}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Longest Word</span>
+                    <span class="detail-value">${escapeHtml(longestWord)} (${longestWord.length} chars)</span>
+                </div>
+            `;
 
-            // --- Reading Time Tab Content ---
+            // Reading time tab
+            const wordsPerMinute = 200;
+            const readingTimeMinutes = Math.ceil(wordCount / wordsPerMinute);
+            const speakingTimeMinutes = Math.ceil(wordCount / 130); // Average speaking speed
 
-            const readingStats = calculateReadingStats(stats);
-            let readingHtml = `
-                <div class="reading-stats">
-                    <div class="reading-grid">
-                        <div class="reading-item">
-                            <span class="reading-value">${readingStats.averageReading}</span>
-                            <span class="reading-label">Average reading<br>(250 WPM)</span>
-                        </div>
-                        <div class="reading-item">
-                            <span class="reading-value">${readingStats.fastReading}</span>
-                            <span class="reading-label">Fast reading<br>(400 WPM)</span>
-                        </div>
-                        <div class="reading-item">
-                            <span class="reading-value">${readingStats.slowReading}</span>
-                            <span class="reading-label">Slow reading<br>(150 WPM)</span>
-                        </div>
-                        <div class="reading-item">
-                            <span class="reading-value">${readingStats.speaking}</span>
-                            <span class="reading-label">Speaking pace<br>(130 WPM)</span>
-                        </div>
+            detailsReading.innerHTML = `
+                <div class="reading-title">Estimated Times</div>
+                <div class="reading-grid">
+                    <div class="reading-item">
+                        <div class="stat-value">${readingTimeMinutes}</div>
+                        <div class="stat-label">min reading</div>
+                    </div>
+                    <div class="reading-item">
+                        <div class="stat-value">${speakingTimeMinutes}</div>
+                        <div class="stat-label">min speaking</div>
                     </div>
                 </div>
             `;
-             contentReading.innerHTML = readingHtml;
         }
 
-        function calculateReadingStats(stats) {
-            const words = stats.words;
+        function switchTab(tab) {
+            const buttons = document.querySelectorAll('.tab-button');
+            const analysisContent = document.getElementById('detailsContentAnalysis');
+            const readingContent = document.getElementById('detailsContentReading');
+
+            buttons.forEach(btn => btn.classList.remove('active'));
             
-            const formatTime = (minutes) => {
-                if (words === 0) return '0 min';
-                if (minutes < 1) {
-                    return '< 1 min';
-                } else if (minutes < 60) {
-                    return `${Math.ceil(minutes)} min`;
-                } else {
-                    const hours = Math.floor(minutes / 60);
-                    const mins = Math.ceil(minutes % 60);
-                    return `${hours}h ${mins}m`;
-                }
-            };
-
-            return {
-                slowReading: formatTime(words / 150),
-                averageReading: formatTime(words / 250),
-                fastReading: formatTime(words / 400),
-                speaking: formatTime(words / 130)
-            };
-        }
-
-        function displayEmptyStats() {
-            // Reset all counters to 0
-            document.getElementById('characterCount').textContent = '0';
-            document.getElementById('characterNoSpaceCount').textContent = '0';
-            document.getElementById('wordCount').textContent = '0';
-            document.getElementById('lineCount').textContent = '0';
-            document.getElementById('paragraphCount').textContent = '0';
-            document.getElementById('sentenceCount').textContent = '0';
-
-            // Reset detailed stats with empty state message
-            const emptyMessage = '<div class="empty-state">Enter some text to see analysis</div>';
-            document.getElementById('detailsContentAnalysis').innerHTML = emptyMessage;
-            document.getElementById('detailsContentReading').innerHTML = emptyMessage;
+            if (tab === 'analysis') {
+                buttons[0].classList.add('active');
+                analysisContent.classList.remove('hidden');
+                readingContent.classList.add('hidden');
+            } else {
+                buttons[1].classList.add('active');
+                analysisContent.classList.add('hidden');
+                readingContent.classList.remove('hidden');
+            }
         }
 
         function loadFile(event) {
@@ -846,6 +759,7 @@
 
         function clearText() {
             textInput.value = '';
+            searchInput.value = '';
             document.getElementById('textFile').value = '';
             updateStats();
         }
@@ -856,17 +770,12 @@
                 textInput.value = text;
                 updateStats();
             } catch (err) {
-                // Fallback for browsers that don't support clipboard API
                 alert('Please paste manually using Ctrl+V (or Cmd+V on Mac)');
             }
         }
 
-        // Initialize with empty stats, theme, and tabs
-        window.addEventListener('load', () => {
-            updateStats();
-            setupTabs(); // Initialize tab switching logic
-            lucide.createIcons();
-        });
+        // Initialize with empty stats
+        updateStats();
     </script>
 </body>
 </html>

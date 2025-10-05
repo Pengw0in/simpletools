@@ -4,294 +4,505 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lorem Ipsum Generator</title>
-    <link rel="icon" type="image/x-icon" href="../../public/logo.ico">
-    <link rel="stylesheet" href="/components/toggle.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
     <style>
+        /* Global Reset and Retro Font */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Press Start 2P', cursive;
         }
+
+        /* Basic Retro Color Palette */
+        :root {
+            --window-bg: #c0c0c0; 
+            --border-dark: #808080;
+            --border-light: #ffffff;
+            --text-color: #000000;
+            --button-face: #c0c0c0;
+            --button-pressed: #dfdfdf;
+            --input-bg: #ffffff;
+            --header-title: #000080;
+            --error-color: #ffcccc;
+            --success-color: #008000;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: var(--bg-color);
-            color: var(--text-primary);
+            background: var(--window-bg);
+            color: var(--text-color);
             line-height: 1.6;
+            padding: 30px;
         }
+
+        /* --- Classic Windows Border Mixin --- */
+        .window-frame {
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--window-bg);
+            padding: 3px; 
+            box-shadow: none;
+        }
+
         .container {
-            max-width: 900px; 
+            max-width: 800px;
             margin: 0 auto;
-            padding: 80px 40px; 
+            padding: 0; 
         }
-        .header {
+
+        /* --- Title Bar/Header --- */
+        .title-bar {
+            background: var(--header-title);
+            color: var(--border-light);
+            padding: 5px 8px;
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-dark);
+        }
+
+        .title-bar-text {
+            white-space: nowrap;
+        }
+
+        /* The main window body */
+        .app-body {
+            padding: 15px;
+        }
+
+        /* --- Section Styling (Sunken Panel) --- */
+        .section {
+            margin-bottom: 15px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--button-pressed);
+            padding: 1px;
+        }
+
+        .section-header {
+            padding: 6px 8px;
+            font-size: 11px;
+            font-weight: normal;
+            border-top: 1px solid var(--border-dark);
+            border-left: 1px solid var(--border-dark);
+            border-right: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-light);
+            background: #ffffff; 
+            display: inline-block;
+            margin-bottom: -1px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .section-content {
+            padding: 15px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--window-bg);
+            margin-top: -1px;
+        }
+
+        /* --- Configuration Section --- */
+        .config-row {
+            display: flex;
+            gap: 15px;
+            align-items: end;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .config-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .config-label {
+            font-size: 10px;
+            font-weight: normal;
+            color: var(--text-color);
+        }
+
+        .config-input {
+            padding: 6px 12px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-size: 10px;
+            font-family: 'Press Start 2P', cursive;
+            outline: none;
+        }
+
+        .config-input:focus {
+            box-shadow: 0 0 0 1px var(--text-color) inset;
+        }
+
+        /* --- Custom Dropdown --- */
+        .custom-dropdown {
+            position: relative;
+            width: 100%;
+        }
+
+        .dropdown-selected {
+            width: 100%;
+            padding: 6px 30px 6px 12px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-size: 10px;
+            font-family: 'Press Start 2P', cursive;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .dropdown-selected:hover {
+            background: var(--button-pressed);
+        }
+
+        .dropdown-arrow {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-color);
+            font-size: 8px;
+            pointer-events: none;
+        }
+
+        .dropdown-options {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--input-bg);
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            z-index: 100;
+            display: none;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .dropdown-options.show {
+            display: block;
+        }
+
+        .dropdown-option {
+            padding: 8px;
+            font-size: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-dark);
+            background: var(--input-bg);
+            color: var(--text-color);
+        }
+
+        .dropdown-option:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-option:hover {
+            background: var(--button-pressed);
+        }
+
+        .dropdown-option.selected {
+            background: var(--header-title);
+            color: var(--border-light);
+        }
+
+        /* --- Generate Button --- */
+        .generate-button {
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--header-title);
+            color: var(--border-light);
+            padding: 8px 16px;
+            font-size: 10px;
             text-align: center;
-            margin-bottom: 70px;
+            cursor: pointer;
+            transition: none;
+            box-shadow: none;
+            line-height: 1;
+            font-family: 'Press Start 2P', cursive;
+            align-self: end;
+        }
+
+        .generate-button:active {
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 9px 15px 7px 17px;
+        }
+
+        /* --- Output Section --- */
+        .output-container {
             position: relative;
         }
-        .header h1 {
-            font-size: 2.5rem;
-            font-weight: 200;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-        }
-        .header p {
-            color: var(--text-secondary);
-            font-size: 16px;
-            font-weight: 300;
-        }
-        .theme-toggle {
-            position: fixed;
-            top: 30px;
-            right: 30px;
-            background: none;
-            border: none;
-            padding: 8px;
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
-            z-index: 100;
-            color: var(--text-secondary);
-            transition: all 0.2s ease;
-        }
-        .theme-toggle:hover {
-            color: var(--text-primary);
-            background: var(--hover-bg);
-            border-radius: 4px;
-        }
-        .input-section, .output-section {
-            background: var(--card-bg);
-            border-radius: 8px;
-            padding: 30px; /* Slight reduction for compactness */
-            margin-bottom: 40px; 
-        }
-        
-        /* ---------------------------------------------------- */
-        /* NEW STYLES FOR COMPACT INPUT SECTION                 */
-        /* ---------------------------------------------------- */
 
-        /* 1. FLEX LAYOUT FOR SIDE-BY-SIDE INPUTS */
-        .controls-row {
+        .output-header {
+            padding: 8px;
+            background: var(--button-pressed);
+            border-bottom: 2px solid var(--border-dark);
+            font-weight: normal;
+            color: var(--text-color);
+            font-size: 11px;
             display: flex;
-            gap: 20px; /* Space between the two input groups */
-            margin-bottom: 25px;
+            justify-content: space-between;
+            align-items: center;
         }
-        .controls-row .input-group {
-            flex: 1; /* Make both groups take equal width */
-            margin-bottom: 0; /* Remove vertical margin from input groups */
-        }
-        
-        /* 2. TIGHTER INPUT/LABEL SPACING */
-        .input-label {
-            display: block;
-            font-size: 13px; /* Slightly smaller label text */
-            font-weight: 400;
-            color: var(--text-secondary);
-            margin-bottom: 6px; /* Reduced vertical space */
-        }
-        
-        /* 3. TIGHTER INPUT FIELD PADDING */
-        .input-field {
+
+        .output-textarea {
             width: 100%;
-            padding: 10px 0; /* Reduced vertical padding */
-            border: none;
-            border-bottom: 1px solid var(--border-color);
-            border-radius: 0;
-            background: transparent;
-            color: var(--text-primary);
-            font-size: 16px; 
-            outline: none;
-            transition: border-bottom-color 0.2s;
-        }
-        .input-field:focus {
-            border-bottom-color: var(--text-primary);
-        }
-        
-        /* 4. BUTTON STYLING (Slightly reduced padding) */
-        .generate-btn {
-            width: 100%;
-            padding: 14px; /* Reduced to 14px */
-            background: var(--text-primary);
-            color: var(--bg-color);
-            border: none;
-            border-radius: 4px; 
-            cursor: pointer;
-            font-size: 15px; 
-            font-weight: 500;
-            transition: background 0.2s, transform 0.1s;
-            margin-top: 10px; /* Reduced space above button */
-        }
-        .generate-btn:hover {
-            background: var(--text-secondary);
-        }
-        
-        /* OUTPUT AREA STYLES (Retained from previous minimalist version) */
-        .output-label {
-            display: block;
-            font-size: 14px;
-            font-weight: 400;
-            color: var(--text-secondary);
-            margin-bottom: 10px;
-        }
-        .output-text {
-            width: 100%;
-            padding: 20px; 
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            background: var(--code-bg);
-            color: var(--text-primary);
-            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
-            font-size: 14px;
-            line-height: 1.6;
-            min-height: 280px;
+            min-height: 400px;
+            padding: 12px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-family: 'Press Start 2P', monospace;
+            font-size: 9px;
+            line-height: 1.4;
             resize: vertical;
             outline: none;
         }
-        .copy-btn {
-            margin-top: 15px; 
-            padding: 8px 16px; 
-            border: 1px solid var(--border-color);
-            background: transparent;
-            border-radius: 4px;
+
+        .output-textarea:read-only {
+            background: var(--button-pressed);
+        }
+
+        .output-textarea::placeholder {
+            color: var(--border-dark);
+        }
+
+        /* --- Copy Button --- */
+        .copy-button {
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--success-color);
+            color: var(--border-light);
+            padding: 6px 12px;
+            font-size: 10px;
+            text-align: center;
             cursor: pointer;
-            font-size: 13px;
-            color: var(--text-primary);
-            transition: background 0.2s;
-        }
-        .copy-btn:hover {
-            background: var(--hover-bg);
-            border-color: var(--text-primary);
-        }
-        
-        /* RESPONSIVE: Stack inputs vertically on small screens */
-        @media (max-width: 600px) {
-            .container {
-                padding: 40px 20px; 
-            }
-            .header h1 {
-                font-size: 2rem;
-            }
-            .controls-row {
-                flex-direction: column;
-                gap: 15px; /* Reduced gap when stacked */
-                margin-bottom: 20px;
-            }
-            .input-group {
-                /* When stacked, add a little margin between them */
-                margin-bottom: 0 !important;
-            }
+            transition: none;
+            box-shadow: none;
+            line-height: 1;
+            font-family: 'Press Start 2P', cursive;
         }
 
-        .notification {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 12px 20px;
-            background: var(--notification-bg);
-            color: var(--card-bg);
-            border-radius: 4px;
-            font-size: 14px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-            z-index: 1000;
+        .copy-button:active {
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 7px 11px 5px 13px;
         }
 
-        .notification.error {
-            background: var(--error-color);
+        .copy-button:disabled {
+            background: var(--border-dark);
+            color: var(--button-pressed);
+            cursor: not-allowed;
         }
 
-        [data-theme="dark"] .notification {
-            background: #fafafa;
-            color: #222;
-        }
-        [data-theme="dark"] .notification.error {
-            background: #ff6b6b;
-            color: #fff;
+        .copy-button:disabled:active {
+            padding: 6px 12px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
         }
 
-        .notification.show {
-            opacity: 1;
-        }
-
+        /* --- Hidden Elements --- */
         .hidden {
             display: none;
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                max-width: 100%;
+            }
+
+            .config-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+
+            .config-group {
+                width: 100%;
+                min-width: auto;
+            }
+
+            .config-input,
+            .generate-button,
+            .copy-button {
+                width: 100%;
+            }
+
+            .output-textarea {
+                min-height: 300px;
+                font-size: 8px;
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .output-textarea {
+                min-height: 250px;
+                font-size: 7px;
+                padding: 8px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-                <i data-lucide="sun" class="theme-icon" id="theme-icon"></i>
-            </button>
-            <h1>Lorem Ipsum Generator</h1>
-            <p>Generate placeholder text for clean design mockups.</p>
+    <div class="container window-frame">
+        <div class="title-bar">
+            <div class="title-bar-text">Lorem Ipsum Generator</div>
         </div>
+        
+        <div class="app-body">
+            <div class="section">
+                <div class="section-header">Text Configuration</div>
+                <div class="section-content">
+                    <div class="config-row">
+                        <div class="config-group">
+                            <label class="config-label">Type of Content:</label>
+                            <div class="custom-dropdown">
+                                <div class="dropdown-selected" onclick="toggleDropdown()">
+                                    <span id="selectedType">Paragraphs</span>
+                                    <span class="dropdown-arrow">▼</span>
+                                </div>
+                                <div class="dropdown-options" id="typeOptions">
+                                    <div class="dropdown-option selected" onclick="selectType('paragraphs', 'Paragraphs')">Paragraphs</div>
+                                    <div class="dropdown-option" onclick="selectType('sentences', 'Sentences')">Sentences</div>
+                                    <div class="dropdown-option" onclick="selectType('words', 'Words')">Words</div>
+                                </div>
+                            </div>
+                        </div>
 
-        <div class="input-section">
-            <div class="controls-row">
-                <div class="input-group">
-                    <label class="input-label" for="type">TYPE OF CONTENT</label>
-                    <select id="type" class="input-field">
-                        <option value="paragraphs">Paragraphs</option>
-                        <option value="sentences">Sentences</option>
-                        <option value="words">Words</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label class="input-label" for="count">COUNT (1-100)</label>
-                    <input type="number" id="count" class="input-field" value="3" min="1" max="100" placeholder="e.g., 5">
+                        <div class="config-group">
+                            <label class="config-label" for="count">Count (1-100):</label>
+                            <input type="number" id="count" class="config-input" value="3" min="1" max="100" placeholder="e.g., 5">
+                        </div>
+
+                        <button class="generate-button" onclick="generateLoremIpsum()">
+                            Generate Text
+                        </button>
+                    </div>
                 </div>
             </div>
-            <button class="generate-btn" onclick="generateLoremIpsum()">Generate Text</button>
-        </div>
 
-        <div class="output-section">
-            <label class="output-label">GENERATED TEXT OUTPUT</label>
-            <textarea id="output" class="output-text" readonly placeholder="Your generated Lorem Ipsum text will appear here..."></textarea>
-            <button class="copy-btn" onclick="copyToClipboard()">Copy to Clipboard</button>
+            <div class="section">
+                <div class="section-header">Generated Output</div>
+                <div class="section-content" style="padding: 0;">
+                    <div class="output-container">
+                        <div class="output-header">
+                            <span>Generated Lorem Ipsum Text</span>
+                            <button class="copy-button" id="copyButton" onclick="copyToClipboard()" disabled>
+                                Copy
+                            </button>
+                        </div>
+                        <textarea 
+                            id="output" 
+                            class="output-textarea"
+                            readonly
+                            placeholder="Your generated Lorem Ipsum text will appear here..."
+                        ></textarea>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <div id="notification" class="notification"></div>
     </div>
 
-    <script src="/components/toggle.js"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script>
-        // JavaScript logic remains unchanged, as it was already clean.
+        // State management
+        let selectedContentType = 'paragraphs';
+
+        // Lorem ipsum word bank
         const loremWords = [
-            "lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit", "sed", "do", "eiusmod", "tempor", "incididunt", "ut", "labore", "et", "dolore", "magna", "aliqua", "ut", "enim", "ad", "minim", "veniam", "quis", "nostrud", "exercitation", "ullamco", "laboris", "nisi", "ut", "aliquip", "ex", "ea", "commodo", "consequat", "duis", "aute", "irure", "dolor", "in", "reprehenderit", "in", "voluptate", "velit", "esse", "cillum", "dolore", "eu", "fugiat", "nulla", "pariatur", "excepteur", "sint", "occaecat", "cupidatat", "non", "proident", "sunt", "in", "culpa", "qui", "officia", "deserunt", "mollit", "anim", "id", "est", "laborum"
+            "lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit", "sed", "do", 
+            "eiusmod", "tempor", "incididunt", "ut", "labore", "et", "dolore", "magna", "aliqua", "ut", 
+            "enim", "ad", "minim", "veniam", "quis", "nostrud", "exercitation", "ullamco", "laboris", 
+            "nisi", "ut", "aliquip", "ex", "ea", "commodo", "consequat", "duis", "aute", "irure", "dolor", 
+            "in", "reprehenderit", "in", "voluptate", "velit", "esse", "cillum", "dolore", "eu", "fugiat", 
+            "nulla", "pariatur", "excepteur", "sint", "occaecat", "cupidatat", "non", "proident", "sunt", 
+            "in", "culpa", "qui", "officia", "deserunt", "mollit", "anim", "id", "est", "laborum"
         ];
 
+        // --- Dropdown Functions ---
+        function toggleDropdown() {
+            const options = document.getElementById('typeOptions');
+            options.classList.toggle('show');
+        }
+
+        function selectType(type, displayName) {
+            selectedContentType = type;
+            document.getElementById('selectedType').textContent = displayName;
+            document.getElementById('typeOptions').classList.remove('show');
+            
+            // Update selected state
+            document.querySelectorAll('.dropdown-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.custom-dropdown')) {
+                document.getElementById('typeOptions').classList.remove('show');
+            }
+        });
+
+        // --- Text Generation Functions ---
         function generateLoremIpsum() {
-            const type = document.getElementById('type').value;
             const countInput = document.getElementById('count');
             const count = parseInt(countInput.value);
 
+            // Validate input
             if (isNaN(count) || count < 1 || count > 100) {
-                showStatus('Count must be a number between 1 and 100', 'error');
-                if (isNaN(count)) countInput.value = 3; 
+                if (isNaN(count)) countInput.value = 3;
                 return;
             }
 
             let text = '';
 
-            if (type === 'paragraphs') {
+            if (selectedContentType === 'paragraphs') {
                 for (let i = 0; i < count; i++) {
                     text += generateParagraph() + '\n\n';
                 }
-            } else if (type === 'sentences') {
+            } else if (selectedContentType === 'sentences') {
                 text = generateSentences(count);
-            } else if (type === 'words') {
+            } else if (selectedContentType === 'words') {
                 text = generateWords(count);
             }
 
-            document.getElementById('output').value = text.trim();
+            const outputElement = document.getElementById('output');
+            outputElement.value = text.trim();
+            
+            // Enable copy button
+            document.getElementById('copyButton').disabled = false;
         }
 
         function generateParagraph() {
-            const sentenceCount = Math.floor(Math.random() * 5) + 3;
+            const sentenceCount = Math.floor(Math.random() * 5) + 3; // 3-7 sentences
             return generateSentences(sentenceCount);
         }
 
@@ -304,7 +515,7 @@
         }
 
         function generateSentence() {
-            const wordCount = Math.floor(Math.random() * 10) + 5;
+            const wordCount = Math.floor(Math.random() * 10) + 5; // 5-14 words
             let sentence = generateWords(wordCount);
             return sentence.charAt(0).toUpperCase() + sentence.slice(1) + '.';
         }
@@ -319,48 +530,25 @@
 
         function copyToClipboard() {
             const text = document.getElementById('output').value;
-            if (!text) {
-                showStatus('Nothing to copy', 'error');
-                return;
+            if (!text) return;
+            
+            // Use the fallback method for compatibility
+            const tempInput = document.createElement('textarea');
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            
+            try {
+                document.execCommand('copy');
+            } catch (err) {
+                console.error('Failed to copy text:', err);
             }
             
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(text).then(() => {
-                    showStatus('Copied to clipboard! 🎉', 'success');
-                }).catch(() => {
-                    copyFallback(text);
-                });
-            } else {
-                copyFallback(text);
-            }
-        }
-        
-        function copyFallback(text) {
-             try {
-                const outputEl = document.getElementById('output');
-                outputEl.select();
-                document.execCommand('copy');
-                showStatus('Copied to clipboard! (Fallback)', 'success');
-            } catch (err) {
-                showStatus('Failed to copy. Please copy manually.', 'error');
-            }
+            document.body.removeChild(tempInput);
         }
 
-        function showStatus(message, type = 'info') {
-            const notif = document.getElementById('notification');
-            notif.textContent = message;
-            notif.classList.remove('error', 'show');
-            if (type === 'error') {
-                notif.classList.add('error');
-            }
-            notif.classList.add('show');
-            setTimeout(() => {
-                notif.classList.remove('show');
-            }, 3000);
-        }
-
+        // Initialize with sample text
         window.onload = function() {
-            lucide.createIcons();
             generateLoremIpsum();
         };
     </script>

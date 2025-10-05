@@ -3,299 +3,330 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Under Construction - Simple Tools</title>
-    <link rel="icon" type="image/x-icon" href="../../public/logo.ico">
-    <link rel="stylesheet" href="/components/toggle.css">
+    <title>Under Construction</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
     <style>
+        /* Global Reset and Retro Font */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        /* Basic Retro Color Palette */
+        :root {
+            --window-bg: #c0c0c0; 
+            --border-dark: #808080;
+            --border-light: #ffffff;
+            --text-color: #000000;
+            --button-face: #c0c0c0;
+            --button-pressed: #dfdfdf;
+            --input-bg: #ffffff;
+            --header-title: #000080;
+            --error-color: #ffcccc;
+            --success-color: #008000;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--bg-color);
-            color: var(--text-primary);
+            background: var(--window-bg);
+            color: var(--text-color);
             line-height: 1.6;
+            padding: 30px;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
+        /* --- Classic Windows Border Mixin --- */
+        .window-frame {
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--window-bg);
+            padding: 3px; 
+            box-shadow: none;
+        }
+
         .container {
             max-width: 600px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 0; 
+        }
+
+        /* --- Title Bar/Header --- */
+        .title-bar {
+            background: var(--header-title);
+            color: var(--border-light);
+            padding: 5px 8px;
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-dark);
+        }
+
+        .title-bar-text {
+            white-space: nowrap;
+        }
+
+        /* The main window body */
+        .app-body {
+            padding: 15px;
+        }
+
+        /* --- Section Styling (Sunken Panel) --- */
+        .section {
+            margin-bottom: 15px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--button-pressed);
+            padding: 1px;
+        }
+
+        .section-header {
+            padding: 6px 8px;
+            font-size: 11px;
+            font-weight: normal;
+            border-top: 1px solid var(--border-dark);
+            border-left: 1px solid var(--border-dark);
+            border-right: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-light);
+            background: #ffffff; 
+            display: inline-block;
+            margin-bottom: -1px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .section-content {
+            padding: 15px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--window-bg);
+            margin-top: -1px;
             text-align: center;
         }
 
-        /* START: Theme Toggle - Now square! */
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 8px;
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
-            z-index: 100;
-            color: var(--text-secondary);
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-sizing: border-box;
-            line-height: 0;
-        }
-        
-        .theme-toggle:hover {
-            background: var(--hover-bg);
-            border-color: var(--text-secondary);
-            color: var(--text-primary);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-        }
-        /* END: Theme Toggle */
-
-        .construction-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 60px 40px;
-            margin-bottom: 30px;
-        }
-
+        /* --- Construction Icon --- */
         .construction-icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 30px auto;
-            color: var(--text-secondary);
-            stroke-width: 1;
+            font-size: 48px;
+            color: var(--border-dark);
+            margin-bottom: 15px;
+            display: block;
         }
 
         .construction-title {
-            font-size: 2rem;
-            font-weight: 300;
-            color: var(--text-primary);
-            margin-bottom: 16px;
+            font-size: 18px;
+            font-weight: normal;
+            color: var(--text-color);
+            margin-bottom: 10px;
         }
 
         .construction-subtitle {
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-            margin-bottom: 24px;
+            font-size: 12px;
+            color: var(--text-color);
+            margin-bottom: 15px;
         }
 
         .construction-description {
-            color: var(--text-secondary);
-            font-size: 14px;
-            line-height: 1.6;
-            margin-bottom: 40px;
-            max-width: 400px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .back-button {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            background: var(--text-primary);
-            color: var(--card-bg);
-            text-decoration: none;
-            border-radius: 4px;
-            font-size: 14px;
-            transition: all 0.2s ease;
-        }
-
-        .back-button:hover {
-            background: var(--text-secondary);
-        }
-
-        .back-icon {
-            width: 16px;
-            height: 16px;
-        }
-
-        .features-section {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 30px;
-        }
-
-        .features-title {
-            font-size: 1.1rem;
-            font-weight: 500;
-            color: var(--text-primary);
+            font-size: 10px;
+            color: var(--text-color);
+            line-height: 1.4;
             margin-bottom: 20px;
         }
 
+        /* --- Back Button --- */
+        .back-button {
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--header-title);
+            color: var(--border-light);
+            padding: 6px 12px;
+            font-size: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: none;
+            box-shadow: none;
+            line-height: 1;
+            font-family: 'Press Start 2P', cursive;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-button:active {
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 7px 11px 5px 13px;
+        }
+
+        /* --- Features List --- */
         .features-list {
             list-style: none;
+            padding: 0;
             text-align: left;
             max-width: 300px;
             margin: 0 auto;
         }
 
         .features-list li {
-            padding: 8px 0;
-            color: var(--text-secondary);
-            font-size: 14px;
+            padding: 6px 0;
+            color: var(--text-color);
+            font-size: 9px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .feature-icon {
-            width: 16px;
-            height: 16px;
-            color: var(--text-secondary);
-            opacity: 0.7;
+            font-size: 8px;
+            color: var(--border-dark);
         }
 
+        /* --- Progress Section --- */
         .progress-section {
-            margin-top: 30px;
-            padding: 20px;
-            background: var(--code-bg);
-            border-radius: 4px;
+            margin-top: 15px;
+            padding: 12px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--input-bg);
         }
 
         .progress-text {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 10px;
+            font-size: 10px;
+            color: var(--text-color);
+            margin-bottom: 8px;
+            text-align: center;
         }
 
         .progress-bar {
             width: 100%;
-            height: 6px;
-            background: var(--border-color);
-            border-radius: 3px;
+            height: 12px;
+            border-style: solid;
+            border-width: 2px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--input-bg);
             overflow: hidden;
         }
 
         .progress-fill {
             height: 100%;
-            background: var(--text-primary);
+            background: var(--header-title);
             width: 35%;
-            border-radius: 3px;
             transition: width 0.3s ease;
         }
 
+        /* --- Responsive Design --- */
         @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
             .container {
-                padding: 20px 16px;
+                max-width: 100%;
             }
 
-            /* Adjusted toggle position for small screens */
-            .theme-toggle {
-                top: 10px; 
-                right: 10px;
-                padding: 6px 10px; /* Smaller padding for mobile square button */
-            }
-            
-            .construction-card {
-                padding: 40px 20px;
-            }
-            
             .construction-icon {
-                width: 60px;
-                height: 60px;
+                font-size: 36px;
             }
-            
+
             .construction-title {
-                font-size: 1.5rem;
+                font-size: 14px;
             }
-            
+
             .construction-subtitle {
-                font-size: 1rem;
+                font-size: 10px;
             }
-            
-            .features-section {
-                padding: 20px;
+
+            .construction-description {
+                font-size: 8px;
+            }
+
+            .features-list li {
+                font-size: 8px;
             }
         }
 
-        .animated {
-            animation: fadeInUp 0.6s ease-out;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
+        @media (max-width: 480px) {
+            .construction-icon {
+                font-size: 28px;
             }
-            to {
-                opacity: 1;
-                transform: translateY(0);
+
+            .construction-title {
+                font-size: 12px;
+            }
+
+            .features-list li {
+                font-size: 7px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-            <i data-lucide="sun" class="theme-icon" id="theme-icon"></i>
-        </button>
-
-        <div class="construction-card animated">
-            <i data-lucide="construction" class="construction-icon"></i>
-            <h1 class="construction-title">Under Construction</h1>
-            <p class="construction-subtitle">This tool is currently being built</p>
-            <p class="construction-description">
-                We're working hard to bring you this amazing tool. It will be available soon with all the features you need.
-            </p>
-            <a href="/" class="back-button">
-                <i data-lucide="arrow-left" class="back-icon"></i>
-                Back to Tools
-            </a>
+    <div class="container window-frame">
+        <div class="title-bar">
+            <div class="title-bar-text">Under Construction</div>
         </div>
+        
+        <div class="app-body">
+            <div class="section">
+                <div class="section-header">Tool Status</div>
+                <div class="section-content">
+                    <div class="construction-icon">🚧</div>
+                    <div class="construction-title">Under Construction</div>
+                    <div class="construction-subtitle">This tool is currently being built</div>
+                    <div class="construction-description">
+                        We're working hard to bring you this amazing tool. It will be available soon with all the features you need.
+                    </div>
+                    <a href="/" class="back-button">← Back to Tools</a>
+                </div>
+            </div>
 
-        <div class="features-section animated">
-            <h2 class="features-title">What to expect:</h2>
-            <ul class="features-list">
-                <li>
-                    <i data-lucide="check-circle" class="feature-icon"></i>
-                    Clean, intuitive interface
-                </li>
-                <li>
-                    <i data-lucide="zap" class="feature-icon"></i>
-                    Fast and responsive
-                </li>
-                <li>
-                    <i data-lucide="shield-check" class="feature-icon"></i>
-                    Privacy-focused (runs in browser)
-                </li>
-                <li>
-                    <i data-lucide="download" class="feature-icon"></i>
-                    Export functionality
-                </li>
-                <li>
-                    <i data-lucide="smartphone" class="feature-icon"></i>
-                    Mobile-friendly design
-                </li>
-            </ul>
+            <div class="section">
+                <div class="section-header">What to expect</div>
+                <div class="section-content">
+                    <ul class="features-list">
+                        <li>
+                            <span class="feature-icon">✓</span>
+                            Clean, intuitive interface
+                        </li>
+                        <li>
+                            <span class="feature-icon">⚡</span>
+                            Fast and responsive
+                        </li>
+                        <li>
+                            <span class="feature-icon">🛡</span>
+                            Privacy-focused (runs in browser)
+                        </li>
+                        <li>
+                            <span class="feature-icon">💾</span>
+                            Export functionality
+                        </li>
+                        <li>
+                            <span class="feature-icon">📱</span>
+                            Mobile-friendly design
+                        </li>
+                    </ul>
 
-            <div class="progress-section">
-                <div class="progress-text">Development Progress</div>
-                <div class="progress-bar">
-                    <div class="progress-fill"></div>
+                    <div class="progress-section">
+                        <div class="progress-text">Development Progress</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="/components/toggle.js"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script>
-        lucide.createIcons();
-        
         // Get tool name from URL parameter if provided
         const urlParams = new URLSearchParams(window.location.search);
         const toolName = urlParams.get('tool');

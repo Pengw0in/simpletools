@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading...</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Retro Font and Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        /* Basic Retro Color Palette */
+        :root {
+            --window-bg: #c0c0c0; 
+            --border-dark: #808080;
+            --border-light: #ffffff;
+            --text-color: #000000;
+            --header-title: #000080;
+            --input-bg: #ffffff;
+        }
+
+        body {
+            background: var(--window-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- Loading Screen Styles --- (Copied from your index.html) */
+        .loading-window {
+            width: 400px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--window-bg);
+            padding: 3px;
+        }
+
+        .loading-title-bar {
+            background: var(--header-title);
+            color: var(--border-light);
+            padding: 5px 8px;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-dark);
+        }
+
+        .loading-content {
+            padding: 30px 20px;
+            background: var(--window-bg);
+            text-align: center;
+        }
+
+        .loading-message {
+            font-size: 11px;
+            color: var(--text-color);
+            margin-bottom: 20px;
+        }
+
+        .loading-bar-container {
+            width: 100%;
+            height: 25px;
+            border-style: solid;
+            border-width: 2px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--input-bg);
+            padding: 2px;
+            margin-bottom: 15px;
+        }
+
+        .loading-bar {
+            display: flex;
+            height: 100%;
+            background-color: var(--input-bg);
+            gap: 2px;
+            align-items: center;
+        }
+
+        .loading-segment {
+            background-color: #000080; 
+            height: 80%;
+            width: 10px;
+            border-top: 1px solid #4040ff;
+            border-left: 1px solid #4040ff;
+            border-right: 1px solid #000040;
+            border-bottom: 1px solid #000040;
+            flex-shrink: 0;
+            transition: none;
+        }
+
+        .loading-status {
+            font-size: 9px;
+            color: var(--text-color);
+            font-style: italic;
+        }
+
+         @media (max-width: 1000px) {
+            .loading-window {
+                width: 90%;
+                max-width: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-window">
+        <div class="loading-title-bar">
+            <div class="title-bar-text">Loading Tool...</div>
+        </div>
+        <div class="loading-content">
+            <div class="loading-message" id="loadingMessage">Please wait...</div>
+            <div class="loading-bar-container">
+                <div id="loadingBar" class="loading-bar"></div>
+            </div>
+            <div class="loading-status" id="loadingStatus">Initializing...</div>
+        </div>
+    </div>
+
+    <script>
+        // --- FUNCTIONAL LOADING LOGIC ---
+        const loadingBar = document.getElementById('loadingBar');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const loadingStatus = document.getElementById('loadingStatus');
+
+        // Your existing status messages
+        const STATUS_MESSAGES = [
+            'Verifying system integrity...',
+            'Decompressing interface assets...',
+            'Initializing core utilities..',
+            'Loading tool configuration files...',
+            'Establishing local environment...',
+            'Compiling browser script modules...',
+            'Setting up security tokens..',
+            'Preparing canvas and drawing buffer...',
+            'Optimizing font rasterization...',
+            'Testing internal memory resources...',
+            'Finalizing tool workspace...',
+            'Starting module execution...',
+            'Complete.'
+        ];
+        const TOTAL_STEPS = STATUS_MESSAGES.length;
+
+        // Function to extract URL parameter (crucial for redirect)
+        function getDestinationUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('dest'); 
+        }
+
+        function updateLoadingBar(step) {
+            loadingBar.innerHTML = '';
+            const segmentsToDraw = 1 + step;
+            const maxVisualSegments = 15; 
+            const segmentsToShow = Math.min(segmentsToDraw, maxVisualSegments);
+
+            for (let i = 0; i < segmentsToShow; i++) {
+                const segment = document.createElement('div');
+                segment.className = 'loading-segment';
+                loadingBar.appendChild(segment);
+            }
+        }
+        
+        function startLoadingSequence() {
+            const destinationUrl = getDestinationUrl();
+            if (!destinationUrl) {
+                 loadingMessage.textContent = 'Error: Destination not found.';
+                 loadingStatus.textContent = 'Aborting...';
+                 return;
+            }
+
+            // Extract the tool name from the URL path for display
+            const toolFile = destinationUrl.substring(destinationUrl.lastIndexOf('/') + 1);
+            let toolName = toolFile.replace('.html', '').replace(/([A-Z])/g, ' $1').trim();
+            toolName = toolName.charAt(0).toUpperCase() + toolName.slice(1);
+
+            loadingMessage.textContent = `Loading ${toolName}...`;
+
+            let currentStep = 0;
+            const stepDuration = 300; // Time per step (in ms)
+            
+            const interval = setInterval(() => {
+                currentStep++;
+
+                if (currentStep < TOTAL_STEPS) {
+                    // Update animation steps
+                    updateLoadingBar(currentStep);
+                    loadingStatus.textContent = STATUS_MESSAGES[currentStep];
+
+                } else {
+                    // Sequence complete. Stop animation and redirect.
+                    clearInterval(interval);
+                    updateLoadingBar(TOTAL_STEPS);
+                    loadingStatus.textContent = 'Complete. Opening tool...';
+                    
+                    // CRUCIAL: Add a final, short delay before redirecting.
+                    // This is the time during which the user is looking at a 'complete' 
+                    // loading screen while the browser is downloading and processing the 
+                    // final, slow-loading assets of the destination page in the background.
+                    const finalWait = 500; // 500ms minimum wait after 'Complete'
+                    
+                    setTimeout(() => {
+                        // Use replace() to prevent the user from going back to this loading page
+                        window.location.replace(destinationUrl); 
+                    }, finalWait); 
+                }
+            }, stepDuration);
+        }
+
+        document.addEventListener('DOMContentLoaded', startLoadingSequence);
+
+    </script>
+</body>
+</html>

@@ -4,236 +4,176 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image to PDF Converter</title>
-    <link rel="icon" type="image/x-icon" href="../../public/logo.ico">
-    <link rel="stylesheet" href="/components/toggle.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
     <style>
+        /* Global Reset and Retro Font */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        /* Basic Retro Color Palette */
+        :root {
+            --window-bg: #c0c0c0; 
+            --border-dark: #808080;
+            --border-light: #ffffff;
+            --text-color: #000000;
+            --button-face: #c0c0c0;
+            --button-pressed: #dfdfdf;
+            --input-bg: #ffffff;
+            --header-title: #000080;
+            --error-color: #ffcccc;
+            --success-color: #008000;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--bg-color);
-            color: var(--text-primary);
+            background: var(--window-bg);
+            color: var(--text-color);
             line-height: 1.6;
+            padding: 30px;
+        }
+
+        /* --- Classic Windows Border Mixin --- */
+        .window-frame {
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--window-bg);
+            padding: 3px; 
+            box-shadow: none;
         }
 
         .container {
-            max-width: 768px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 0; 
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            position: relative;
-        }
-
-        .header h1 {
-            font-size: 2rem;
-            font-weight: 200;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-        }
-
-        .header p {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 8px;
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
-            z-index: 100;
-            color: var(--text-secondary);
-            transition: all 0.2s ease;
+        /* --- Title Bar/Header --- */
+        .title-bar {
+            background: var(--header-title);
+            color: var(--border-light);
+            padding: 5px 8px;
+            font-size: 16px;
+            font-weight: bold;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            box-sizing: border-box;
-            line-height: 0;
+            border-bottom: 1px solid var(--border-dark);
         }
 
-        .theme-toggle:hover {
-            background: var(--hover-bg);
-            border-color: var(--text-secondary);
-            color: var(--text-primary);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+        .title-bar-text {
+            white-space: nowrap;
         }
 
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
-            padding: 32px;
+        /* The main window body */
+        .app-body {
+            padding: 15px;
         }
 
-        .form-group {
-            margin-bottom: 24px;
+        /* --- Section Styling (Sunken Panel) --- */
+        .section {
+            margin-bottom: 15px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--button-pressed);
+            padding: 1px;
         }
 
-        .form-label {
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-            display: block;
+        .section-header {
+            padding: 6px 8px;
+            font-size: 11px;
+            font-weight: normal;
+            border-top: 1px solid var(--border-dark);
+            border-left: 1px solid var(--border-dark);
+            border-right: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-light);
+            background: #ffffff; 
+            display: inline-block;
+            margin-bottom: -1px;
+            position: relative;
+            z-index: 10;
         }
 
-        .select-input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            background: var(--input-bg);
-            color: var(--text-primary);
-            font-size: 14px;
-            transition: border-color 0.2s;
+        .section-content {
+            padding: 15px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--window-bg);
+            margin-top: -1px;
         }
 
-        .select-input:focus {
-            outline: none;
-            border-color: var(--text-primary);
-            box-shadow: 0 0 0 1px var(--text-primary);
-        }
-
+        /* --- Drop Zone --- */
         .drop-zone {
-            border: 2px dashed var(--border-color);
-            border-radius: 8px;
-            padding: 40px 20px;
+            border: 3px dashed var(--border-dark);
+            padding: 30px 20px;
             text-align: center;
             cursor: pointer;
-            transition: background 0.3s, border-color 0.3s;
-            position: relative;
-            margin-bottom: 24px;
+            transition: none;
+            margin-bottom: 15px;
+            background: var(--input-bg);
             user-select: none;
         }
 
         .drop-zone:hover {
-            border-color: var(--text-primary);
-            background: var(--hover-bg);
+            border-color: var(--text-color);
+            background: var(--button-pressed);
         }
 
         .drop-zone.dragover {
-            border-color: var(--text-primary);
-            background: var(--hover-bg);
-            opacity: 0.8;
+            border-color: var(--text-color);
+            background: var(--button-pressed);
         }
 
         .drop-zone input {
             display: none;
         }
 
-        .drop-zone-text {
-            color: var(--text-secondary);
-            font-size: 16px;
-            font-weight: 300;
-            margin-top: 10px;
+        .drop-zone-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--border-dark);
         }
 
+        .drop-zone-text {
+            color: var(--text-color);
+            font-size: 10px;
+            font-weight: normal;
+        }
+
+        /* --- File Count --- */
         .file-count {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin-bottom: 16px;
+            font-size: 10px;
+            color: var(--text-color);
+            margin-bottom: 15px;
             text-align: center;
-            font-weight: 500;
+            font-weight: normal;
+            padding: 8px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--input-bg);
         }
 
         .file-count.hidden {
             display: none;
         }
 
-        .btn {
-            width: 100%;
-            padding: 12px 0;
-            background: var(--text-primary);
-            color: var(--card-bg);
-            border: none;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: 300;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: background 0.2s, transform 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .btn:disabled {
-            background: var(--border-color);
-            color: var(--text-secondary);
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-
-        .btn:hover:not(:disabled) {
-            background: var(--text-secondary);
-            color: var(--card-bg);
-            transform: translateY(-1px);
-        }
-
-        .btn-icon {
-            width: 20px;
-            height: 20px;
-            color: inherit;
-            vertical-align: middle;
-        }
-
-        .notification {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 12px 20px;
-            background: var(--notification-bg);
-            color: var(--card-bg);
-            border-radius: 4px;
-            font-size: 14px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-            z-index: 1000;
-        }
-
-        .notification.error {
-            background: var(--error-color);
-        }
-
-        [data-theme="dark"] .notification {
-            background: #fafafa;
-            color: #222;
-        }
-        [data-theme="dark"] .notification.error {
-            background: #ff6b6b;
-            color: #fff;
-        }
-
-        .notification.show {
-            opacity: 1;
-        }
-
+        /* --- Image Preview Container --- */
         #image-preview-container {
-            margin-top: 16px;
-            margin-bottom: 24px;
-            padding: 8px 0;
+            margin: 15px 0;
+            padding: 8px;
             white-space: nowrap;
             overflow-x: auto;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
             background: var(--input-bg);
             display: none;
         }
@@ -250,9 +190,10 @@
             width: 130px;
             margin: 0 4px;
             vertical-align: top;
-            background: var(--card-bg);
-            border-radius: 6px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            background: var(--window-bg);
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
             position: relative;
         }
 
@@ -261,7 +202,9 @@
             height: 100px;
             overflow: hidden;
             margin-bottom: 8px;
-            border-radius: 4px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -276,8 +219,8 @@
         }
 
         .image-info {
-            font-size: 10px;
-            color: var(--text-secondary);
+            font-size: 8px;
+            color: var(--text-color);
             margin-bottom: 4px;
             max-width: 100%;
             overflow: hidden;
@@ -297,51 +240,109 @@
         .controls-row button {
             flex-grow: 1;
             padding: 4px 6px;
-            background: var(--text-secondary);
-            color: var(--card-bg);
-            border: none;
-            border-radius: 4px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--button-face);
+            color: var(--text-color);
             cursor: pointer;
-            font-size: 10px;
+            font-size: 7px;
             line-height: 1;
-            transition: background 0.2s, transform 0.1s;
+            transition: none;
+            box-shadow: none;
+            font-family: 'Press Start 2P', cursive;
         }
 
-        .controls-row button:hover {
-            background: var(--text-primary);
-            transform: scale(1.02);
+        .controls-row button:active {
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 5px 5px 3px 7px;
         }
 
         .delete-btn {
             background: var(--error-color) !important;
-            color: white !important;
+            color: var(--text-color) !important;
         }
 
-        .delete-btn:hover {
-            background: var(--error-color) !important;
-            filter: brightness(1.1);
+        /* --- Form Controls --- */
+        .form-group {
+            margin-bottom: 15px;
         }
 
-        .spin {
-            animation: spin 1s linear infinite;
+        .form-label {
+            font-size: 11px;
+            font-weight: normal;
+            color: var(--text-color);
+            margin-bottom: 8px;
+            display: block;
         }
 
-        @keyframes spin {
-            100% { transform: rotate(360deg);}
+        .select-input {
+            width: 100%;
+            padding: 6px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-size: 10px;
+            font-family: 'Press Start 2P', cursive;
+            outline: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8"><path fill="%23000000" d="M6 8L0 0h12z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 6px center;
+            padding-right: 24px;
         }
 
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px 8px;
-            }
-            .card {
-                padding: 16px;
-            }
-            .header h1 {
-                font-size: 2rem;
-            }
+        .select-input:focus {
+            box-shadow: 0 0 0 1px var(--text-color) inset;
         }
 
+        /* --- Buttons --- */
+        .btn {
+            width: 100%;
+            padding: 12px 20px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--header-title);
+            color: var(--border-light);
+            font-size: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: none;
+            box-shadow: none;
+            line-height: 1;
+            font-family: 'Press Start 2P', cursive;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:active:not(:disabled) {
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 13px 19px 11px 21px;
+        }
+
+        .btn:disabled {
+            background: var(--border-dark);
+            color: var(--button-pressed);
+            cursor: not-allowed;
+        }
+
+        .btn:disabled:active {
+            padding: 12px 20px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+        }
+
+        .btn-icon {
+            font-size: 11px;
+        }
+
+        /* --- Modal --- */
         .modal {
             display: none;
             position: fixed;
@@ -360,90 +361,165 @@
             max-width: 90%;
             max-height: 90%;
             object-fit: contain;
-            border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--window-bg);
+            padding: 8px;
         }
 
         .modal-close {
             position: absolute;
             top: 20px;
             right: 20px;
-            background: rgba(255, 255, 255, 0.8);
-            border: none;
-            border-radius: 50%;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--button-face);
+            color: var(--text-color);
             width: 40px;
             height: 40px;
             cursor: pointer;
-            font-size: 20px;
-            color: #333;
+            font-size: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 2001;
+            font-family: 'Press Start 2P', cursive;
         }
 
-        .modal-close:hover {
-            background: rgba(255, 255, 255, 1);
+        .modal-close:active {
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 1px 0 0 1px;
+        }
+
+        /* --- Loading Animation --- */
+        .spin {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg);}
+        }
+
+        /* --- Hidden Elements --- */
+        .hidden {
+            display: none;
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                max-width: 100%;
+            }
+
+            .image-preview-item {
+                width: 110px;
+            }
+
+            .preview-image-wrapper {
+                width: 80px;
+                height: 80px;
+            }
+
+            .controls-row button {
+                font-size: 6px;
+                padding: 3px 5px;
+            }
+
+            .image-info {
+                font-size: 7px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .image-preview-item {
+                width: 100px;
+            }
+
+            .preview-image-wrapper {
+                width: 70px;
+                height: 70px;
+            }
+
+            .controls-row button {
+                font-size: 5px;
+                padding: 2px 4px;
+            }
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exif-js/2.3.0/exif.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-                <i data-lucide="sun" class="theme-icon" id="theme-icon"></i>
-            </button>
-            <h1>Image to PDF Converter</h1>
-            <p>Combine multiple JPG or PNG files into a single PDF document.</p>
+    <div class="container window-frame">
+        <div class="title-bar">
+            <div class="title-bar-text">Image to PDF Converter</div>
         </div>
-        <div class="card">
-            
-            <div id="drop-zone" class="drop-zone" onclick="document.getElementById('image-files').click()">
-                <i data-lucide="upload-cloud" style="width: 32px; height: 32px; color: var(--text-secondary);"></i>
-                <p class="drop-zone-text">Drop images here or click to select files</p>
-                <input
-                    type="file"
-                    id="image-files"
-                    accept="image/jpeg, image/png"
-                    multiple
-                    onchange="handleFileSelect(this.files)"
-                >
+        
+        <div class="app-body">
+            <div class="section">
+                <div class="section-header">File Upload</div>
+                <div class="section-content">
+                    <div class="drop-zone" onclick="document.getElementById('image-files').click()">
+                        <div class="drop-zone-icon">
+                            <img src="https://64.media.tumblr.com/2a8939ee32c9fd167af542dccf2ff70e/412b6d5d5a669993-9a/s540x810/4e3c3ac41d6ab1227105523ba9aa486a86e7a49c.png" alt="Folder Icon" style="width:64px;height:64px;image-rendering:pixelated;">
+                        </div>
+                        <p class="drop-zone-text">Drop images here or click to select files</p>
+                        <input
+                            type="file"
+                            id="image-files"
+                            accept="image/jpeg, image/png"
+                            multiple
+                            onchange="handleFileSelect(this.files)"
+                        >
+                    </div>
+                    
+                    <div id="file-count" class="file-count hidden">No files selected.</div>
+                </div>
             </div>
-            
-            <div id="file-count" class="file-count hidden">No files selected.</div>
 
             <div id="image-preview-container">
-                </div>
-
-            <div class="form-group" id="orientation-group" style="display: none;">
-                <label for="pdf-orientation" class="form-label">PDF Page Orientation</label>
-                <select id="pdf-orientation" class="select-input">
-                    <option value="p">Portrait (Default)</option>
-                    <option value="l">Landscape</option>
-                </select>
             </div>
-            
-            <button
-                id="convert-button"
-                class="btn"
-                onclick="convertImagesToPdf()"
-                disabled
-            >
-                <i data-lucide="download" class="btn-icon" id="button-icon"></i>
-                <span id="button-text">Convert & Download PDF</span>
-            </button>
-            <div id="status-message" class="status-message"></div>
+
+            <div class="section" id="orientation-section" style="display: none;">
+                <div class="section-header">PDF Settings</div>
+                <div class="section-content">
+                    <div class="form-group">
+                        <label for="pdf-orientation" class="form-label">PDF Page Orientation</label>
+                        <select id="pdf-orientation" class="select-input">
+                            <option value="p">Portrait (Default)</option>
+                            <option value="l">Landscape</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">Conversion</div>
+                <div class="section-content">
+                    <button
+                        id="convert-button"
+                        class="btn"
+                        onclick="convertImagesToPdf()"
+                        disabled
+                    >
+                        <span id="button-text">Convert & Download PDF</span>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
-    <div id="notification" class="notification"></div>
+    
     <div id="image-modal" class="modal">
         <button class="modal-close" onclick="closeModal()">&times;</button>
         <img id="modal-image" class="modal-content" src="" alt="Image Preview">
     </div>
-    <script src="/components/toggle.js"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
     <script>
         // Global array to store file info, rotation, and EXIF
         let imageFilesData = []; 
@@ -467,6 +543,7 @@
                 reader.readAsDataURL(file);
             });
         }
+        
         function loadImage(dataUrl) {
             return new Promise((resolve, reject) => {
                 const img = new Image();
@@ -476,24 +553,19 @@
             });
         }
         
-        // --- UI Update Functions (Centralized) ---
+        // --- UI Update Functions ---
         function handleFileSelect(files) {
             const validFiles = Array.from(files).filter(file => file.type.match('image/(jpeg|png)'));
             
             if (validFiles.length === 0 && imageFilesData.length === 0) {
-                showStatus('Please select valid JPG or PNG files.', 'error');
                 return;
             }
             
-            // Collect all current files (including new ones) and pass to loader
+            // Collect all current files (including new ones)
             const existingFiles = imageFilesData.map(d => d.file);
             const combinedFiles = existingFiles.concat(validFiles);
             
-            // Deduplicate files by name/size to handle accidental re-selection, 
-            // though simple concatenation is often fine for a utility app.
-            // For simplicity, we trust loadAndRenderImages will overwrite/refresh the global state.
-            
-            // Filter out duplicates if drag/drop is used repeatedly on the same files
+            // Filter out duplicates
             const uniqueFiles = combinedFiles.reduce((acc, current) => {
                 const x = acc.find(item => item.name === current.name && item.size === current.size);
                 if (!x) {
@@ -511,7 +583,7 @@
             const button = document.getElementById('convert-button');
             const fileCountEl = document.getElementById('file-count');
             const previewContainer = document.getElementById('image-preview-container');
-            const orientationGroup = document.getElementById('orientation-group');
+            const orientationSection = document.getElementById('orientation-section');
 
             const count = filesArray.length;
             
@@ -520,18 +592,7 @@
             button.disabled = count === 0;
             
             previewContainer.classList.toggle('visible', count > 0);
-            orientationGroup.style.display = count > 0 ? 'block' : 'none';
-        }
-        
-        function showStatus(message, type = 'info') {
-            const notif = document.getElementById('notification');
-            notif.textContent = message;
-            notif.classList.remove('error', 'success', 'show');
-            notif.classList.add(type);
-            notif.classList.add('show');
-            setTimeout(() => {
-                notif.classList.remove('show');
-            }, 3000);
+            orientationSection.style.display = count > 0 ? 'block' : 'none';
         }
         
         function setLoadingState(isLoading) {
@@ -541,14 +602,13 @@
             button.disabled = isLoading;
             if (isLoading) {
                 buttonText.textContent = 'Generating PDF...';
-                buttonIcon.setAttribute('data-lucide', 'loader-2');
+                buttonIcon.textContent = '⏳';
                 buttonIcon.classList.add('spin');
             } else {
                 buttonText.textContent = 'Convert & Download PDF';
-                buttonIcon.setAttribute('data-lucide', 'download');
+                buttonIcon.textContent = '💾';
                 buttonIcon.classList.remove('spin');
             }
-            if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
         // --- Image Loading and Preview Rendering ---
@@ -562,11 +622,9 @@
                 return;
             }
 
-            showStatus('Loading image previews and checking orientation...', 'info');
-
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
-                // Check if file is already loaded (useful when handleFileSelect is called with combined files)
+                // Check if file is already loaded
                 const existingData = imageFilesData.find(d => d.file.name === file.name && d.file.size === file.size);
                 if (existingData) continue; 
                 
@@ -603,13 +661,13 @@
                 item.innerHTML = `
                     <div class="controls-row">
                         <button onclick="rotateImage('${uniqueId}', -90)" aria-label="Rotate left">
-                             <i data-lucide="rotate-ccw" style="width: 12px; height: 12px; vertical-align: middle;"></i>
+                            ↺
                         </button>
                         <button onclick="rotateImage('${uniqueId}', 90)" aria-label="Rotate right">
-                             <i data-lucide="rotate-cw" style="width: 12px; height: 12px; vertical-align: middle;"></i>
+                            ↻
                         </button>
                         <button onclick="deleteImage('${uniqueId}')" class="delete-btn" aria-label="Remove image">
-                             <i data-lucide="x" style="width: 12px; height: 12px; vertical-align: middle;"></i>
+                            ✕
                         </button>
                     </div>
                     <div class="preview-image-wrapper">
@@ -619,10 +677,6 @@
                 `;
                 
                 previewContainer.appendChild(item);
-                if (typeof lucide !== 'undefined') lucide.createIcons(); 
-            }
-            if (files.length > 0) {
-                showStatus(`Loaded ${imageFilesData.length} images. Adjust orientation as needed.`, 'info');
             }
         }
 
@@ -643,24 +697,22 @@
         }
         
         function deleteImage(uniqueId) {
-            // 1. Remove from global array
+            // Remove from global array
             const initialLength = imageFilesData.length;
             imageFilesData = imageFilesData.filter(d => d.id !== uniqueId);
             const newLength = imageFilesData.length;
 
             if (initialLength === newLength) return;
 
-            // 2. Remove from DOM
+            // Remove from DOM
             const itemElement = document.getElementById(uniqueId);
             if (itemElement) {
                 itemElement.remove();
             }
 
-            // 3. Update UI status
+            // Update UI status
             updateFileCount(imageFilesData.map(d => d.file));
             updateImageNumbering();
-            
-            showStatus(`Image removed. ${newLength} images remaining.`, 'info');
         }
         
         function updateImageNumbering() {
@@ -674,7 +726,7 @@
         
         // --- Drag and Drop Handlers ---
         function setupDragAndDrop() {
-            const dropZone = document.getElementById('drop-zone');
+            const dropZone = document.querySelector('.drop-zone');
             
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
                 dropZone.addEventListener(eventName, preventDefaults, false);
@@ -700,15 +752,12 @@
             }
         }
 
-
-        // --- Main Conversion Logic (Unchanged) ---
+        // --- Main Conversion Logic ---
         async function convertImagesToPdf() {
             if (imageFilesData.length === 0) {
-                showStatus('Please select at least one image file.', 'error');
                 return;
             }
             setLoadingState(true);
-            showStatus('Generating PDF, applying custom orientations...', 'info');
 
             const pdfOrientation = document.getElementById('pdf-orientation').value;
 
@@ -721,14 +770,10 @@
                 
                 let pdfWidth = doc.internal.pageSize.getWidth();
                 let pdfHeight = doc.internal.pageSize.getHeight();
-                
-                pdfWidth = doc.internal.pageSize.getWidth();
-                pdfHeight = doc.internal.pageSize.getHeight();
 
                 doc.deletePage(1);
 
                 for (let i = 0; i < imageFilesData.length; i++) {
-                    showStatus(`Processing image ${i + 1} of ${imageFilesData.length}...`, 'info');
                     const fileData = imageFilesData[i];
                     const { dataUrl, file, rotation } = fileData;
                     
@@ -738,7 +783,7 @@
                     let imgHeight = image.naturalHeight;
                     const format = file.type.split('/')[1].toUpperCase();
                     
-                    // --- CANVAS ROTATION & RESIZING ---
+                    // Canvas rotation & resizing
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
                     
@@ -771,16 +816,13 @@
 
                     doc.addPage();
                     doc.addImage(rotatedDataUrl, format, x, y, finalWidth, finalHeight);
-
                 }
 
                 const currentDate = new Date().toISOString().slice(0, 10);
                 doc.save(`images-to-pdf_${currentDate}.pdf`);
-                showStatus(`Successfully converted ${imageFilesData.length} images into a single PDF!`, 'success');
                 
             } catch (error) {
                 console.error("PDF Generation Error:", error);
-                showStatus(`Conversion failed. Error: ${error.message}. Please check your files.`, 'error');
             } finally {
                 setLoadingState(false);
             }
@@ -815,8 +857,7 @@
 
         window.onload = function() {
             setupDragAndDrop();
-            updateFileCount([]); // Initialize UI
-            if (typeof lucide !== 'undefined') lucide.createIcons();
+            updateFileCount([]);
         };
     </script>
 </body>

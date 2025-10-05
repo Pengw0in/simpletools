@@ -4,97 +4,100 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Color Palette Generator</title>
-    <link rel="icon" type="image/x-icon" href="../../public/logo.ico">
-    <link rel="stylesheet" href="/components/toggle.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
     <style>
+        /* Global Reset and Retro Font */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        /* Basic Retro Color Palette */
+        :root {
+            --window-bg: #c0c0c0; 
+            --border-dark: #808080;
+            --border-light: #ffffff;
+            --text-color: #000000;
+            --button-face: #c0c0c0;
+            --button-pressed: #dfdfdf;
+            --input-bg: #ffffff;
+            --header-title: #000080;
+            --error-color: #ffcccc;
+            --success-color: #008000;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--bg-color);
-            color: var(--text-primary);
+            background: var(--window-bg);
+            color: var(--text-color);
             line-height: 1.6;
+            padding: 30px;
+        }
+
+        /* --- Classic Windows Border Mixin --- */
+        .window-frame {
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--window-bg);
+            padding: 3px; 
+            box-shadow: none;
         }
 
         .container {
-            max-width: 800px;
+            max-width: 750px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 0; 
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            position: relative;
-        }
-
-        .header h1 {
-            font-size: 2rem;
-            font-weight: 300;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-        }
-
-        .header p {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 8px;
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
-            z-index: 100;
-            color: var(--text-secondary);
-            transition: all 0.2s ease;
+        /* --- Title Bar/Header --- */
+        .title-bar {
+            background: var(--header-title);
+            color: var(--border-light);
+            padding: 5px 8px;
+            font-size: 16px;
+            font-weight: bold;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            box-sizing: border-box;
-            line-height: 0;
-        }
-        .theme-toggle:hover {
-            background: var(--hover-bg);
-            border-color: var(--text-secondary);
-            color: var(--text-primary);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            border-bottom: 1px solid var(--border-dark);
         }
 
+        .title-bar-text {
+            white-space: nowrap;
+        }
+
+        /* The main window body */
+        .app-body {
+            padding: 15px;
+        }
+
+        /* --- Section Styling (Sunken Panel) --- */
         .section {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            margin-bottom: 30px;
-            overflow: hidden;
-        }
-
-        .section-header {
-            padding: 12px 16px;
-            background: var(--code-bg);
-            border-bottom: 1px solid var(--border-color);
-            font-weight: 500;
-            color: var(--text-primary);
-            font-size: 14px;
+            margin-bottom: 15px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--button-pressed);
+            padding: 1px;
         }
 
         .section-content {
-            padding: 20px;
+            padding: 15px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--window-bg);
+            margin-top: -1px;
         }
 
+        /* --- File Upload Styling --- */
         .image-upload-area {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .file-input-wrapper {
@@ -112,33 +115,40 @@
         }
 
         .file-input-label {
-            display: inline-block;
-            padding: 12px 24px;
-            background: var(--text-primary);
-            color: var(--card-bg);
-            border-radius: 4px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--button-face);
+            color: var(--text-color);
+            padding: 8px 15px;
+            font-size: 11px;
+            text-align: center;
             cursor: pointer;
-            font-size: 14px;
-            transition: background 0.2s;
+            transition: none;
+            box-shadow: none;
+            line-height: 1;
+            display: inline-block;
         }
 
-        .file-input-label:hover {
-            background: var(--text-secondary);
+        .file-input-label:active {
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 9px 14px 7px 16px;
         }
 
+        /* --- Canvas Container --- */
         .canvas-container {
             max-width: 600px;
             margin: 0 auto;
             position: relative;
             min-height: 300px;
-            border: 2px dashed var(--border-color);
-            border-radius: 4px;
-            background: var(--code-bg);
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--button-pressed);
         }
 
         .canvas-container.has-image {
-            border-style: solid;
-            background: var(--card-bg);
+            background: var(--input-bg);
         }
 
         .color-picker-canvas {
@@ -146,7 +156,6 @@
             width: 100%;
             height: auto;
             cursor: crosshair;
-            border-radius: 4px;
         }
 
         .image-placeholder {
@@ -154,8 +163,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            color: var(--text-secondary);
-            font-size: 14px;
+            color: var(--text-color);
+            font-size: 10px;
             text-align: center;
             padding: 20px;
             pointer-events: none;
@@ -164,19 +173,21 @@
         .picker-instruction {
             margin-top: 12px;
             color: var(--success-color);
-            font-size: 13px;
-            font-weight: 500;
+            font-size: 10px;
+            font-weight: normal;
         }
 
+        /* --- Zoom Window --- */
         .zoom-window {
             position: fixed;
             width: 150px;
             height: 150px;
-            border: 2px solid var(--border-color);
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
             border-radius: 50%;
             overflow: hidden;
-            background: var(--card-bg);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            background: var(--window-bg);
             pointer-events: none;
             z-index: 1000;
             display: none;
@@ -204,7 +215,7 @@
             left: 0;
             width: 100%;
             height: 2px;
-            background: var(--text-primary);
+            background: var(--text-color);
             transform: translateY(-50%);
         }
 
@@ -215,10 +226,11 @@
             top: 0;
             width: 2px;
             height: 100%;
-            background: var(--text-primary);
+            background: var(--text-color);
             transform: translateX(-50%);
         }
 
+        /* --- Color Input Area --- */
         .color-input-area {
             display: flex;
             align-items: center;
@@ -228,20 +240,19 @@
         }
 
         .color-input-label {
-            font-weight: 500;
-            color: var(--text-primary);
-            font-size: 14px;
+            font-size: 11px;
+            font-weight: normal;
+            color: var(--text-color);
         }
 
         .color-picker-input {
             width: 48px;
             height: 48px;
             padding: 0;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
+            border: 1px solid;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
             cursor: pointer;
-            background: transparent;
-            transition: transform 0.15s ease-in-out;
+            background: var(--input-bg);
         }
 
         .color-picker-input::-webkit-color-swatch-wrapper {
@@ -250,11 +261,6 @@
 
         .color-picker-input::-webkit-color-swatch {
             border: none;
-            border-radius: 3px;
-        }
-
-        .color-picker-input:hover {
-            transform: scale(1.05);
         }
 
         .hex-input-wrapper {
@@ -264,84 +270,82 @@
         }
 
         .hex-prefix {
-            color: var(--text-secondary);
-            font-weight: 500;
+            color: var(--text-color);
+            font-weight: normal;
+            font-size: 11px;
         }
 
         .hex-input {
             width: 80px;
-            padding: 8px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            text-align: center;
-            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
-            font-size: 14px;
-            text-transform: uppercase;
+            padding: 6px;
+            border: 1px solid;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            font-size: 12px;
             outline: none;
             background: var(--input-bg);
-            color: var(--text-primary);
+            color: var(--text-color);
+            height: 32px;
+            line-height: 1;
+            text-align: center;
+            font-family: 'Press Start 2P', monospace;
+            text-transform: uppercase;
         }
 
         .hex-input:focus {
-            border-color: var(--text-primary);
-            background: var(--input-focus-bg);
+            box-shadow: 0 0 0 1px var(--text-color) inset;
         }
 
+        /* --- Palette Container --- */
         .palette-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 16px;
-            margin-top: 20px;
+            gap: 12px;
+            margin-top: 15px;
         }
 
         .color-card {
             height: 120px;
-            border-radius: 4px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
             padding: 12px;
-            border: 1px solid rgba(255,255,255,0.2);
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            transition: none;
         }
 
-        [data-theme="dark"] .color-card {
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .color-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        }
-
-        [data-theme="dark"] .color-card:hover {
-            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+        .color-card:active {
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 13px 11px 11px 13px;
         }
 
         .color-hex {
-            font-weight: 500;
-            font-size: 16px;
+            font-weight: normal;
+            font-size: 12px;
             margin-bottom: 4px;
-            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+            font-family: 'Press Start 2P', monospace;
         }
 
         .color-label {
-            font-size: 12px;
+            font-size: 10px;
             opacity: 0.8;
         }
 
+        /* --- Notification --- */
         .notification {
             position: fixed;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
             padding: 12px 20px;
-            background: var(--notification-bg);
-            color: var(--card-bg);
-            border-radius: 4px;
-            font-size: 14px;
+            background: var(--window-bg);
+            color: var(--text-color);
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            font-size: 10px;
             opacity: 0;
             transition: opacity 0.3s ease;
             pointer-events: none;
@@ -352,15 +356,6 @@
             background: var(--error-color);
         }
 
-        [data-theme="dark"] .notification {
-            background: #fafafa;
-            color: #222;
-        }
-        [data-theme="dark"] .notification.error {
-            background: #ff6b6b;
-            color: #fff;
-        }
-
         .notification.show {
             opacity: 1;
         }
@@ -369,19 +364,14 @@
             display: none;
         }
 
+        /* --- Responsive Design --- */
         @media (max-width: 768px) {
-            .container {
-                padding: 20px 16px;
+            body {
+                padding: 10px;
             }
             
-            .header h1 {
-                font-size: 1.5rem;
-                padding-right: 50px;
-            }
-
-            .theme-toggle {
-                top: -10px;
-                right: 0;
+            .container {
+                max-width: 100%;
             }
             
             .canvas-container {
@@ -405,7 +395,7 @@
             }
             
             .color-hex {
-                font-size: 14px;
+                font-size: 10px;
             }
 
             .zoom-window {
@@ -437,86 +427,81 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-                <i data-lucide="sun" class="theme-icon" id="theme-icon"></i>
-            </button>
-            <h1>Color Palette Generator</h1>
-            <p>Pick colors from images or generate palettes from any color</p>
+    <div class="container window-frame">
+        <div class="title-bar">
+            <div class="title-bar-text">Color Palette Generator</div>
         </div>
-
-        <div class="section">
-            <div class="section-header">Pick Color from Image</div>
-            <div class="section-content">
-                <div class="image-upload-area">
-                    <div class="file-input-wrapper">
-                        <input type="file" id="imageUpload" class="file-input" accept="image/*" onchange="loadImage(event)">
-                        <label for="imageUpload" class="file-input-label">Upload Image</label>
-                    </div>
-                    
-                    <div class="canvas-container" id="canvasContainer">
-                        <canvas id="colorPickerCanvas" class="color-picker-canvas"></canvas>
-                        <div id="imagePlaceholder" class="image-placeholder">
-                            Upload an image above to start picking colors
+        
+        <div class="app-body">
+            <div class="section">
+                <div class="section-content">
+                    <div class="image-upload-area">
+                        <div class="file-input-wrapper">
+                            <input type="file" id="imageUpload" class="file-input" accept="image/*" onchange="loadImage(event)">
+                            <label for="imageUpload" class="file-input-label">Upload Image</label>
+                        </div>
+                        
+                        <div class="canvas-container" id="canvasContainer">
+                            <canvas id="colorPickerCanvas" class="color-picker-canvas"></canvas>
+                            <div id="imagePlaceholder" class="image-placeholder">
+                                Upload an image above to start picking colors
+                            </div>
+                        </div>
+                        
+                        <div id="pickerInstruction" class="picker-instruction hidden">
+                            Image loaded! Click anywhere on the image to select a color
                         </div>
                     </div>
-                    
-                    <div id="pickerInstruction" class="picker-instruction hidden">
-                        Image loaded! Click anywhere on the image to select a color
-                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="section">
-            <div class="section-header">Base Color</div>
-            <div class="section-content">
-                <div class="color-input-area">
-                    <label for="baseColorPicker" class="color-input-label">Choose Color:</label>
-                    
-                    <input 
-                        type="color" 
-                        id="baseColorPicker" 
-                        class="color-picker-input"
-                        value="#2563EB"
-                        oninput="debouncedGeneratePalette()"
-                    >
-                    
-                    <div class="hex-input-wrapper">
-                        <span class="hex-prefix">#</span>
+            <div class="section">
+                <div class="section-header">Base Color</div>
+                <div class="section-content">
+                    <div class="color-input-area">
+                        <label for="baseColorPicker" class="color-input-label">Choose Color:</label>
+                        
                         <input 
-                            type="text" 
-                            id="baseHexInput" 
-                            class="hex-input"
-                            maxlength="6"
-                            value="2563EB"
-                            oninput="validateAndUpdateColor(this.value)"
+                            type="color" 
+                            id="baseColorPicker" 
+                            class="color-picker-input"
+                            value="#2563EB"
+                            oninput="debouncedGeneratePalette()"
                         >
+                        
+                        <div class="hex-input-wrapper">
+                            <span class="hex-prefix">#</span>
+                            <input 
+                                type="text" 
+                                id="baseHexInput" 
+                                class="hex-input"
+                                maxlength="6"
+                                value="2563EB"
+                                oninput="validateAndUpdateColor(this.value)"
+                            >
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">Generated Palette</div>
+                <div class="section-content">
+                    <div id="paletteContainer" class="palette-container">
+                        <!-- Color cards will be rendered here -->
                     </div>
                 </div>
             </div>
         </div>
-
-        <div class="section">
-            <div class="section-header">Generated Palette</div>
-            <div class="section-content">
-                <div id="paletteContainer" class="palette-container">
-                    <!-- Color cards will be rendered here -->
-                </div>
-            </div>
-        </div>
-
-        <div id="notification" class="notification"></div>
     </div>
+
+    <div id="notification" class="notification"></div>
 
     <div id="zoomWindow" class="zoom-window">
         <canvas id="zoomCanvas" class="zoom-canvas"></canvas>
         <div class="zoom-crosshair"></div>
     </div>
 
-    <script src="/components/toggle.js"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script>
         const baseColorPicker = document.getElementById('baseColorPicker');
         const baseHexInput = document.getElementById('baseHexInput');
@@ -646,24 +631,20 @@
             reader.onload = (e) => {
                 const img = new Image();
                 img.onload = () => {
-                    const containerWidth = canvasContainer.offsetWidth - 4; // Account for border
-                    const containerHeight = 500; // Increased from 400
+                    const containerWidth = canvasContainer.offsetWidth - 6; // Account for border
+                    const containerHeight = 500;
                     
                     let displayWidth, displayHeight;
                     const ratio = img.width / img.height;
                     
-                    // Always make the image fill more of the container
                     if (ratio > 1) {
-                        // Landscape image
-                        displayWidth = Math.min(containerWidth, img.width * 0.8); // Use 80% of container width minimum
+                        displayWidth = Math.min(containerWidth, img.width * 0.8);
                         displayHeight = displayWidth / ratio;
                     } else {
-                        // Portrait or square image
-                        displayHeight = Math.min(containerHeight, img.height * 0.8); // Use 80% of container height minimum
+                        displayHeight = Math.min(containerHeight, img.height * 0.8);
                         displayWidth = displayHeight * ratio;
                     }
                     
-                    // Ensure minimum size for usability
                     const minSize = 300;
                     if (displayWidth < minSize || displayHeight < minSize) {
                         if (ratio > 1) {
@@ -704,8 +685,8 @@
             const x = (event.clientX - rect.left) * (colorPickerCanvas.width / rect.width);
             const y = (event.clientY - rect.top) * (colorPickerCanvas.height / rect.height);
 
-            const zoomSize = 50; // Size of zoomed area
-            const zoomFactor = 4; // Magnification factor
+            const zoomSize = 50;
+            const zoomFactor = 4;
 
             zoomCtx.clearRect(0, 0, zoomCanvas.width, zoomCanvas.height);
             zoomCtx.drawImage(
@@ -714,12 +695,10 @@
                 0, 0, zoomCanvas.width, zoomCanvas.height
             );
 
-            // Position the zoom window
             const zoomWindowSize = zoomWindow.offsetWidth;
             let zoomX = event.clientX - zoomWindowSize / 2;
             let zoomY = event.clientY - zoomWindowSize - 20;
 
-            // Keep zoom window within viewport
             if (zoomX < 10) zoomX = 10;
             if (zoomX + zoomWindowSize > window.innerWidth - 10) zoomX = window.innerWidth - zoomWindowSize - 10;
             if (zoomY < 10) zoomY = event.clientY + 20;
@@ -749,8 +728,6 @@
                 baseHexInput.value = newHex.toUpperCase();
                 baseColorPicker.value = `#${newHex}`;
                 debouncedGeneratePalette();
-                
-                showNotification(`Color picked: #${newHex.toUpperCase()}`);
             } catch (e) {
                 showNotification("Error: Cannot pick color due to security restrictions. Try a local image.", true);
             }
@@ -808,7 +785,6 @@
             zoomCanvas.width = 150;
             zoomCanvas.height = 150;
             validateAndUpdateColor(baseHexInput.value);
-            lucide.createIcons();
         });
     </script>
 </body>

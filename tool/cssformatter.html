@@ -3,167 +3,237 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSS Minifier/Unminifier</title>
-    <link rel="icon" type="image/x-icon" href="../../public/logo.ico">
-    <link rel="stylesheet" href="/components/toggle.css">
+    <title>CSS Formatter</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
     <style>
+        /* Global Reset and Retro Font */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Press Start 2P', cursive;
         }
+
+        /* Basic Retro Color Palette */
+        :root {
+            --window-bg: #c0c0c0; 
+            --border-dark: #808080;
+            --border-light: #ffffff;
+            --text-color: #000000;
+            --button-face: #c0c0c0;
+            --button-pressed: #dfdfdf;
+            --input-bg: #ffffff;
+            --header-title: #000080;
+            --error-color: #ffcccc;
+            --success-color: #008000;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--bg-color);
-            color: var(--text-primary);
+            background: var(--window-bg);
+            color: var(--text-color);
             line-height: 1.6;
+            padding: 30px;
         }
+
+        /* --- Classic Windows Border Mixin --- */
+        .window-frame {
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--window-bg);
+            padding: 3px; 
+            box-shadow: none;
+        }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 0; 
         }
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            position: relative;
-        }
-        .header h1 {
-            font-size: 2rem;
-            font-weight: 300;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-        }
-        .header p {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 8px;
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
-            z-index: 100;
-            color: var(--text-secondary);
-            transition: all 0.2s ease;
+
+        /* --- Title Bar/Header --- */
+        .title-bar {
+            background: var(--header-title);
+            color: var(--border-light);
+            padding: 5px 8px;
+            font-size: 16px;
+            font-weight: bold;
             display: flex;
+            justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid var(--border-dark);
+        }
+
+        .title-bar-text {
+            white-space: nowrap;
+        }
+
+        /* The main window body */
+        .app-body {
+            padding: 15px;
+        }
+
+        /* --- Section Styling (Sunken Panel) --- */
+        .section {
+            margin-bottom: 15px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--button-pressed);
+            padding: 1px;
+        }
+
+        .section-header {
+            padding: 6px 8px;
+            font-size: 11px;
+            font-weight: normal;
+            border-top: 1px solid var(--border-dark);
+            border-left: 1px solid var(--border-dark);
+            border-right: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-light);
+            background: #ffffff; 
+            display: inline-block;
+            margin-bottom: -1px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .section-content {
+            padding: 15px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--window-bg);
+            margin-top: -1px;
+        }
+
+        /* --- Controls Section --- */
+        .controls {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 8px;
             justify-content: center;
-            box-sizing: border-box;
-            line-height: 0;
+            flex-wrap: wrap;
         }
-        .theme-toggle:hover {
-            background: var(--hover-bg);
-            border-color: var(--text-secondary);
-            color: var(--text-primary);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+
+        .btn {
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--button-face);
+            color: var(--text-color);
+            padding: 6px 12px;
+            font-size: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: none;
+            box-shadow: none;
+            line-height: 1;
         }
-        .editor-section {
+
+        .btn:active {
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 7px 11px 5px 13px;
+        }
+
+        .btn-primary {
+            background: var(--header-title);
+            color: var(--border-light);
+        }
+
+        /* --- Editor Grid --- */
+        .editor-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
+            gap: 15px;
+            margin-bottom: 15px;
         }
+
         .editor-group {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
-        .editor-header {
-            padding: 12px 16px;
-            background: var(--code-bg);
-            border-bottom: 1px solid var(--border-color);
-            font-weight: 500;
-            color: var(--text-primary);
-            font-size: 14px;
+
+        .editor-label {
+            padding: 8px;
+            background: var(--button-pressed);
+            border-bottom: 2px solid var(--border-dark);
+            font-weight: normal;
+            color: var(--text-color);
+            font-size: 11px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
+
+        /* --- CSS Textarea --- */
         .css-textarea {
             width: 100%;
             min-height: 500px;
-            padding: 16px;
-            border: none;
-            outline: none;
-            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
-            font-size: 14px;
-            resize: vertical;
-            line-height: 1.5;
+            padding: 12px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
             background: var(--input-bg);
-            color: var(--text-primary);
+            color: var(--text-color);
+            font-family: 'Press Start 2P', monospace;
+            font-size: 9px;
+            line-height: 1.4;
+            resize: vertical;
+            outline: none;
         }
+
         .css-textarea:focus {
-            background: var(--input-focus-bg);
+            box-shadow: 0 0 0 1px var(--text-color) inset;
         }
+
         .css-textarea::placeholder {
-            color: var(--text-secondary);
+            color: var(--border-dark);
         }
-        .controls {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            margin-bottom: 20px;
+
+        .css-textarea:read-only {
+            background: var(--button-pressed);
         }
-        .btn {
-            padding: 8px 16px;
-            border: 1px solid var(--border-color);
-            background: var(--card-bg);
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 13px;
-            color: var(--text-primary);
-            transition: all 0.2s;
+
+        /* --- Syntax Highlighting --- */
+        .css-property {
+            color: var(--header-title);
+            font-weight: normal;
         }
-        .btn:hover {
-            background: var(--hover-bg);
-            border-color: var(--text-secondary);
+
+        .css-value {
+            color: #006400;
         }
-        .btn-primary {
-            background: var(--text-primary);
-            color: var(--card-bg);
-            border-color: var(--text-primary);
+
+        .css-selector {
+            color: #8B4513;
         }
-        .btn-primary:hover {
-            background: var(--text-secondary);
-            border-color: var(--text-secondary);
+
+        .css-comment {
+            color: var(--border-dark);
+            font-style: italic;
         }
-        .status-message {
-            margin-top: 16px;
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-size: 13px;
-            text-align: center;
+
+        .css-punctuation {
+            color: var(--text-color);
         }
-        .status-message.success {
-            background: var(--success-color);
-            color: var(--text-primary);
-        }
-        .status-message.error {
-            background: var(--error-color);
-            color: #fff;
-        }
-        .status-message.info {
-            background: var(--notification-bg);
-            color: #fff;
-        }
+
+        /* --- Notification --- */
         .notification {
             position: fixed;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            padding: 12px 20px;
-            background: var(--notification-bg);
-            color: var(--card-bg);
-            border-radius: 4px;
-            font-size: 14px;
+            padding: 8px 15px;
+            background: var(--success-color);
+            color: var(--border-light);
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            font-size: 9px;
             opacity: 0;
             transition: opacity 0.3s ease;
             pointer-events: none;
@@ -172,121 +242,212 @@
 
         .notification.error {
             background: var(--error-color);
-        }
-
-        [data-theme="dark"] .notification {
-            background: #fafafa;
-            color: #222;
-        }
-        [data-theme="dark"] .notification.error {
-            background: #ff6b6b;
-            color: #fff;
+            color: var(--text-color);
         }
 
         .notification.show {
             opacity: 1;
         }
 
+        /* --- Error Display --- */
+        .error {
+            background: var(--error-color);
+            color: var(--text-color);
+            padding: 12px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            font-size: 10px;
+            margin: 15px 0;
+        }
+
+        /* --- Hidden Elements --- */
         .hidden {
             display: none;
         }
+
+        /* --- Responsive Design --- */
         @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
             .container {
-                padding: 20px 16px;
+                max-width: 100%;
             }
-            .header h1 {
-                font-size: 1.5rem;
-                padding-right: 50px;
-            }
-            .theme-toggle {
-                top: -10px;
-                right: 0;
-            }
-            .editor-section {
+
+            .editor-grid {
                 grid-template-columns: 1fr;
-                gap: 16px;
+                gap: 15px;
             }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 200px;
+            }
+
+            .css-textarea {
+                min-height: 400px;
+                font-size: 8px;
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
             .css-textarea {
                 min-height: 300px;
+                font-size: 7px;
+                padding: 8px;
             }
         }
     </style>
+    
+    <!-- Load CSS Beautifier Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.7/beautify-css.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-                <i data-lucide="sun" class="theme-icon" id="theme-icon"></i>
-            </button>
-            <h1>CSS Minifier/Unminifier</h1>
-            <p>Minify or beautify your CSS code</p>
+    <div class="container window-frame">
+        <div class="title-bar">
+            <div class="title-bar-text">CSS Formatter</div>
         </div>
-
-        <div class="editor-section">
-            <div class="editor-group">
-                <div class="editor-header">
-                    <span>Input CSS</span>
-                    <button class="btn" onclick="clearInput()">Clear</button>
+        
+        <div class="app-body">
+            <div class="editor-grid">
+                <div class="section">
+                    <div class="section-header">Input CSS</div>
+                    <div class="section-content" style="padding: 0;">
+                        <div class="editor-group">
+                            <div class="editor-label">
+                                <span>Paste your CSS here</span>
+                                <button class="btn" onclick="clearInput()">Clear</button>
+                            </div>
+                            <textarea 
+                                id="inputCss" 
+                                class="css-textarea"
+                                placeholder="body { margin: 0; padding: 0; } .header { background: #333; color: white; }"
+                                oninput="autoFormat()"
+                            ></textarea>
+                        </div>
+                    </div>
                 </div>
-                <textarea class="css-textarea" id="inputCss" placeholder="Paste your CSS here..."></textarea>
-            </div>
-            <div class="editor-group">
-                <div class="editor-header">
-                    <span>Output CSS</span>
-                    <button class="btn" onclick="copyOutput()">Copy</button>
+
+                <div class="section">
+                    <div class="section-header">Output CSS</div>
+                    <div class="section-content" style="padding: 0;">
+                        <div class="editor-group">
+                            <div class="editor-label">
+                                <span>Formatted CSS will appear here</span>
+                                <button class="btn" onclick="copyOutput()">Copy</button>
+                            </div>
+                            <textarea 
+                                id="outputCss" 
+                                class="css-textarea"
+                                readonly
+                                placeholder="Output will appear here..."
+                            ></textarea>
+                        </div>
+                    </div>
                 </div>
-                <textarea class="css-textarea" id="outputCss" readonly placeholder="Output will appear here..."></textarea>
             </div>
-        </div>
 
-        <div class="controls">
-            <button class="btn btn-primary" onclick="minifyCss()">Minify CSS</button>
-            <button class="btn btn-primary" onclick="unminifyCss()">Unminify CSS</button>
-        </div>
+            <div class="controls">
+                <button class="btn btn-primary" onclick="minifyCss()">Minify CSS</button>
+                <button class="btn btn-primary" onclick="beautifyCss()">Beautify CSS</button>
+                <button class="btn" onclick="validateCss()">Validate</button>
+            </div>
 
-        <div id="notification" class="notification"></div>
+            <div id="notification" class="notification"></div>
+        </div>
     </div>
 
-    <script src="/components/toggle.js"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.7/beautify-css.min.js"></script>
     <script>
+        // DOM Elements
+        const inputCss = document.getElementById('inputCss');
+        const outputCss = document.getElementById('outputCss');
+        const notification = document.getElementById('notification');
+
+        let autoFormatTimeout;
+
+        // Auto format on input (debounced)
+        function autoFormat() {
+            clearTimeout(autoFormatTimeout);
+            autoFormatTimeout = setTimeout(() => {
+                const input = inputCss.value.trim();
+                if (input) {
+                    beautifyCss(false); // Silent mode
+                }
+            }, 1000);
+        }
+
+        /**
+         * Minifies CSS by removing whitespace and comments
+         */
         function minifyCss() {
-            const input = document.getElementById('inputCss').value;
+            const input = inputCss.value;
             if (!input.trim()) {
-                showStatus('Please enter CSS to minify.', 'error');
+                showNotification('Please enter CSS to minify.', true);
                 return;
             }
+
             try {
-                // Simple minification: remove extra spaces, newlines, and comments
+                // Advanced minification
                 let minified = input
-                    .replace(/\/\*[\s\S]*?\*\//g, '') // Remove comments
-                    .replace(/\s+/g, ' ') // Collapse whitespace
-                    .replace(/\s*{\s*/g, '{') // Remove spaces around {
-                    .replace(/\s*}\s*/g, '}') // Remove spaces around }
-                    .replace(/\s*;\s*/g, ';') // Remove spaces around ;
-                    .replace(/\s*:\s*/g, ':') // Remove spaces around :
-                    .replace(/;\s*}/g, '}') // Remove ; before }
+                    // Remove comments
+                    .replace(/\/\*[\s\S]*?\*\//g, '')
+                    // Remove extra whitespace
+                    .replace(/\s+/g, ' ')
+                    // Remove spaces around specific characters
+                    .replace(/\s*{\s*/g, '{')
+                    .replace(/\s*}\s*/g, '}')
+                    .replace(/\s*;\s*/g, ';')
+                    .replace(/\s*:\s*/g, ':')
+                    .replace(/\s*,\s*/g, ',')
+                    .replace(/\s*>\s*/g, '>')
+                    .replace(/\s*\+\s*/g, '+')
+                    .replace(/\s*~\s*/g, '~')
+                    // Remove semicolon before closing brace
+                    .replace(/;\s*}/g, '}')
+                    // Remove leading/trailing whitespace
                     .trim();
-                document.getElementById('outputCss').value = minified;
-                showStatus('CSS minified successfully!', 'success');
+
+                outputCss.value = minified;
+                showNotification('CSS minified successfully!');
+                
+                // Calculate compression ratio
+                const originalSize = input.length;
+                const minifiedSize = minified.length;
+                const savings = ((originalSize - minifiedSize) / originalSize * 100).toFixed(1);
+                
+                setTimeout(() => {
+                    showNotification(`Compressed by ${savings}% (${originalSize} → ${minifiedSize} chars)`);
+                }, 2000);
+
             } catch (error) {
-                showStatus('Error minifying CSS: ' + error.message, 'error');
+                showNotification('Error minifying CSS: ' + error.message, true);
             }
         }
 
-        function unminifyCss() {
-            const input = document.getElementById('inputCss').value;
+        /**
+         * Beautifies CSS using the js-beautify library
+         */
+        function beautifyCss(showMessage = true) {
+            const input = inputCss.value;
             if (!input.trim()) {
-                showStatus('Please enter CSS to unminify.', 'error');
+                if (showMessage) {
+                    showNotification('Please enter CSS to beautify.', true);
+                }
                 return;
             }
+
             try {
-                // Use css_beautify (correct function name) for proper formatting with indentation
                 const beautified = css_beautify(input, {
-                    indent_size: 4, // 4 spaces
+                    indent_size: 2,
                     indent_char: ' ',
-                    max_preserve_newlines: 1,
+                    max_preserve_newlines: 2,
                     preserve_newlines: true,
                     keep_array_indentation: false,
                     break_chained_methods: false,
@@ -295,49 +456,140 @@
                     space_before_conditional: true,
                     unescape_strings: false,
                     jslint_happy: false,
-                    end_with_newline: false,
+                    end_with_newline: true,
                     wrap_line_length: 0,
                     indent_inner_html: false,
                     comma_first: false,
                     e4x: false,
                     indent_empty_lines: false
                 });
-                document.getElementById('outputCss').value = beautified;
-                showStatus('CSS unminified successfully!', 'success');
+
+                outputCss.value = beautified;
+                
+                if (showMessage) {
+                    showNotification('CSS beautified successfully!');
+                }
+
             } catch (error) {
-                showStatus('Error unminifying CSS: ' + error.message, 'error');
+                if (showMessage) {
+                    showNotification('Error beautifying CSS: ' + error.message, true);
+                }
             }
         }
 
+        /**
+         * Basic CSS validation
+         */
+        function validateCss() {
+            const input = inputCss.value;
+            if (!input.trim()) {
+                showNotification('Please enter CSS to validate.', true);
+                return;
+            }
+
+            try {
+                const errors = [];
+                const lines = input.split('\n');
+                
+                let braceCount = 0;
+                let inComment = false;
+                
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    const lineNum = i + 1;
+                    
+                    // Skip empty lines
+                    if (!line) continue;
+                    
+                    // Check for comment blocks
+                    if (line.includes('/*')) inComment = true;
+                    if (line.includes('*/')) inComment = false;
+                    if (inComment) continue;
+                    
+                    // Count braces
+                    const openBraces = (line.match(/{/g) || []).length;
+                    const closeBraces = (line.match(/}/g) || []).length;
+                    braceCount += openBraces - closeBraces;
+                    
+                    // Check for common issues
+                    if (line.includes(':') && !line.includes('{') && !line.includes('}')) {
+                        if (!line.endsWith(';') && !line.endsWith(':')) {
+                            errors.push(`Line ${lineNum}: Missing semicolon`);
+                        }
+                    }
+                    
+                    // Check for unclosed strings
+                    const quotes = (line.match(/"/g) || []).length;
+                    const singleQuotes = (line.match(/'/g) || []).length;
+                    if (quotes % 2 !== 0 || singleQuotes % 2 !== 0) {
+                        errors.push(`Line ${lineNum}: Unclosed quote`);
+                    }
+                }
+                
+                // Check final brace count
+                if (braceCount !== 0) {
+                    errors.push(`Mismatched braces: ${braceCount > 0 ? 'missing ' + braceCount + ' closing' : 'extra ' + Math.abs(braceCount) + ' closing'} brace(s)`);
+                }
+                
+                if (errors.length === 0) {
+                    showNotification('CSS validation passed! ✓');
+                    outputCss.value = input + '\n\n/* ✓ Validation: No errors found */';
+                } else {
+                    showNotification(`Found ${errors.length} validation error(s)`, true);
+                    outputCss.value = '/* Validation Errors:\n' + errors.join('\n') + '\n*/\n\n' + input;
+                }
+
+            } catch (error) {
+                showNotification('Error during validation: ' + error.message, true);
+            }
+        }
+
+        /**
+         * Clears the input and output
+         */
         function clearInput() {
-            document.getElementById('inputCss').value = '';
-            document.getElementById('outputCss').value = '';
-            showStatus('Input cleared.', 'info');
+            inputCss.value = '';
+            outputCss.value = '';
+            showNotification('Input cleared.');
         }
 
+        /**
+         * Copies the output to clipboard
+         */
         function copyOutput() {
-            const output = document.getElementById('outputCss');
-            output.select();
-            document.execCommand('copy');
-            showStatus('Output copied to clipboard!', 'success');
+            if (!outputCss.value.trim()) {
+                showNotification('Nothing to copy!', true);
+                return;
+            }
+
+            outputCss.select();
+            outputCss.setSelectionRange(0, 99999); // For mobile devices
+            
+            try {
+                document.execCommand('copy');
+                showNotification('Output copied to clipboard!');
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+                showNotification('Failed to copy to clipboard.', true);
+            }
         }
 
-        function showStatus(message, type = 'info') {
-            const notif = document.getElementById('notification');
-            notif.textContent = message;
-            notif.classList.remove('error', 'show');
-            if (type === 'error') {
-                notif.classList.add('error');
-            }
-            notif.classList.add('show');
+        /**
+         * Shows a notification message
+         * @param {string} message - The message to display
+         * @param {boolean} isError - If true, displays an error message
+         */
+        function showNotification(message, isError = false) {
+            notification.textContent = message;
+            notification.className = `notification show ${isError ? 'error' : ''}`;
+
             setTimeout(() => {
-                notif.classList.remove('show');
+                notification.classList.remove('show');
             }, 3000);
         }
 
         /**
-         * Function to synchronize the height of two textareas when one is manually resized.
-         * It uses MutationObserver to watch for style changes (which occur during manual resize).
+         * Synchronizes textarea heights when manually resized
          */
         function syncTextareaHeights(sourceId, targetId) {
             const source = document.getElementById(sourceId);
@@ -345,9 +597,7 @@
 
             const observer = new MutationObserver((mutations) => {
                 mutations.forEach((mutation) => {
-                    // Check if the 'style' attribute was changed
                     if (mutation.attributeName === 'style') {
-                        // The browser sets the height property in the element's inline style on manual resize
                         const newHeight = source.style.height;
                         if (newHeight && target.style.height !== newHeight) {
                             target.style.height = newHeight;
@@ -356,15 +606,22 @@
                 });
             });
 
-            // Start observing the source element's style attribute for changes
             observer.observe(source, { attributes: true });
         }
 
+        // Initialize
         window.onload = function() {
-            lucide.createIcons();
-            // Start synchronization in both directions
+            // Sync textarea heights
             syncTextareaHeights('inputCss', 'outputCss');
             syncTextareaHeights('outputCss', 'inputCss');
+            
+            // Add example CSS if empty
+            if (!inputCss.value.trim()) {
+                inputCss.value = `/* Example CSS */
+            body {margin: 0;padding: 20px;font-family: Arial, sans-serif;background-color: #f5f5f5;}`;
+                // Auto-beautify the example
+                beautifyCss(false);
+            }
         };
     </script>
 </body>

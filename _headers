@@ -1,8 +1,2 @@
-/*
-  Cache-Control: public, max-age=31536000, immutable
-/index.css
-  Cache-Control: public, max-age=31536000, immutable
-/public/lucide.min.js
-  Cache-Control: public, max-age=31536000, immutable
 /public/logo.png
   Cache-Control: public, max-age=31536000, immutable

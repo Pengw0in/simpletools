@@ -4,131 +4,121 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Text Difference Tool</title>
-    <link rel="icon" type="image/x-icon" href="../../public/logo.ico">
-    <link rel="stylesheet" href="/components/toggle.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
     <style>
+        /* Global Reset and Retro Font */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        /* Basic Retro Color Palette */
+        :root {
+            --window-bg: #c0c0c0; 
+            --border-dark: #808080;
+            --border-light: #ffffff;
+            --text-color: #000000;
+            --button-face: #c0c0c0;
+            --button-pressed: #dfdfdf;
+            --input-bg: #ffffff;
+            --header-title: #000080;
+            --error-color: #ffcccc;
+            --success-color: #008000;
+            --highlight-added: #c6f6d5;
+            --highlight-removed: #fed7d7;
+            --highlight-modified: #fef5e7;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--bg-color);
-            color: var(--text-primary);
+            background: var(--window-bg);
+            color: var(--text-color);
             line-height: 1.6;
+            padding: 30px;
         }
 
-        /* 1. INCREASE CONTAINER AND HEADER SPACING */
+        /* --- Classic Windows Border Mixin --- */
+        .window-frame {
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--window-bg);
+            padding: 3px; 
+            box-shadow: none;
+        }
+
         .container {
-            max-width: 1400px; /* Increased max width */
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 60px 40px; /* Increased padding */
+            padding: 0; 
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 60px; /* Increased bottom margin */
-            position: relative;
-        }
-
-        .header h1 {
-            font-size: 2rem;
-            font-weight: 300;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-        }
-
-        .header p {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 8px;
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
-            z-index: 100;
-            color: var(--text-secondary);
-            transition: all 0.2s ease;
+        /* --- Title Bar/Header --- */
+        .title-bar {
+            background: var(--header-title);
+            color: var(--border-light);
+            padding: 5px 8px;
+            font-size: 16px;
+            font-weight: bold;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            box-sizing: border-box;
-            line-height: 0;
-        }
-        .theme-toggle:hover {
-            background: var(--hover-bg);
-            border-color: var(--text-secondary);
-            color: var(--text-primary);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            border-bottom: 1px solid var(--border-dark);
         }
 
-        .input-section {
-            margin-bottom: 30px;
+        .title-bar-text {
+            white-space: nowrap;
         }
 
-        /* 2. ADJUST INPUT ROW SPACING */
-        .input-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px; /* Adjusted gap */
-            margin-bottom: 20px;
+        /* The main window body */
+        .app-body {
+            padding: 15px;
         }
 
-        .input-group {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            overflow: hidden;
+        /* --- Section Styling (Sunken Panel) --- */
+        .section {
+            margin-bottom: 15px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--button-pressed);
+            padding: 1px;
         }
 
-        .input-label {
-            display: block;
-            padding: 12px 16px;
-            background: var(--code-bg);
-            border-bottom: 1px solid var(--border-color);
-            font-weight: 500;
-            color: var(--text-primary);
-            font-size: 14px;
+        .section-header {
+            padding: 6px 8px;
+            font-size: 11px;
+            font-weight: normal;
+            border-top: 1px solid var(--border-dark);
+            border-left: 1px solid var(--border-dark);
+            border-right: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-light);
+            background: #ffffff; 
+            display: inline-block;
+            margin-bottom: -1px;
+            position: relative;
+            z-index: 10;
         }
 
-        /* 2. ADJUST TEXT INPUT PADDING */
-        .text-input {
-            width: 100%;
-            min-height: 200px;
-            padding: 20px; /* Increased padding */
-            border: none;
-            outline: none;
-            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
-            font-size: 13px;
-            resize: vertical;
-            line-height: 1.4;
-            background: var(--input-bg);
-            color: var(--text-primary);
+        .section-content {
+            padding: 15px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--window-bg);
+            margin-top: -1px;
         }
 
-        .text-input:focus {
-            background: var(--input-focus-bg);
-        }
-
-        .text-input::placeholder {
-            color: var(--text-secondary);
-        }
-
+        /* --- File Upload Section --- */
         .file-input-section {
             display: flex;
             gap: 12px;
-            margin-bottom: 16px;
+            margin-bottom: 15px;
             justify-content: center;
+            flex-wrap: wrap;
         }
 
         .file-input-wrapper {
@@ -145,76 +135,131 @@
         }
 
         .file-input-label {
-            display: inline-block;
-            padding: 8px 16px;
-            background: var(--text-primary);
-            color: var(--card-bg);
-            border-radius: 4px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--button-face);
+            color: var(--text-color);
+            padding: 6px 12px;
+            font-size: 10px;
+            text-align: center;
             cursor: pointer;
-            font-size: 13px;
-            transition: background 0.2s;
+            transition: none;
+            box-shadow: none;
+            line-height: 1;
+            font-family: 'Press Start 2P', cursive;
+            display: inline-block;
         }
 
-        .file-input-label:hover {
-            background: var(--text-secondary);
+        .file-input-label:active {
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 7px 11px 5px 13px;
         }
 
-        /* 2. ADJUST CONTROLS SPACING */
+        /* --- Input Row Grid --- */
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .input-group {
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--input-bg);
+            overflow: hidden;
+        }
+
+        .input-label {
+            display: block;
+            padding: 8px;
+            background: var(--button-pressed);
+            border-bottom: 2px solid var(--border-dark);
+            font-weight: normal;
+            color: var(--text-color);
+            font-size: 11px;
+        }
+
+        .text-input {
+            width: 100%;
+            min-height: 300px;
+            padding: 12px;
+            border: none;
+            outline: none;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 9px;
+            resize: vertical;
+            line-height: 1.4;
+            background: var(--input-bg);
+            color: var(--text-color);
+        }
+
+        .text-input:focus {
+            box-shadow: 0 0 0 1px var(--text-color) inset;
+        }
+
+        .text-input::placeholder {
+            color: var(--border-dark);
+        }
+
+        /* --- Controls --- */
         .controls {
-            margin-bottom: 40px; /* Increased bottom margin */
+            margin-bottom: 15px;
             display: flex;
-            gap: 12px;
+            gap: 8px;
             justify-content: center;
             flex-wrap: wrap;
         }
 
         .btn {
-            padding: 8px 16px;
-            border: 1px solid var(--border-color);
-            background: var(--card-bg);
-            border-radius: 4px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--button-face);
+            color: var(--text-color);
+            padding: 6px 12px;
+            font-size: 10px;
+            text-align: center;
             cursor: pointer;
-            font-size: 13px;
-            color: var(--text-primary);
-            transition: all 0.2s;
+            transition: none;
+            box-shadow: none;
+            line-height: 1;
+            font-family: 'Press Start 2P', cursive;
         }
 
-        .btn:hover {
-            background: var(--hover-bg);
-            border-color: var(--text-secondary);
+        .btn:active {
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 7px 11px 5px 13px;
         }
 
         .btn-primary {
-            background: var(--text-primary);
-            color: var(--card-bg);
-            border-color: var(--text-primary);
+            background: var(--header-title);
+            color: var(--border-light);
         }
 
-        .btn-primary:hover {
-            background: var(--text-secondary);
-            border-color: var(--text-secondary);
-        }
-
-        /* 3. ADJUST STATS SPACING */
+        /* --- Stats Section --- */
         .stats {
-            background: var(--card-bg);
-            padding: 16px;
-            border-radius: 4px;
-            margin-bottom: 16px;
-            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            padding: 12px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            margin-bottom: 15px;
             display: flex;
-            gap: 32px; /* Increased gap */
-            font-size: 13px;
+            gap: 20px;
+            font-size: 10px;
             flex-wrap: wrap;
         }
 
         .stat-item {
-            color: var(--text-secondary);
+            color: var(--text-color);
         }
 
         .stat-value {
-            font-weight: 500;
-            color: var(--text-primary);
+            font-weight: normal;
+            color: var(--header-title);
         }
 
         .stat-value.added {
@@ -222,39 +267,76 @@
         }
 
         .stat-value.removed {
-            color: var(--error-color);
+            color: #cc0000;
         }
 
+        /* --- View Toggle --- */
+        .view-toggle {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .toggle-btn {
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--button-face);
+            color: var(--text-color);
+            padding: 6px 12px;
+            font-size: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: none;
+            box-shadow: none;
+            line-height: 1;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        .toggle-btn:active {
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 7px 11px 5px 13px;
+        }
+
+        .toggle-btn.active {
+            background: var(--header-title);
+            color: var(--border-light);
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 7px 11px 5px 13px;
+        }
+
+        /* --- Diff Container --- */
         .diff-container {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--input-bg);
             overflow: hidden;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .diff-header {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            background: var(--code-bg);
-            border-bottom: 1px solid var(--border-color);
+            background: var(--button-pressed);
+            border-bottom: 2px solid var(--border-dark);
         }
 
         .diff-title {
-            padding: 12px 16px;
-            font-weight: 500;
-            color: var(--text-primary);
-            font-size: 14px;
-            border-right: 1px solid var(--border-color);
+            padding: 8px;
+            font-weight: normal;
+            color: var(--text-color);
+            font-size: 11px;
+            border-right: 1px solid var(--border-dark);
         }
 
         .diff-title:last-child {
             border-right: none;
         }
 
-        /* 3. ADJUST DIFF CONTENT MAX HEIGHT */
         .diff-content {
-            max-height: 65vh; /* Slightly increased height */
+            max-height: 60vh;
             overflow: auto;
         }
 
@@ -264,10 +346,10 @@
         }
 
         .diff-side {
-            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
-            font-size: 13px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 8px;
             line-height: 1.4;
-            border-right: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-dark);
         }
 
         .diff-side:last-child {
@@ -276,128 +358,90 @@
 
         .diff-line {
             display: flex;
-            min-height: 20px;
+            min-height: 18px;
         }
 
         .line-number {
-            background: var(--code-bg);
-            color: var(--text-secondary);
-            padding: 2px 8px;
-            border-right: 1px solid var(--border-color);
-            min-width: 40px;
+            background: var(--button-pressed);
+            color: var(--text-color);
+            padding: 2px 6px;
+            border-right: 1px solid var(--border-dark);
+            min-width: 35px;
             text-align: right;
             user-select: none;
             flex-shrink: 0;
+            font-size: 7px;
         }
 
         .line-content {
-            padding: 2px 8px;
+            padding: 2px 6px;
             flex: 1;
             white-space: pre-wrap;
             word-wrap: break-word;
         }
 
         .line-added {
-            background: #e6ffed;
-            border-left: 3px solid var(--success-color);
-        }
-
-        [data-theme="dark"] .line-added {
-            background: rgba(74, 222, 128, 0.1);
+            background: var(--highlight-added);
+            border-left: 2px solid var(--success-color);
         }
 
         .line-removed {
-            background: #ffeef0;
-            border-left: 3px solid var(--error-color);
-        }
-
-        [data-theme="dark"] .line-removed {
-            background: rgba(248, 113, 113, 0.1);
+            background: var(--highlight-removed);
+            border-left: 2px solid #cc0000;
         }
 
         .line-modified {
-            background: #fff5b4;
-            border-left: 3px solid #ffc107;
-        }
-
-        [data-theme="dark"] .line-modified {
-            background: rgba(255, 193, 7, 0.1);
-            border-left-color: #ffc107;
+            background: var(--highlight-modified);
+            border-left: 2px solid #ff8c00;
         }
 
         .line-unchanged {
-            background: var(--card-bg);
+            background: var(--input-bg);
         }
 
         .unified-view {
-            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
-            font-size: 13px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 8px;
             line-height: 1.4;
         }
 
-        .view-toggle {
-            margin-bottom: 16px;
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-        }
-
-        .toggle-btn {
-            padding: 6px 12px;
-            border: 1px solid var(--border-color);
-            background: var(--card-bg);
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            color: var(--text-primary);
-            transition: all 0.2s;
-        }
-
-        .toggle-btn.active {
-            background: var(--text-primary);
-            color: var(--card-bg);
-            border-color: var(--text-primary);
-        }
-
-        .toggle-btn:hover:not(.active) {
-            background: var(--hover-bg);
-            border-color: var(--text-secondary);
-        }
-
+        /* --- Error and No-Diff States --- */
         .error {
-            background: var(--error-bg);
-            color: var(--error-color);
-            padding: 16px;
-            border-radius: 4px;
-            border-left: 3px solid var(--error-border);
-            font-size: 14px;
+            background: var(--error-color);
+            color: var(--text-color);
+            padding: 12px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            font-size: 10px;
+            margin: 15px 0;
         }
 
         .no-diff {
             text-align: center;
             color: var(--success-color);
-            padding: 40px 20px;
-            font-size: 16px;
+            padding: 30px 15px;
+            font-size: 10px;
         }
 
+        /* --- Hidden Elements --- */
+        .hidden {
+            display: none;
+        }
+
+        /* --- Responsive Design --- */
         @media (max-width: 768px) {
-            .container {
-                padding: 20px 16px;
+            body {
+                padding: 10px;
             }
             
-            .header h1 {
-                font-size: 1.5rem;
-                padding-right: 50px;
+            .container {
+                max-width: 100%;
             }
 
-            .theme-toggle {
-                top: -10px;
-                right: 0;
-            }
-            
             .input-row {
                 grid-template-columns: 1fr;
-                gap: 16px;
+                gap: 15px;
             }
             
             .diff-view {
@@ -406,7 +450,7 @@
             
             .diff-side {
                 border-right: none;
-                border-bottom: 1px solid var(--border-color);
+                border-bottom: 1px solid var(--border-dark);
             }
             
             .diff-side:last-child {
@@ -414,7 +458,12 @@
             }
             
             .controls {
-                flex-wrap: wrap;
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 180px;
             }
             
             .stats {
@@ -428,77 +477,112 @@
 
             .diff-title {
                 border-right: none;
-                border-bottom: 1px solid var(--border-color);
+                border-bottom: 1px solid var(--border-dark);
             }
 
             .diff-title:last-child {
                 border-bottom: none;
             }
+
+            .file-input-section {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .file-input-label {
+                width: 180px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .text-input {
+                min-height: 250px;
+                font-size: 8px;
+                padding: 10px;
+            }
+
+            .diff-side {
+                font-size: 7px;
+            }
+
+            .line-number {
+                font-size: 6px;
+                padding: 1px 4px;
+                min-width: 30px;
+            }
+
+            .line-content {
+                padding: 1px 4px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-                <i data-lucide="sun" class="theme-icon" id="theme-icon"></i>
-            </button>
-            <h1>Text Difference Tool</h1>
-            <p>Compare two text files or content side-by-side</p>
+    <div class="container window-frame">
+        <div class="title-bar">
+            <div class="title-bar-text">Text Difference Tool</div>
         </div>
-
-        <div class="file-input-section">
-            <div class="file-input-wrapper">
-                <input type="file" id="file1" class="file-input" accept=".txt,.js,.html,.css,.json,.xml,.csv,.md" />
-                <label for="file1" class="file-input-label">Load File 1</label>
-            </div>
-            <div class="file-input-wrapper">
-                <input type="file" id="file2" class="file-input" accept=".txt,.js,.html,.css,.json,.xml,.csv,.md" />
-                <label for="file2" class="file-input-label">Load File 2</label>
-            </div>
-        </div>
-
-        <div class="input-section">
-            <div class="input-row">
-                <div class="input-group">
-                    <label class="input-label" id="label1">Original Text</label>
-                    <textarea class="text-input" id="text1" placeholder="Enter or paste the original text here..."></textarea>
-                </div>
-                <div class="input-group">
-                    <label class="input-label" id="label2">Modified Text</label>
-                    <textarea class="text-input" id="text2" placeholder="Enter or paste the modified text here..."></textarea>
+        
+        <div class="app-body">
+            <div class="section">
+                <div class="section-header">File Upload</div>
+                <div class="section-content">
+                    <div class="file-input-section">
+                        <div class="file-input-wrapper">
+                            <input type="file" id="file1" class="file-input" accept=".txt,.js,.html,.css,.json,.xml,.csv,.md" />
+                            <label for="file1" class="file-input-label">Load File 1</label>
+                        </div>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="file2" class="file-input" accept=".txt,.js,.html,.css,.json,.xml,.csv,.md" />
+                            <label for="file2" class="file-input-label">Load File 2</label>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="controls">
-            <button class="btn btn-primary" onclick="compareTexts()">Compare</button>
-            <button class="btn" onclick="clearTexts()">Clear All</button>
-            <button class="btn" onclick="swapTexts()">Swap Texts</button>
-            <button class="btn" onclick="downloadDiff()">Download Diff</button>
-        </div>
-
-        <div id="results" style="display: none;">
-            <div class="stats" id="stats"></div>
-            
-            <div class="view-toggle">
-                <button class="toggle-btn active" onclick="setView('side')" id="sideBtn">Side by Side</button>
-                <button class="toggle-btn" onclick="setView('unified')" id="unifiedBtn">Unified</button>
+            <div class="section">
+                <div class="section-header">Text Input</div>
+                <div class="section-content">
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label class="input-label" id="label1">Original Text</label>
+                            <textarea class="text-input" id="text1" placeholder="Enter or paste the original text here..."></textarea>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label" id="label2">Modified Text</label>
+                            <textarea class="text-input" id="text2" placeholder="Enter or paste the modified text here..."></textarea>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="diff-container" id="diffContainer"></div>
+            <div class="controls">
+                <button class="btn btn-primary" onclick="compareTexts()">Compare</button>
+                <button class="btn" onclick="clearTexts()">Clear All</button>
+                <button class="btn" onclick="swapTexts()">Swap Texts</button>
+                <button class="btn" onclick="downloadDiff()">Download Diff</button>
+            </div>
+
+            <div id="results" class="hidden">
+                <div class="stats" id="stats"></div>
+                
+                <div class="view-toggle">
+                    <button class="toggle-btn active" onclick="setView('side')" id="sideBtn">Side by Side</button>
+                    <button class="toggle-btn" onclick="setView('unified')" id="unifiedBtn">Unified</button>
+                </div>
+
+                <div class="diff-container" id="diffContainer"></div>
+            </div>
         </div>
     </div>
 
-    <script src="/components/toggle.js"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script>
         let currentView = 'side';
         let diffResult = null;
         
         const text1El = document.getElementById('text1');
         const text2El = document.getElementById('text2');
-        const MIN_HEIGHT = 200; // Matches CSS min-height
+        const MIN_HEIGHT = 300; // Matches CSS min-height
 
         document.getElementById('file1').addEventListener('change', (e) => loadFile(e, 'text1', 'label1'));
         document.getElementById('file2').addEventListener('change', (e) => loadFile(e, 'text2', 'label2'));
@@ -507,8 +591,7 @@
         text1El.addEventListener('input', debounce(compareTexts, 500));
         text2El.addEventListener('input', debounce(compareTexts, 500));
         
-        // --- TEXTAREA RESIZE SYNC LOGIC (MutationObserver for manual resize) ---
-
+        // --- TEXTAREA RESIZE SYNC LOGIC ---
         function syncTextareaHeights(source, target) {
             const height = source.clientHeight;
             
@@ -517,14 +600,11 @@
             }
         }
         
-        // Function to observe changes to the style attribute (height)
         function createResizeObserver(source, target) {
             const observer = new MutationObserver((mutationsList, observer) => {
                 for(const mutation of mutationsList) {
                     if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-                        // Debounce the sync to prevent performance issues during dragging
                         debounce(() => {
-                            // Only sync if the source has a height style applied (meaning the user dragged it)
                             if (source.style.height) {
                                 syncTextareaHeights(source, target);
                             }
@@ -533,11 +613,8 @@
                 }
             });
 
-            // Start observing the target's style attribute changes
             observer.observe(source, { attributes: true, attributeFilter: ['style'] });
         }
-
-        // --- END OF SYNC LOGIC ---
 
         function loadFile(event, textAreaId, labelId) {
             const file = event.target.files[0];
@@ -549,13 +626,10 @@
                 textEl.value = e.target.result;
                 document.getElementById(labelId).textContent = file.name;
                 
-                // 1. Reset height to auto to calculate scrollHeight correctly
                 textEl.style.height = 'auto'; 
-                // 2. Set height based on content or MIN_HEIGHT
                 const newHeight = Math.max(textEl.scrollHeight, MIN_HEIGHT);
                 textEl.style.height = newHeight + 'px';
 
-                // 3. Force sync after loading file content
                 const source = textEl;
                 const target = source === text1El ? text2El : text1El;
                 syncTextareaHeights(source, target);
@@ -570,46 +644,40 @@
             const text2 = text2El.value;
 
             if (!text1 && !text2) {
-                document.getElementById('results').style.display = 'none';
+                document.getElementById('results').classList.add('hidden');
                 return;
             }
 
             diffResult = calculateDiff(text1, text2);
             displayDiff();
             showStats();
-            document.getElementById('results').style.display = 'block';
+            document.getElementById('results').classList.remove('hidden');
         }
 
         function calculateDiff(text1, text2) {
             const lines1 = text1.split('\n');
             const lines2 = text2.split('\n');
             
-            // Simple line-by-line diff algorithm
             const diff = [];
             let i = 0, j = 0;
 
             while (i < lines1.length || j < lines2.length) {
                 if (i >= lines1.length) {
-                    // Remaining lines in text2 are additions
                     diff.push({ type: 'added', line1: null, line2: lines2[j], lineNum1: null, lineNum2: j + 1 });
                     j++;
                 } else if (j >= lines2.length) {
-                    // Remaining lines in text1 are deletions
                     diff.push({ type: 'removed', line1: lines1[i], line2: null, lineNum1: i + 1, lineNum2: null });
                     i++;
                 } else if (lines1[i] === lines2[j]) {
-                    // Lines are identical
                     diff.push({ type: 'unchanged', line1: lines1[i], line2: lines2[j], lineNum1: i + 1, lineNum2: j + 1 });
                     i++;
                     j++;
                 } else {
-                    // Look ahead to find matching lines
                     let foundMatch = false;
                     const lookAhead = Math.min(10, Math.max(lines1.length - i, lines2.length - j));
                     
                     for (let k = 1; k <= lookAhead; k++) {
                         if (i + k < lines1.length && lines1[i + k] === lines2[j]) {
-                            // Found match in text1, mark preceding lines as removed
                             for (let l = 0; l < k; l++) {
                                 diff.push({ type: 'removed', line1: lines1[i + l], line2: null, lineNum1: i + l + 1, lineNum2: null });
                             }
@@ -619,7 +687,6 @@
                             foundMatch = true;
                             break;
                         } else if (j + k < lines2.length && lines1[i] === lines2[j + k]) {
-                            // Found match in text2, mark preceding lines as added
                             for (let l = 0; l < k; l++) {
                                 diff.push({ type: 'added', line1: null, line2: lines2[j + l], lineNum1: null, lineNum2: j + l + 1 });
                             }
@@ -632,7 +699,6 @@
                     }
                     
                     if (!foundMatch) {
-                        // No match found, treat as modification
                         diff.push({ type: 'modified', line1: lines1[i], line2: lines2[j], lineNum1: i + 1, lineNum2: j + 1 });
                         i++;
                         j++;
@@ -751,7 +817,6 @@
                     prefix = '-';
                     lineClass = 'line-removed';
                 } else if (item.type === 'modified') {
-                    // Show both removed and added lines for modifications
                     html += `
                         <div class="diff-line line-removed">
                             <div class="line-number">-</div>
@@ -824,10 +889,9 @@
             document.getElementById('label2').textContent = 'Modified Text';
             document.getElementById('file1').value = '';
             document.getElementById('file2').value = '';
-            document.getElementById('results').style.display = 'none';
+            document.getElementById('results').classList.add('hidden');
             diffResult = null;
             
-            // Reset heights to min-height (200px) after clear
             text1El.style.height = MIN_HEIGHT + 'px';
             text2El.style.height = MIN_HEIGHT + 'px';
         }
@@ -843,7 +907,6 @@
             document.getElementById('label1').textContent = label2;
             document.getElementById('label2').textContent = label1;
             
-            // Re-calculate heights based on new content and sync
             text1El.style.height = 'auto'; 
             text2El.style.height = 'auto'; 
             const newHeight1 = Math.max(text1El.scrollHeight, MIN_HEIGHT);
@@ -927,11 +990,8 @@
             };
         }
 
-        // Initialize theme and icons
+        // Initialize
         window.addEventListener('load', () => {
-            lucide.createIcons();
-            
-            // Set initial heights explicitly and create observers
             text1El.style.height = MIN_HEIGHT + 'px';
             text2El.style.height = MIN_HEIGHT + 'px';
             

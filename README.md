@@ -15,7 +15,14 @@ Simply Tools is a collection of everyday web utilities that run entirely in your
 
 ‎ 
 
-<div align="center">
-  <sub>Lightweight • Private • Always free</sub><br>
-  <sub>Made for students, developers, creators  and anyone who values simplicity.</sub>
+<div align="left">
+  A collection of web-based utilities, all running entirely in your browser.<br>
+  No paywalls, no ads, just useful tools!
+  <br><br>
+  Simply Tools is designed for everyone - students, developers, creators, and anyone who needs quick, reliable tools without hassle.  
+  All features work instantly in your browser, with no sign-up or installation required.  
+  Your data stays private: nothing is uploaded or tracked.
+  <br><br>
+  Explore converters, viewers, generators, and editors - all in one place.  
+  If you have suggestions, feel free to reach out!
 </div>

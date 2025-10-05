@@ -4,210 +4,291 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JSON Viewer</title>
-    <link rel="icon" type="image/x-icon" href="../../public/logo.ico">
-    <link rel="stylesheet" href="/components/toggle.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
     <style>
+        /* Global Reset and Retro Font */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        /* Basic Retro Color Palette */
+        :root {
+            --window-bg: #c0c0c0; 
+            --border-dark: #808080;
+            --border-light: #ffffff;
+            --text-color: #000000;
+            --button-face: #c0c0c0;
+            --button-pressed: #dfdfdf;
+            --input-bg: #ffffff;
+            --header-title: #000080;
+            --error-color: #ffcccc;
+            --success-color: #008000;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--bg-color);
-            color: var(--text-primary);
+            background: var(--window-bg);
+            color: var(--text-color);
             line-height: 1.6;
+            padding: 30px;
+        }
+
+        /* --- Classic Windows Border Mixin --- */
+        .window-frame {
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--window-bg);
+            padding: 3px; 
+            box-shadow: none;
         }
 
         .container {
             max-width: 1000px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 0; 
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            position: relative;
-        }
-
-        .header h1 {
-            font-size: 2rem;
-            font-weight: 300;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-        }
-
-        .header p {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 8px;
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
-            z-index: 100;
-            color: var(--text-secondary);
-            transition: all 0.2s ease;
+        /* --- Title Bar/Header --- */
+        .title-bar {
+            background: var(--header-title);
+            color: var(--border-light);
+            padding: 5px 8px;
+            font-size: 16px;
+            font-weight: bold;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            box-sizing: border-box;
-            line-height: 0;
-        }
-        .theme-toggle:hover {
-            background: var(--hover-bg);
-            border-color: var(--text-secondary);
-            color: var(--text-primary);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            border-bottom: 1px solid var(--border-dark);
         }
 
-        .upload-section {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 30px;
-            border: 2px dashed var(--border-color);
-            border-radius: 8px;
-            background: var(--card-bg);
+        .title-bar-text {
+            white-space: nowrap;
         }
 
-        .file-input-wrapper {
+        /* The main window body */
+        .app-body {
+            padding: 15px;
+        }
+
+        /* --- Section Styling (Sunken Panel) --- */
+        .section {
+            margin-bottom: 15px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--button-pressed);
+            padding: 1px;
+        }
+
+        .section-header {
+            padding: 6px 8px;
+            font-size: 11px;
+            font-weight: normal;
+            border-top: 1px solid var(--border-dark);
+            border-left: 1px solid var(--border-dark);
+            border-right: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-light);
+            background: #ffffff; 
+            display: inline-block;
+            margin-bottom: -1px;
             position: relative;
-            display: inline-block;
+            z-index: 10;
         }
 
-        .file-input {
-            position: absolute;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
+        .section-content {
+            padding: 15px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--window-bg);
+            margin-top: -1px;
+        }
+
+        /* --- Drop Zone --- */
+        .drop-zone {
+            border: 3px dashed var(--border-dark);
+            padding: 30px 20px;
+            text-align: center;
             cursor: pointer;
+            transition: none;
+            margin-bottom: 15px;
+            background: var(--input-bg);
+            user-select: none;
         }
 
-        .file-input-label {
-            display: inline-block;
-            padding: 12px 24px;
-            background: var(--text-primary);
-            color: var(--card-bg);
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background 0.2s;
+        .drop-zone:hover {
+            border-color: var(--text-color);
+            background: var(--button-pressed);
         }
 
-        .file-input-label:hover {
-            background: var(--text-secondary);
+        .drop-zone.dragover {
+            border-color: var(--text-color);
+            background: var(--button-pressed);
         }
 
-        .file-name {
-            margin-top: 12px;
-            font-size: 14px;
-            color: var(--text-secondary);
+        .drop-zone input {
+            display: none;
         }
 
+        .drop-zone-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--border-dark);
+        }
+
+        .drop-zone-text {
+            color: var(--text-color);
+            font-size: 10px;
+            font-weight: normal;
+        }
+
+        /* --- File Count --- */
+        .file-count {
+            font-size: 10px;
+            color: var(--text-color);
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: normal;
+            padding: 8px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--input-bg);
+        }
+
+        .file-count.hidden {
+            display: none;
+        }
+
+        /* --- Controls --- */
         .controls {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             display: flex;
-            gap: 12px;
+            gap: 8px;
             justify-content: center;
             flex-wrap: wrap;
         }
 
         .btn {
-            padding: 8px 16px;
-            border: 1px solid var(--border-color);
-            background: var(--card-bg);
-            border-radius: 4px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--button-face);
+            color: var(--text-color);
+            padding: 6px 12px;
+            font-size: 10px;
+            text-align: center;
             cursor: pointer;
-            font-size: 13px;
-            color: var(--text-primary);
-            transition: all 0.2s;
+            transition: none;
+            box-shadow: none;
+            line-height: 1;
         }
 
-        .btn:hover {
-            background: var(--hover-bg);
-            border-color: var(--text-secondary);
+        .btn:active {
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 7px 11px 5px 13px;
         }
 
         .btn-primary {
-            background: var(--text-primary);
-            color: var(--card-bg);
-            border-color: var(--text-primary);
+            background: var(--header-title);
+            color: var(--border-light);
         }
 
-        .btn-primary:hover {
-            background: var(--text-secondary);
-            border-color: var(--text-secondary);
+        /* --- Stats Section --- */
+        .stats {
+            background: var(--input-bg);
+            padding: 12px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            margin-bottom: 15px;
+            display: flex;
+            gap: 20px;
+            font-size: 10px;
+            flex-wrap: wrap;
         }
 
+        .stat-item {
+            color: var(--text-color);
+        }
+
+        .stat-value {
+            font-weight: normal;
+            color: var(--header-title);
+        }
+
+        /* --- Search Box --- */
+        .search-box {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 6px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            font-size: 10px;
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        .search-input:focus {
+            box-shadow: 0 0 0 1px var(--text-color) inset;
+            outline: none;
+        }
+
+        .search-input::placeholder {
+            color: var(--border-dark);
+        }
+
+        /* --- JSON Container --- */
         .json-container {
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            background: var(--card-bg);
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--input-bg);
             max-height: 70vh;
             overflow: auto;
-            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
-            font-size: 13px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 9px;
             line-height: 1.4;
-            padding: 20px;
+            padding: 15px;
         }
 
+        /* --- JSON Syntax Highlighting --- */
         .json-key {
-            color: #0066cc;
-            font-weight: 500;
-        }
-
-        [data-theme="dark"] .json-key {
-            color: #66b3ff;
+            color: var(--header-title);
+            font-weight: normal;
         }
 
         .json-string {
-            color: #22863a;
-        }
-
-        [data-theme="dark"] .json-string {
-            color: #4ade80;
+            color: #006400;
         }
 
         .json-number {
-            color: #e36209;
-        }
-
-        [data-theme="dark"] .json-number {
-            color: #fb923c;
+            color: #8B4513;
         }
 
         .json-boolean {
-            color: #d73a49;
-        }
-
-        [data-theme="dark"] .json-boolean {
-            color: #f87171;
+            color: #800080;
         }
 
         .json-null {
-            color: #6f42c1;
-        }
-
-        [data-theme="dark"] .json-null {
-            color: #a78bfa;
+            color: #808080;
         }
 
         .json-punctuation {
-            color: #586069;
-        }
-
-        [data-theme="dark"] .json-punctuation {
-            color: #9ca3af;
+            color: var(--text-color);
         }
 
         .json-line {
@@ -223,8 +304,8 @@
             content: '▼';
             position: absolute;
             left: -12px;
-            color: var(--text-secondary);
-            font-size: 10px;
+            color: var(--border-dark);
+            font-size: 8px;
             width: 10px;
         }
 
@@ -241,159 +322,158 @@
         }
 
         .path-indicator {
-            background: var(--code-bg);
+            background: var(--button-pressed);
             padding: 8px 12px;
-            border-radius: 4px;
-            font-size: 12px;
-            color: var(--text-secondary);
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            font-size: 9px;
+            color: var(--text-color);
             margin-bottom: 12px;
-            font-family: monospace;
+            font-family: 'Press Start 2P', monospace;
         }
 
+        /* --- Error Display --- */
         .error {
-            background: var(--error-bg);
-            color: var(--error-color);
-            padding: 16px;
-            border-radius: 4px;
-            border-left: 3px solid var(--error-border);
-            font-size: 14px;
+            background: var(--error-color);
+            color: var(--text-color);
+            padding: 12px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            font-size: 10px;
+            margin: 15px 0;
         }
 
-        .stats {
-            background: var(--card-bg);
-            padding: 16px;
-            border-radius: 4px;
-            margin-bottom: 16px;
-            border: 1px solid var(--border-color);
-            display: flex;
-            gap: 24px;
-            font-size: 13px;
-        }
-
-        .stat-item {
-            color: var(--text-secondary);
-        }
-
-        .stat-value {
-            font-weight: 500;
-            color: var(--text-primary);
-        }
-
-        .search-box {
-            margin-bottom: 16px;
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .search-input {
-            flex: 1;
-            padding: 8px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            font-size: 13px;
-            background: var(--input-bg);
-            color: var(--text-primary);
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: var(--text-primary);
-            background: var(--input-focus-bg);
-        }
-
-        .search-input::placeholder {
-            color: var(--text-secondary);
-        }
-
+        /* --- Search Highlighting --- */
         .highlight {
-            background: yellow;
+            background: #ffff00;
+            color: var(--text-color);
         }
 
-        [data-theme="dark"] .highlight {
-            background: rgba(255, 193, 7, 0.3);
+        /* --- Hidden Elements --- */
+        .hidden {
+            display: none;
         }
 
+        /* --- Responsive Design --- */
         @media (max-width: 768px) {
-            .container {
-                padding: 20px 16px;
+            body {
+                padding: 10px;
             }
             
-            .header h1 {
-                font-size: 1.5rem;
-                padding-right: 50px;
-            }
-
-            .theme-toggle {
-                top: -10px;
-                right: 0;
+            .container {
+                max-width: 100%;
             }
             
             .controls {
-                flex-wrap: wrap;
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 200px;
             }
             
             .stats {
                 flex-direction: column;
                 gap: 8px;
             }
+
+            .search-box {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .drop-zone {
+                padding: 20px 15px;
+            }
+            
+            .drop-zone-text {
+                font-size: 9px;
+            }
+
+            .json-container {
+                font-size: 8px;
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .json-container {
+                font-size: 7px;
+                padding: 8px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-                <i data-lucide="sun" class="theme-icon" id="theme-icon"></i>
-            </button>
-            <h1>JSON Viewer</h1>
-            <p>Upload and view JSON files</p>
+    <div class="container window-frame">
+        <div class="title-bar">
+            <div class="title-bar-text">JSON Viewer</div>
         </div>
-
-        <div class="upload-section">
-            <div class="file-input-wrapper">
-                <input type="file" id="jsonFile" class="file-input" accept=".json,text/json,application/json" />
-                <label for="jsonFile" class="file-input-label">
-                    Choose JSON File
-                </label>
-            </div>
-            <div class="file-name" id="fileName"></div>
-        </div>
-
-        <div class="controls" style="display: none;" id="controls">
-            <button class="btn btn-primary" onclick="expandAll()">Expand All</button>
-            <button class="btn" onclick="collapseAll()">Collapse All</button>
-            <button class="btn" onclick="downloadFormatted()">Download</button>
-            <button class="btn" onclick="downloadMinified()">Download Minified</button>
-        </div>
-
-        <div class="viewer" id="viewer" style="display: none;">
-            <div class="stats" id="stats"></div>
-            
-            <div class="search-box">
-                <input type="text" class="search-input" placeholder="Search keys or values..." id="searchInput" oninput="searchJSON()">
-                <button class="btn" onclick="clearSearch()">Clear</button>
+        
+        <div class="app-body">
+            <div class="section">
+                <div class="section-header">Upload JSON File</div>
+                <div class="section-content">
+                    <div id="drop-zone" class="drop-zone" onclick="document.getElementById('jsonFile').click()">
+                        <div class="drop-zone-icon">
+                            <img src="https://64.media.tumblr.com/2a8939ee32c9fd167af542dccf2ff70e/412b6d5d5a669993-9a/s540x810/4e3c3ac41d6ab1227105523ba9aa486a86e7a49c.png" alt="Folder Icon" style="width:64px;height:64px;image-rendering:pixelated;">
+                        </div>
+                        <p class="drop-zone-text">Drop JSON file here or click to select</p>
+                        <input
+                            type="file"
+                            id="jsonFile"
+                            accept=".json,text/json,application/json"
+                            onchange="handleFileSelect(this.files)"
+                        >
+                    </div>
+                    
+                    <div id="file-count" class="file-count hidden">No file selected.</div>
+                </div>
             </div>
 
-            <div class="path-indicator" id="pathIndicator" style="display: none;"></div>
-            <div class="json-container" id="jsonContainer"></div>
+            <div class="controls hidden" id="controls">
+                <button class="btn btn-primary" onclick="expandAll()">Expand All</button>
+                <button class="btn" onclick="collapseAll()">Collapse All</button>
+                <button class="btn" onclick="downloadFormatted()">Download</button>
+                <button class="btn" onclick="downloadMinified()">Download Minified</button>
+            </div>
+
+            <div class="viewer hidden" id="viewer">
+                <div class="stats" id="stats"></div>
+                
+                <div class="search-box">
+                    <input type="text" class="search-input" placeholder="Search keys or values..." id="searchInput" oninput="searchJSON()">
+                    <button class="btn" onclick="clearSearch()">Clear</button>
+                </div>
+
+                <div class="path-indicator" id="pathIndicator" style="display: none;"></div>
+                <div class="json-container" id="jsonContainer"></div>
+            </div>
         </div>
     </div>
 
-    <script src="/components/toggle.js"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script>
         let jsonData = null;
         let originalJsonString = '';
         let searchTerm = '';
 
-        document.getElementById('jsonFile').addEventListener('change', handleFileSelect);
-
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            document.getElementById('fileName').textContent = `Selected: ${file.name}`;
+        // --- File Handling Functions ---
+        function handleFileSelect(files) {
+            const validFiles = Array.from(files).filter(file => 
+                file.type === 'application/json' || 
+                file.name.toLowerCase().endsWith('.json')
+            );
+            
+            if (validFiles.length === 0) {
+                showFileCount('Please select a valid JSON file.');
+                return;
+            }
+            
+            const file = validFiles[0];
+            showFileCount(`${file.name} selected.`);
             
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -403,13 +483,19 @@
             reader.readAsText(file);
         }
 
+        function showFileCount(message) {
+            const fileCountEl = document.getElementById('file-count');
+            fileCountEl.textContent = message;
+            fileCountEl.classList.remove('hidden');
+        }
+
         function parseAndDisplayJSON(jsonString) {
             try {
                 jsonData = JSON.parse(jsonString);
                 displayJSON();
                 showStats();
-                document.getElementById('controls').style.display = 'flex';
-                document.getElementById('viewer').style.display = 'block';
+                document.getElementById('controls').classList.remove('hidden');
+                document.getElementById('viewer').classList.remove('hidden');
                 
             } catch (error) {
                 displayError(`JSON parsing error: ${error.message}`);
@@ -612,8 +698,8 @@
                 <strong>Error:</strong> ${message}
             </div>`;
             
-            document.getElementById('controls').style.display = 'none';
-            document.getElementById('viewer').style.display = 'block';
+            document.getElementById('controls').classList.add('hidden');
+            document.getElementById('viewer').classList.remove('hidden');
         }
 
         function expandAll() {
@@ -672,10 +758,40 @@
             return div.innerHTML;
         }
 
-        // Initialize theme and icons
-        window.addEventListener('load', () => {
-            lucide.createIcons();
-        });
+        // --- Drag and Drop Setup ---
+        function setupDragAndDrop() {
+            const dropZone = document.getElementById('drop-zone');
+            
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => {
+                    dropZone.classList.add('dragover');
+                }, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => {
+                    dropZone.classList.remove('dragover');
+                }, false);
+            });
+
+            dropZone.addEventListener('drop', function(e) {
+                handleFileSelect(e.dataTransfer.files);
+            }, false);
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        }
+
+        // --- Initialize ---
+        window.onload = function() {
+            setupDragAndDrop();
+        };
     </script>
 </body>
 </html>

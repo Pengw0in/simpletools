@@ -4,293 +4,372 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Metadata Viewer</title>
-    <link rel="icon" type="image/x-icon" href="../../public/logo.ico">
-    <link rel="stylesheet" href="/components/toggle.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
     <style>
+        /* Global Reset and Retro Font */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Press Start 2P', cursive;
         }
+
+        /* Basic Retro Color Palette */
+        :root {
+            --window-bg: #c0c0c0; 
+            --border-dark: #808080;
+            --border-light: #ffffff;
+            --text-color: #000000;
+            --button-face: #c0c0c0;
+            --button-pressed: #dfdfdf;
+            --input-bg: #ffffff;
+            --header-title: #000080;
+            --error-color: #ffcccc;
+            --success-color: #008000;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--bg-color);
-            color: var(--text-primary);
+            background: var(--window-bg);
+            color: var(--text-color);
             line-height: 1.6;
+            padding: 30px;
         }
+
+        /* --- Classic Windows Border Mixin --- */
+        .window-frame {
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--window-bg);
+            padding: 3px; 
+            box-shadow: none;
+        }
+
         .container {
             max-width: 800px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 0; 
         }
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            position: relative;
-        }
-        .header h1 {
-            font-size: 2rem;
-            font-weight: 300;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-        }
-        .header p {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 8px;
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
-            z-index: 100;
-            color: var(--text-secondary);
-            transition: all 0.2s ease;
+
+        /* --- Title Bar/Header --- */
+        .title-bar {
+            background: var(--header-title);
+            color: var(--border-light);
+            padding: 5px 8px;
+            font-size: 16px;
+            font-weight: bold;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            box-sizing: border-box;
-            line-height: 0;
+            border-bottom: 1px solid var(--border-dark);
         }
-        .theme-toggle:hover {
-            background: var(--hover-bg);
-            border-color: var(--text-secondary);
-            color: var(--text-primary);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+
+        .title-bar-text {
+            white-space: nowrap;
         }
-        .upload-section {
-            background: var(--card-bg);
-            border: 2px dashed var(--border-color); 
-            border-radius: 8px;
-            padding: 24px;
-            margin-bottom: 24px;
-            text-align: center;
-            box-shadow: none; 
+
+        /* The main window body */
+        .app-body {
+            padding: 15px;
         }
-        .file-input-wrapper {
+
+        /* --- Section Styling (Sunken Panel) --- */
+        .section {
+            margin-bottom: 15px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--button-pressed);
+            padding: 1px;
+        }
+
+        .section-header {
+            padding: 6px 8px;
+            font-size: 11px;
+            font-weight: normal;
+            border-top: 1px solid var(--border-dark);
+            border-left: 1px solid var(--border-dark);
+            border-right: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-light);
+            background: #ffffff; 
+            display: inline-block;
+            margin-bottom: -1px;
             position: relative;
-            display: inline-block;
-            margin: 0 auto;
+            z-index: 10;
         }
-        .file-input {
-            position: absolute;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
+
+        .section-content {
+            padding: 15px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--window-bg);
+            margin-top: -1px;
+        }
+
+        /* --- Drop Zone --- */
+        .drop-zone {
+            border: 3px dashed var(--border-dark);
+            padding: 30px 20px;
+            text-align: center;
             cursor: pointer;
+            transition: none;
+            margin-bottom: 15px;
+            background: var(--input-bg);
+            user-select: none;
         }
-        .file-input-label {
-            display: inline-block;
-            padding: 12px 24px;
-            background: var(--text-primary);
-            color: var(--card-bg);
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background 0.2s;
+
+        .drop-zone:hover {
+            border-color: var(--text-color);
+            background: var(--button-pressed);
         }
-        .file-input-label:hover {
-            background: var(--text-secondary);
+
+        .drop-zone.dragover {
+            border-color: var(--text-color);
+            background: var(--button-pressed);
         }
-        .file-name {
-            margin-top: 12px;
-            font-size: 14px;
-            color: var(--text-secondary);
+
+        .drop-zone input {
+            display: none;
         }
+
+        .drop-zone-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--border-dark);
+        }
+
+        .drop-zone-text {
+            color: var(--text-color);
+            font-size: 10px;
+            font-weight: normal;
+        }
+
+        /* --- File Count --- */
+        .file-count {
+            font-size: 10px;
+            color: var(--text-color);
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: normal;
+            padding: 8px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--input-bg);
+        }
+
+        .file-count.hidden {
+            display: none;
+        }
+
+        /* --- Controls --- */
         .controls {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             display: flex;
-            gap: 12px;
+            gap: 8px;
             justify-content: center;
             flex-wrap: wrap;
         }
+
         .btn {
-            padding: 8px 16px;
-            border: 1px solid var(--border-color);
-            background: var(--card-bg);
-            border-radius: 4px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--button-face);
+            color: var(--text-color);
+            padding: 6px 12px;
+            font-size: 10px;
+            text-align: center;
             cursor: pointer;
-            font-size: 13px;
-            color: var(--text-primary);
-            transition: all 0.2s;
+            transition: none;
+            box-shadow: none;
+            line-height: 1;
+            font-family: 'Press Start 2P', cursive;
         }
-        .btn:hover {
-            background: var(--hover-bg);
-            border-color: var(--text-secondary);
+
+        .btn:active {
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 7px 11px 5px 13px;
         }
+
         .btn-primary {
-            background: var(--text-primary);
-            color: var(--card-bg);
-            border-color: var(--text-primary);
+            background: var(--header-title);
+            color: var(--border-light);
         }
-        .btn-primary:hover {
-            background: var(--text-secondary);
-            border-color: var(--text-secondary);
-        }
-        .viewer {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 24px;
-        }
+
+        /* --- Stats Section --- */
         .stats {
-            background: var(--card-bg);
-            padding: 16px;
-            border-radius: 4px;
-            margin-bottom: 16px;
-            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            padding: 12px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            margin-bottom: 15px;
             display: flex;
-            gap: 24px;
-            font-size: 13px;
+            gap: 20px;
+            font-size: 10px;
             flex-wrap: wrap;
         }
+
         .stat-item {
-            color: var(--text-secondary);
+            color: var(--text-color);
         }
+
         .stat-value {
-            font-weight: 500;
-            color: var(--text-primary);
+            font-weight: normal;
+            color: var(--header-title);
         }
+
+        /* --- Metadata Section --- */
         .metadata-section {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+            background: var(--input-bg);
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 15px;
         }
+
         .metadata-group {
+            margin-bottom: 15px;
+        }
+
+        .metadata-group:last-child {
             margin-bottom: 0;
         }
+
         .metadata-label {
             display: block;
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-primary);
-            margin-bottom: 8px;
+            font-size: 10px;
+            font-weight: normal;
+            color: var(--text-color);
+            margin-bottom: 6px;
+            padding: 4px;
+            background: var(--button-pressed);
+            border-style: solid;
+            border-width: 1px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
         }
+
         .metadata-value {
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            background: var(--code-bg);
-            color: var(--text-primary);
-            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
-            font-size: 13px;
+            padding: 8px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-family: 'Press Start 2P', monospace;
+            font-size: 8px;
             word-break: break-all;
-        }
-        .status-message {
-            margin-top: 16px;
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-size: 13px;
-            text-align: center;
-        }
-        .status-message.success {
-            background: var(--success-color);
-            color: #fff;
-        }
-        .status-message.error {
-            background: var(--error-color);
-            color: #fff;
-        }
-        .status-message.info {
-            background: var(--notification-bg);
-            color: var(--card-bg);
-        }
-        .notification {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 12px 20px;
-            background: var(--notification-bg);
-            color: var(--card-bg);
-            border-radius: 4px;
-            font-size: 14px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-            z-index: 1000;
+            line-height: 1.4;
         }
 
-        .notification.error {
-            background: var(--error-color);
+        .metadata-value.not-available {
+            color: var(--border-dark);
+            font-style: italic;
         }
 
-        [data-theme="dark"] .notification {
-            background: #fafafa;
-            color: #222;
-        }
-        [data-theme="dark"] .notification.error {
-            background: #ff6b6b;
-            color: #fff;
-        }
-
-        .notification.show {
-            opacity: 1;
-        }
-
+        /* --- Hidden Elements --- */
         .hidden {
             display: none;
         }
-        @media (max-width: 600px) {
+
+        /* --- Responsive Design --- */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
             .container {
-                padding: 20px 16px;
+                max-width: 100%;
             }
-            .header h1 {
-                font-size: 1.5rem;
-                padding-right: 50px;
-            }
-            .theme-toggle {
-                top: -10px;
-                right: 0;
-            }
+
             .controls {
-                flex-wrap: wrap;
+                flex-direction: column;
+                align-items: center;
             }
+            
+            .btn {
+                width: 200px;
+            }
+            
             .stats {
                 flex-direction: column;
                 gap: 8px;
+            }
+
+            .metadata-value {
+                font-size: 7px;
+                padding: 6px;
+            }
+
+            .metadata-label {
+                font-size: 9px;
+            }
+
+            .drop-zone {
+                padding: 20px 15px;
+            }
+            
+            .drop-zone-text {
+                font-size: 9px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .metadata-value {
+                font-size: 6px;
+                padding: 5px;
+            }
+
+            .metadata-label {
+                font-size: 8px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-                <i data-lucide="sun" class="theme-icon" id="theme-icon"></i>
-            </button>
-            <h1>Image Metadata Viewer</h1>
-            <p>View EXIF data from uploaded images</p>
+    <div class="container window-frame">
+        <div class="title-bar">
+            <div class="title-bar-text">Image Metadata Viewer</div>
         </div>
-
-        <div class="upload-section">
-            <div class="file-input-wrapper">
-                <input type="file" id="imageFile" class="file-input" accept="image/*" onchange="handleFileSelect(event)">
-                <label for="imageFile" class="file-input-label">Choose Image File</label>
+        
+        <div class="app-body">
+            <div class="section">
+                <div class="section-header">Upload Image File</div>
+                <div class="section-content">
+                    <div id="drop-zone" class="drop-zone" onclick="document.getElementById('imageFile').click()">
+                        <div class="drop-zone-icon">
+                            <img src="https://64.media.tumblr.com/2a8939ee32c9fd167af542dccf2ff70e/412b6d5d5a669993-9a/s540x810/4e3c3ac41d6ab1227105523ba9aa486a86e7a49c.png" alt="Folder Icon" style="width:64px;height:64px;image-rendering:pixelated;">
+                        </div>
+                        <p class="drop-zone-text">Drop image file here or click to select</p>
+                        <input
+                            type="file"
+                            id="imageFile"
+                            accept="image/*"
+                            onchange="handleFileSelect(this.files)"
+                        >
+                    </div>
+                    
+                    <div id="file-count" class="file-count hidden">No file selected.</div>
+                </div>
             </div>
-            <div class="file-name" id="fileName"></div>
-        </div>
 
-        <div class="controls" style="display: none;" id="controls">
+            <div class="controls hidden" id="controls">
+                <button class="btn btn-primary" onclick="downloadMetadata()">Download Report</button>
+                <button class="btn" onclick="clearImage()">Clear</button>
             </div>
 
-        <div class="viewer" id="viewer" style="display: none;">
-            <div class="stats" id="stats"></div>
-            <div class="metadata-section" id="metadataSection"></div>
+            <div class="viewer hidden" id="viewer">
+                <div class="stats" id="stats"></div>
+                <div class="metadata-section" id="metadataSection"></div>
+            </div>
         </div>
-
-        <div id="notification" class="notification"></div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/exif-js@2.3.0/exif.js"></script>
-    <script src="/components/toggle.js"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script>
         const METADATA_FIELDS = [
             { label: "File Name", property: "fileName" },
@@ -305,18 +384,8 @@
             { label: "Focal Length", property: "FocalLength", formatter: 'focal' }
         ];
 
-        function showStatus(message, type = 'info') {
-            const notif = document.getElementById('notification');
-            notif.textContent = message;
-            notif.classList.remove('error', 'show');
-            if (type === 'error') {
-                notif.classList.add('error');
-            }
-            notif.classList.add('show');
-            setTimeout(() => {
-                notif.classList.remove('show');
-            }, 3000);
-        }
+        let currentMetadata = {};
+        let currentFile = null;
 
         function formatBytes(bytes) {
             if (bytes === 0) return '0 Bytes';
@@ -339,11 +408,12 @@
 
         function createMetadataGroupHTML(label, value) {
             const displayValue = value === null || value === undefined || value === '' ? 'Not available' : value;
+            const isNotAvailable = displayValue === 'Not available';
 
             return `
                 <div class="metadata-group">
                     <label class="metadata-label">${label}</label>
-                    <div class="metadata-value">${displayValue}</div>
+                    <div class="metadata-value ${isNotAvailable ? 'not-available' : ''}">${displayValue}</div>
                 </div>
             `;
         }
@@ -357,10 +427,18 @@
             document.getElementById('stats').innerHTML = statsHtml;
         }
 
+        function showFileCount(message) {
+            const fileCountEl = document.getElementById('file-count');
+            fileCountEl.textContent = message;
+            fileCountEl.classList.remove('hidden');
+        }
+
         function populateMetadata(file, img, exifData) {
             const metadataSection = document.getElementById('metadataSection');
             let htmlContent = '';
             let availableFields = 0;
+            currentMetadata = {};
+            currentFile = file;
 
             METADATA_FIELDS.forEach(field => {
                 let value = null;
@@ -407,6 +485,7 @@
                     availableFields++;
                 }
 
+                currentMetadata[field.label] = value || 'Not available';
                 htmlContent += createMetadataGroupHTML(field.label, value);
             });
 
@@ -414,14 +493,18 @@
             showStats(availableFields);
         }
 
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (!file) {
-                document.getElementById('viewer').style.display = 'none';
+        function handleFileSelect(files) {
+            const validFiles = Array.from(files).filter(file => 
+                file.type.startsWith('image/')
+            );
+            
+            if (validFiles.length === 0) {
+                showFileCount('Please select a valid image file.');
                 return;
             }
-
-            document.getElementById('fileName').textContent = `Selected: ${file.name}`;
+            
+            const file = validFiles[0];
+            showFileCount(`${file.name} selected.`);
 
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -430,24 +513,87 @@
                     EXIF.getData(img, function() {
                         const exifData = EXIF.getAllTags(this);
                         populateMetadata(file, img, exifData);
-                        document.getElementById('controls').style.display = 'flex';
-                        document.getElementById('viewer').style.display = 'block';
-                        showStatus('Metadata extracted successfully', 'success');
+                        document.getElementById('controls').classList.remove('hidden');
+                        document.getElementById('viewer').classList.remove('hidden');
                     });
                 };
                 img.onerror = function() {
-                    showStatus('Could not load image file.', 'error');
+                    console.error('Could not load image file.');
                 };
                 img.src = e.target.result;
             };
             reader.onerror = function() {
-                showStatus('Error reading file.', 'error');
+                console.error('Error reading file.');
             };
             reader.readAsDataURL(file);
         }
 
+        function downloadMetadata() {
+            if (!currentMetadata || !currentFile) return;
+
+            let report = 'IMAGE METADATA REPORT\n';
+            report += '=====================\n\n';
+            
+            Object.entries(currentMetadata).forEach(([label, value]) => {
+                report += `${label}: ${value}\n`;
+            });
+            
+            report += '\n\nGenerated by Simply Tools - Image Metadata Viewer';
+
+            const blob = new Blob([report], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `metadata_${currentFile.name.replace(/\.[^/.]+$/, '')}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function clearImage() {
+            document.getElementById('imageFile').value = '';
+            document.getElementById('file-count').textContent = '';
+            document.getElementById('file-count').classList.add('hidden');
+            document.getElementById('viewer').classList.add('hidden');
+            document.getElementById('controls').classList.add('hidden');
+            currentMetadata = {};
+            currentFile = null;
+        }
+
+        // --- Drag and Drop Setup ---
+        function setupDragAndDrop() {
+            const dropZone = document.getElementById('drop-zone');
+            
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => {
+                    dropZone.classList.add('dragover');
+                }, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => {
+                    dropZone.classList.remove('dragover');
+                }, false);
+            });
+
+            dropZone.addEventListener('drop', function(e) {
+                handleFileSelect(e.dataTransfer.files);
+            }, false);
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        }
+
+        // --- Initialize ---
         window.onload = function() {
-            lucide.createIcons();
+            setupDragAndDrop();
         };
     </script>
 </body>

@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timestamp Converter</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Global Reset and Retro Font */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        /* Basic Retro Color Palette */
+        :root {
+            --window-bg: #c0c0c0; 
+            --border-dark: #808080;
+            --border-light: #ffffff;
+            --text-color: #000000;
+            --button-face: #c0c0c0;
+            --button-pressed: #dfdfdf;
+            --input-bg: #ffffff;
+            --header-title: #000080;
+            --error-color: #ffcccc;
+        }
+
+        body {
+            background: var(--window-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 30px;
+        }
+
+        /* --- Classic Windows Border Mixin --- */
+        .window-frame {
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--window-bg);
+            padding: 3px; 
+            box-shadow: none;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0; 
+        }
+
+        /* --- Title Bar/Header --- */
+        .title-bar {
+            background: var(--header-title);
+            color: var(--border-light);
+            padding: 5px 8px;
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-dark);
+        }
+
+        .title-bar-text {
+            white-space: nowrap;
+        }
+
+        /* The main window body */
+        .app-body {
+            padding: 15px;
+        }
+
+        /* --- Section Styling (Sunken Panel) --- */
+        .section {
+            margin-bottom: 15px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--button-pressed);
+            padding: 1px;
+        }
+
+        .section-header {
+            padding: 6px 8px;
+            font-size: 11px;
+            font-weight: normal;
+            border-top: 1px solid var(--border-dark);
+            border-left: 1px solid var(--border-dark);
+            border-right: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-light);
+            background: #ffffff; 
+            display: inline-block;
+            margin-bottom: -1px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .section-content {
+            padding: 15px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--window-bg);
+            margin-top: -1px;
+        }
+
+        /* --- Live Clock Section --- */
+        .current-time-section {
+            text-align: center;
+            padding: 15px;
+        }
+
+        #live-timestamp {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 14px;
+            font-weight: normal;
+            color: var(--header-title);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        #live-datetime {
+            font-size: 10px;
+            color: var(--text-color);
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .set-current-btn {
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--button-face);
+            color: var(--text-color);
+            padding: 6px 12px;
+            font-size: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: none;
+            box-shadow: none;
+            line-height: 1;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        .set-current-btn:active {
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 7px 11px 5px 13px;
+        }
+
+        /* --- Input Section --- */
+        .input-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr auto;
+            gap: 15px;
+            align-items: end;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-label {
+            font-size: 10px;
+            font-weight: normal;
+            color: var(--text-color);
+            margin-bottom: 6px;
+        }
+
+        .timestamp-input, .format-select {
+            width: 100%;
+            padding: 8px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-size: 10px;
+            font-family: 'Press Start 2P', cursive;
+            outline: none;
+        }
+
+        .timestamp-input:focus, .format-select:focus {
+            box-shadow: 0 0 0 1px var(--text-color) inset;
+        }
+
+        .format-select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8"><path fill="%23000000" d="M6 8L0 0h12z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 6px center;
+            padding-right: 24px;
+        }
+
+        .convert-btn {
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--header-title);
+            color: var(--border-light);
+            padding: 8px 12px;
+            font-size: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: none;
+            box-shadow: none;
+            line-height: 1;
+            font-family: 'Press Start 2P', cursive;
+            white-space: nowrap;
+        }
+
+        .convert-btn:active {
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 9px 11px 7px 13px;
+        }
+
+        /* --- Output Grid --- */
+        .output-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .output-group {
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--input-bg);
+            padding: 12px;
+        }
+
+        .output-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 10px;
+            font-weight: normal;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+
+        .output-value {
+            background: transparent;
+            color: var(--header-title);
+            font-family: 'Press Start 2P', monospace;
+            font-size: 9px;
+            word-break: break-all;
+            white-space: pre-wrap;
+            line-height: 1.4;
+            min-height: 20px;
+        }
+
+        .copy-btn {
+            border-style: solid;
+            border-width: 2px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--button-face);
+            color: var(--text-color);
+            padding: 3px 6px;
+            font-size: 8px;
+            cursor: pointer;
+            transition: none;
+            box-shadow: none;
+            line-height: 1;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        .copy-btn:active {
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 4px 5px 2px 7px;
+        }
+
+        /* --- Hidden Elements --- */
+        .hidden {
+            display: none;
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                max-width: 100%;
+            }
+
+            .input-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .output-section {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .timestamp-input, .format-select, .convert-btn {
+                font-size: 9px;
+                padding: 6px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .output-value {
+                font-size: 8px;
+            }
+
+            .copy-btn {
+                font-size: 7px;
+                padding: 2px 4px;
+            }
+
+            #live-timestamp {
+                font-size: 12px;
+            }
+
+            #live-datetime {
+                font-size: 9px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container window-frame">
+        <div class="title-bar">
+            <div class="title-bar-text">Timestamp Converter</div>
+        </div>
+        
+        <div class="app-body">
+            <div class="section">
+                <div class="section-header">Current Time</div>
+                <div class="section-content">
+                    <div class="current-time-section">
+                        <span id="live-timestamp">Loading current timestamp...</span>
+                        <span id="live-datetime">Loading current date/time...</span>
+                        <button class="set-current-btn" onclick="setCurrentTimestamp()">Set Current Timestamp</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">Input</div>
+                <div class="section-content">
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label class="input-label" for="timestamp-input">Enter Timestamp or Date</label>
+                            <input type="text" id="timestamp-input" class="timestamp-input" placeholder="e.g., 1640995200 or 2022-01-01T00:00:00Z" oninput="convertTimestamp()">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label class="input-label" for="input-format">Input Format</label>
+                            <select id="input-format" class="format-select" onchange="convertTimestamp()">
+                                <option value="auto">Auto Detect</option>
+                                <option value="unix">Unix (seconds)</option>
+                                <option value="unix-ms">Unix (milliseconds)</option>
+                                <option value="iso">ISO 8601</option>
+                                <option value="rfc2822">RFC 2822</option>
+                                <option value="locale">Locale String</option>
+                            </select>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label class="input-label" style="opacity: 0;">Convert</label> 
+                            <button class="convert-btn" onclick="convertTimestamp()">
+                                Convert
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">Output</div>
+                <div class="section-content">
+                    <div class="output-section">
+                        <div class="output-group">
+                            <label class="output-label">
+                                <span>Unix Timestamp (seconds)</span>
+                                <button class="copy-btn" onclick="copyToClipboard('unix-output')">Copy</button>
+                            </label>
+                            <div class="output-value" id="unix-output"></div>
+                        </div>
+                        
+                        <div class="output-group">
+                            <label class="output-label">
+                                <span>Unix Timestamp (milliseconds)</span>
+                                <button class="copy-btn" onclick="copyToClipboard('unix-ms-output')">Copy</button>
+                            </label>
+                            <div class="output-value" id="unix-ms-output"></div>
+                        </div>
+                        
+                        <div class="output-group">
+                            <label class="output-label">
+                                <span>ISO 8601 (Zulu/UTC)</span>
+                                <button class="copy-btn" onclick="copyToClipboard('iso-output')">Copy</button>
+                            </label>
+                            <div class="output-value" id="iso-output"></div>
+                        </div>
+                        
+                        <div class="output-group">
+                            <label class="output-label">
+                                <span>RFC 2822 / UTC String</span>
+                                <button class="copy-btn" onclick="copyToClipboard('rfc2822-output')">Copy</button>
+                            </label>
+                            <div class="output-value" id="rfc2822-output"></div>
+                        </div>
+                        
+                        <div class="output-group">
+                            <label class="output-label">
+                                <span>Locale String (Your Timezone)</span>
+                                <button class="copy-btn" onclick="copyToClipboard('locale-output')">Copy</button>
+                            </label>
+                            <div class="output-value" id="locale-output"></div>
+                        </div>
+                        
+                        <div class="output-group">
+                            <label class="output-label">
+                                <span>Date Object String</span>
+                                <button class="copy-btn" onclick="copyToClipboard('date-object-output')">Copy</button>
+                            </label>
+                            <div class="output-value" id="date-object-output"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Store the output IDs for easy iteration
+        const outputIds = ['unix-output', 'unix-ms-output', 'iso-output', 'rfc2822-output', 'locale-output', 'date-object-output'];
+
+        function parseTimestamp(input, format) {
+            let date;
+            const cleanInput = input.trim();
+            
+            try {
+                if (format === 'auto') {
+                    // 1. Check for 10-digit (seconds) or 13-digit (ms) Unix timestamps
+                    if (/^\d{10}$/.test(cleanInput)) {
+                        date = new Date(parseInt(cleanInput) * 1000);
+                    } else if (/^\d{13}$/.test(cleanInput)) {
+                        date = new Date(parseInt(cleanInput));
+                    } else {
+                        // 2. Try parsing as a standard date string
+                        date = new Date(cleanInput);
+                        if (isNaN(date.getTime())) {
+                            // 3. Last resort: if the input is only digits, try as seconds anyway
+                            if (/^\d+$/.test(cleanInput)) {
+                                date = new Date(parseInt(cleanInput) * 1000);
+                            } else {
+                                throw new Error('Invalid date string format.');
+                            }
+                        }
+                    }
+                } else if (format === 'unix') {
+                    date = new Date(parseInt(cleanInput) * 1000);
+                } else if (format === 'unix-ms') {
+                    date = new Date(parseInt(cleanInput));
+                } else {
+                    // For specific date string formats, rely on Date constructor
+                    date = new Date(cleanInput);
+                }
+
+                if (isNaN(date.getTime())) {
+                    throw new Error('Invalid timestamp or date format.');
+                }
+                return date;
+            } catch (e) {
+                // If parsing fails, catch the error and throw a standardized message
+                throw new Error('Could not parse input. Please check the format.');
+            }
+        }
+
+        function convertTimestamp() {
+            const input = document.getElementById('timestamp-input').value.trim();
+            const format = document.getElementById('input-format').value;
+
+            if (!input) {
+                // Clear outputs
+                outputIds.forEach(id => document.getElementById(id).textContent = '');
+                return;
+            }
+
+            try {
+                const date = parseTimestamp(input, format);
+                const timestamp = date.getTime();
+
+                document.getElementById('unix-output').textContent = Math.floor(timestamp / 1000);
+                document.getElementById('unix-ms-output').textContent = timestamp;
+                document.getElementById('iso-output').textContent = date.toISOString();
+                document.getElementById('rfc2822-output').textContent = date.toUTCString();
+                document.getElementById('locale-output').textContent = date.toLocaleString();
+                document.getElementById('date-object-output').textContent = date.toString();
+            } catch (e) {
+                // Silently handle errors without notifications
+            }
+        }
+        
+        function updateLiveClock() {
+            const now = new Date();
+            const timestampSeconds = Math.floor(now.getTime() / 1000).toLocaleString('en-US');
+            
+            document.getElementById('live-timestamp').textContent = timestampSeconds;
+            document.getElementById('live-datetime').textContent = now.toLocaleString();
+        }
+        
+        function setCurrentTimestamp() {
+            const now = new Date();
+            const timestampSeconds = Math.floor(now.getTime() / 1000);
+            document.getElementById('timestamp-input').value = timestampSeconds;
+            document.getElementById('input-format').value = 'unix'; // Set format for clarity
+            convertTimestamp();
+        }
+
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent;
+            if (!text) {
+                return;
+            }
+            
+            const tempInput = document.createElement('textarea');
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            
+            try {
+                document.execCommand('copy');
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+            }
+            document.body.removeChild(tempInput);
+        }
+
+        // Initialize
+        window.onload = function() {
+            // Start live clock update
+            updateLiveClock();
+            setInterval(updateLiveClock, 1000);
+            
+            // Set initial value and convert
+            setCurrentTimestamp();
+        };
+    </script>
+</body>
+</html>

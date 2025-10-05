@@ -4,603 +4,714 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Universal Image Converter</title>
-    <link rel="icon" type="image/x-icon" href="../../public/logo.ico">
-    <link rel="stylesheet" href="/components/toggle.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
     <style>
+        /* Global Reset and Retro Font */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        /* Basic Retro Color Palette */
+        :root {
+            --window-bg: #c0c0c0; 
+            --border-dark: #808080;
+            --border-light: #ffffff;
+            --text-color: #000000;
+            --button-face: #c0c0c0;
+            --button-pressed: #dfdfdf;
+            --input-bg: #ffffff;
+            --header-title: #000080;
+            --error-color: #ffcccc;
+            --success-color: #008000;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--bg-color);
-            color: var(--text-primary);
+            background: var(--window-bg);
+            color: var(--text-color);
             line-height: 1.6;
+            padding: 30px;
         }
 
-        .container {
-            max-width: 768px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            position: relative;
-        }
-
-        .header h1 {
-            font-size: 2rem;
-            font-weight: 300;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-        }
-
-        .header p {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 8px;
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
-            z-index: 100;
-            color: var(--text-secondary);
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-sizing: border-box;
-            line-height: 0;
-        }
-
-        .theme-toggle:hover {
-            background: var(--hover-bg);
-            border-color: var(--text-secondary);
-            color: var(--text-primary);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-        }
-
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
-            padding: 32px;
-        }
-
-        .form-group {
-            margin-bottom: 24px;
-        }
-
-        .form-label {
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        .file-input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            background: var(--input-bg);
-            color: var(--text-primary);
-            font-size: 14px;
-            transition: border-color 0.2s;
-        }
-
-        .file-input:focus {
-            outline: none;
-            border-color: var(--text-primary);
-            box-shadow: 0 0 0 1px var(--text-primary);
-        }
-
-        .file-count {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin-bottom: 16px;
-            text-align: center;
-            font-weight: 500;
-        }
-
-        .select-input {
-            padding: 8px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            background: var(--input-bg);
-            color: var(--text-primary);
-            font-size: 14px;
-            transition: border-color 0.2s;
-        }
-
-        .select-input:focus {
-            outline: none;
-            border-color: var(--text-primary);
-            box-shadow: 0 0 0 1px var(--text-primary);
-        }
-
-        .btn {
-            width: 100%;
-            padding: 12px 0;
-            background: var(--text-primary);
-            color: var(--card-bg);
-            border: none;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: 300;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: background 0.2s, transform 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .btn:disabled {
-            background: var(--border-color);
-            color: var(--text-secondary);
-            cursor: not-allowed;
+        /* --- Classic Windows Border Mixin --- */
+        .window-frame {
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--window-bg);
+            padding: 3px; 
             box-shadow: none;
         }
 
-        .btn:hover:not(:disabled) {
-            background: var(--text-secondary);
-            color: var(--card-bg);
-            transform: translateY(-1px);
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0; 
         }
 
-        .file-list {
-            list-style: none;
-            padding: 0;
-            margin-top: 20px;
-        }
-
-        .file-item {
-            display: grid;
-            grid-template-columns: 1fr auto auto;
+        /* --- Title Bar/Header --- */
+        .title-bar {
+            background: var(--header-title);
+            color: var(--border-light);
+            padding: 5px 8px;
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-dark);
         }
 
-        .file-item:last-child {
+        .title-bar-text {
+            white-space: nowrap;
+        }
+
+        /* The main window body */
+        .app-body {
+            padding: 15px;
+        }
+
+        /* --- Section Styling (Sunken Panel) --- */
+        .section {
+            margin-bottom: 15px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--button-pressed);
+            padding: 1px;
+        }
+
+        .section-header {
+            padding: 6px 8px;
+            font-size: 11px;
+            font-weight: normal;
+            border-top: 1px solid var(--border-dark);
+            border-left: 1px solid var(--border-dark);
+            border-right: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-light);
+            background: #ffffff; 
+            display: inline-block;
+            margin-bottom: -1px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .section-content {
+            padding: 15px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--window-bg);
+            margin-top: -1px;
+        }
+
+        /* --- Drop Zone --- */
+        .drop-zone {
+            border: 3px dashed var(--border-dark);
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: none;
+            margin-bottom: 15px;
+            background: var(--input-bg);
+            user-select: none;
+        }
+
+        .drop-zone:hover {
+            border-color: var(--text-color);
+            background: var(--button-pressed);
+        }
+
+        .drop-zone.dragover {
+            border-color: var(--text-color);
+            background: var(--button-pressed);
+        }
+
+        .drop-zone input {
+            display: none;
+        }
+
+        .drop-zone-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--border-dark);
+        }
+
+        .drop-zone-text {
+            color: var(--text-color);
+            font-size: 10px;
+            font-weight: normal;
+        }
+
+        /* --- Custom Dropdown --- */
+        .custom-dropdown {
+            position: relative;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .dropdown-selected {
+            width: 100%;
+            padding: 8px 30px 8px 8px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-size: 10px;
+            font-family: 'Press Start 2P', cursive;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .dropdown-selected:hover {
+            background: var(--button-pressed);
+        }
+
+        .dropdown-arrow {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-color);
+            font-size: 8px;
+            pointer-events: none;
+        }
+
+        .dropdown-options {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--input-bg);
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            z-index: 100;
+            display: none;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .dropdown-options.show {
+            display: block;
+        }
+
+        .dropdown-option {
+            padding: 8px;
+            font-size: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-dark);
+            background: var(--input-bg);
+            color: var(--text-color);
+        }
+
+        .dropdown-option:last-child {
             border-bottom: none;
         }
 
-        .file-item-name {
-            font-size: 14px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-right: 15px;
+        .dropdown-option:hover {
+            background: var(--button-pressed);
         }
 
-        .file-item-actions {
+        .dropdown-option.selected {
+            background: var(--header-title);
+            color: var(--border-light);
+        }
+
+        /* --- File Count --- */
+        .file-count {
+            font-size: 10px;
+            color: var(--text-color);
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: normal;
+            padding: 8px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--input-bg);
+        }
+
+        .file-count.hidden {
+            display: none;
+        }
+
+        /* --- Simplified Image Preview Container --- */
+        .image-preview-container {
+            margin: 15px 0;
+            padding: 15px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--input-bg);
+            display: none;
+        }
+
+        .image-preview-container.visible {
+            display: block;
+        }
+
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .preview-item {
+            text-align: center;
+            padding: 10px;
+            background: var(--window-bg);
+            border-style: solid;
+            border-width: 1px;
+            border-color: var(--border-dark);
+        }
+
+        .preview-thumbnail {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border: 1px solid var(--border-dark);
+            margin-bottom: 8px;
+        }
+
+        .preview-filename {
+            font-size: 8px;
+            color: var(--text-color);
+            margin-bottom: 4px;
+            word-break: break-all;
+            line-height: 1.2;
+        }
+
+        .preview-size {
+            font-size: 7px;
+            color: var(--border-dark);
+            margin-bottom: 8px;
+        }
+
+        /* --- Main Buttons --- */
+        .btn {
+            width: 100%;
+            padding: 12px 0;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--button-face);
+            color: var(--text-color);
+            font-size: 11px;
+            font-weight: normal;
+            cursor: pointer;
+            transition: none;
+            box-shadow: none;
+            line-height: 1;
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
+            gap: 8px;
+            font-family: 'Press Start 2P', cursive;
+            margin-bottom: 8px;
         }
 
-        .convert-single-btn {
-            padding: 8px 12px;
-            background: var(--text-primary);
-            color: var(--card-bg);
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
+        .btn:active {
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 13px 0 11px 0;
         }
 
-        .convert-single-btn:disabled {
-            background: var(--border-color);
-            color: var(--text-secondary);
+        .btn:disabled {
+            background: var(--border-dark);
+            color: var(--button-pressed);
             cursor: not-allowed;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
         }
 
-        .convert-single-btn:hover:not(:disabled) {
-            background: var(--text-secondary);
-            transform: scale(1.02);
+        .btn:disabled:active {
+            padding: 12px 0;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
         }
 
-        .btn-icon {
-            width: 20px;
+        .btn-secondary {
+            background: var(--window-bg);
+            font-size: 10px;
+        }
+
+        /* --- Progress Bar --- */
+        .progress-container {
+            margin: 15px 0;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
             height: 20px;
-            color: inherit;
-            vertical-align: middle;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--input-bg);
+            overflow: hidden;
         }
 
-        .spin {
-            animation: spin 1s linear infinite;
+        .progress-fill {
+            height: 100%;
+            background: var(--header-title);
+            width: 0%;
+            transition: width 0.3s ease;
         }
 
-        @keyframes spin {
-            100% { transform: rotate(360deg);}
-        }
-
-        .notification {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 12px 20px;
-            background: var(--notification-bg);
-            color: var(--card-bg);
-            border-radius: 4px;
-            font-size: 14px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-            z-index: 1000;
-        }
-
-        .notification.error {
-            background: var(--error-color);
-        }
-
-        [data-theme="dark"] .notification {
-            background: #fafafa;
-            color: #222;
-        }
-        [data-theme="dark"] .notification.error {
-            background: #ff6b6b;
-            color: #fff;
-        }
-
-        .notification.show {
-            opacity: 1;
+        .progress-text {
+            font-size: 9px;
+            text-align: center;
+            margin-top: 5px;
+            color: var(--text-color);
         }
 
         .hidden {
             display: none;
         }
 
-        .status-badge {
-            font-size: 10px;
-            padding: 2px 5px;
-            border-radius: 3px;
-            margin-left: 10px;
-            font-weight: 600;
-            color: white;
-            white-space: nowrap;
+        /* --- Canvas (Hidden) --- */
+        #conversionCanvas {
+            display: none;
         }
 
-        .status-badge.converting { background-color: orange; }
-        .status-badge.converted { background: var(--success-color); }
-        .status-badge.error { background: var(--error-color); }
-
-        @media (max-width: 600px) {
+        /* --- Responsive Design --- */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
             .container {
-                padding: 20px 8px;
+                max-width: 100%;
             }
-            .card {
-                padding: 16px;
+            
+            .preview-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 10px;
             }
-            .header h1 {
-                font-size: 2rem;
+
+            .preview-thumbnail {
+                width: 60px;
+                height: 60px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-                <i data-lucide="sun" class="theme-icon" id="theme-icon"></i>
-            </button>
-            <h1>Universal Image Converter</h1>
-            <p>Select multiple images and choose a separate format for each.</p>
+    <div class="container window-frame">
+        <div class="title-bar">
+            <div class="title-bar-text">Universal Image Converter</div>
         </div>
-        <div class="card">
-            <div class="form-group">
-                <label for="fileInput" class="form-label">Select Image Files (JPG, PNG, WebP, etc.)</label>
-                <input type="file" id="fileInput" accept="image/*" class="file-input" multiple>
-            </div>
-            
-            <div id="fileListContainer" class="hidden">
-                <label class="form-label">Configure Conversions</label>
-                <ul id="fileList" class="file-list">
-                    </ul>
-                <hr style="margin: 20px 0; border-color: var(--border-color);">
-                <button id="convertAllBtn" class="btn" disabled>
-                    <i data-lucide="wand-2" class="btn-icon"></i>
-                    <span id="buttonText">Convert All Images</span>
-                </button>
-            </div>
-            
-            <div id="noFilesMessage" style="text-align: center; color: var(--text-secondary); margin-top: 10px;">
-                No files selected yet.
+        
+        <div class="app-body">
+            <div class="section">
+                <div class="section-header">Image File Selection</div>
+                <div class="section-content">
+                    <div id="drop-zone" class="drop-zone" onclick="document.getElementById('image-files').click()">
+                        <div class="drop-zone-icon">
+                            <img src="https://64.media.tumblr.com/2a8939ee32c9fd167af542dccf2ff70e/412b6d5d5a669993-9a/s540x810/4e3c3ac41d6ab1227105523ba9aa486a86e7a49c.png" alt="Folder Icon" style="width:64px;height:64px;image-rendering:pixelated;">
+                        </div>
+                        <p class="drop-zone-text">Drop image files here or click to select</p>
+                        <input
+                            type="file"
+                            id="image-files"
+                            accept="image/*"
+                            multiple
+                            onchange="handleFileSelect(this.files)"
+                        >
+                    </div>
+                    
+                    <div id="file-count" class="file-count hidden">No files selected.</div>
+
+                    <div id="image-preview-container" class="image-preview-container">
+                        <div id="preview-grid" class="preview-grid"></div>
+                    </div>
+                </div>
             </div>
 
-            <canvas id="conversionCanvas" style="display:none;"></canvas>
+            <div class="section">
+                <div class="section-header">Conversion Settings</div>
+                <div class="section-content">
+                    <label for="defaultFormat" class="form-label">Output Format</label>
+                    <div class="custom-dropdown">
+                        <div class="dropdown-selected" onclick="toggleDropdown()">
+                            <span id="selectedFormat">JPEG/JPG</span>
+                            <span class="dropdown-arrow">▼</span>
+                        </div>
+                        <div class="dropdown-options" id="formatOptions">
+                            <div class="dropdown-option" onclick="selectFormat('jpeg', 'JPEG/JPG')">JPEG/JPG</div>
+                            <div class="dropdown-option" onclick="selectFormat('png', 'PNG')">PNG</div>
+                            <div class="dropdown-option" onclick="selectFormat('webp', 'WebP')">WebP</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">Convert Images</div>
+                <div class="section-content">
+                    <button id="convertAllBtn" class="btn" disabled onclick="convertAllImages()">
+                        <span>Convert All Images</span>
+                    </button>
+                    
+                    <button id="clearBtn" class="btn btn-secondary" onclick="clearSelection()">
+                        <span>Clear Selection</span>
+                    </button>
+
+                    <div id="progress-container" class="progress-container">
+                        <div class="progress-bar">
+                            <div id="progress-fill" class="progress-fill"></div>
+                        </div>
+                        <div id="progress-text" class="progress-text">Converting...</div>
+                    </div>
+                </div>
+            </div>
+
+            <canvas id="conversionCanvas"></canvas>
         </div>
-        <div id="notification" class="notification"></div>
     </div>
-    <script src="/components/toggle.js"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
     <script>
-        // DOM Elements
-        const fileInput = document.getElementById('fileInput');
-        const fileListContainer = document.getElementById('fileListContainer');
-        const fileListUL = document.getElementById('fileList');
-        const convertAllBtn = document.getElementById('convertAllBtn');
-        const noFilesMessage = document.getElementById('noFilesMessage');
-        const canvas = document.getElementById('conversionCanvas');
-        const ctx = canvas.getContext('2d');
+        // State Management
+        let selectedFiles = [];
+        let outputFormat = 'jpeg';
+        let isConverting = false;
 
-        // State
-        let selectedFiles = []; // Array to hold File objects
-
-        // Map MimeType to standard extension for file naming
-        const extensionMap = {
-            'image/png': 'png',
-            'image/jpeg': 'jpg',
-            'image/webp': 'webp'
+        // Format configuration
+        const formatConfig = {
+            jpeg: { mimeType: 'image/jpeg', extension: 'jpg', quality: 0.9 },
+            png: { mimeType: 'image/png', extension: 'png', quality: 1.0 },
+            webp: { mimeType: 'image/webp', extension: 'webp', quality: 0.9 }
         };
 
-        const formatOptions = [
-            { value: 'image/png', text: 'PNG' },
-            { value: 'image/jpeg', text: 'JPEG/JPG' },
-            { value: 'image/webp', text: 'WebP' },
-        ];
+        // DOM Elements
+        const elements = {
+            fileInput: document.getElementById('image-files'),
+            dropZone: document.getElementById('drop-zone'),
+            fileCount: document.getElementById('file-count'),
+            previewContainer: document.getElementById('image-preview-container'),
+            previewGrid: document.getElementById('preview-grid'),
+            convertBtn: document.getElementById('convertAllBtn'),
+            clearBtn: document.getElementById('clearBtn'),
+            canvas: document.getElementById('conversionCanvas'),
+            progressContainer: document.getElementById('progress-container'),
+            progressFill: document.getElementById('progress-fill'),
+            progressText: document.getElementById('progress-text')
+        };
 
-        // Helper function to convert Data URL (base64) to a Blob object
-        function dataURLtoBlob(dataURL) {
-            const parts = dataURL.split(';base64,');
-            if (parts.length !== 2) return null;
-            const contentType = parts[0].split(':')[1];
-            const raw = window.atob(parts[1]);
-            const rawLength = raw.length;
-            const uInt8Array = new Uint8Array(rawLength);
-            for (let i = 0; i < rawLength; ++i) {
-                uInt8Array[i] = raw.charCodeAt(i);
-            }
-            return new Blob([uInt8Array], { type: contentType });
-        }
+        const ctx = elements.canvas.getContext('2d');
 
-        // Status message utility (using notification div)
-        function setStatus(message, type = 'info') {
-            const notif = document.getElementById('notification');
-            notif.textContent = message;
-            notif.classList.remove('error', 'success', 'show');
-            notif.classList.add(type);
-            notif.classList.add('show');
-            setTimeout(() => {
-                notif.classList.remove('show');
-            }, 3000);
-        }
-        
-        // Update the status badge for a single file item
-        function updateFileStatus(index, status) {
-            const item = document.getElementById(`file-item-${index}`);
-            if (!item) return;
-
-            // Clear existing badges
-            item.querySelectorAll('.status-badge').forEach(badge => badge.remove());
+        // --- File Handling ---
+        function handleFileSelect(files) {
+            const validFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
             
-            let badge = document.createElement('span');
-            badge.classList.add('status-badge');
-            
-            if (status === 'converting') {
-                badge.classList.add('converting');
-                badge.textContent = 'Converting...';
-            } else if (status === 'converted') {
-                badge.classList.add('converted');
-                badge.textContent = 'Done!';
-            } else if (status === 'error') {
-                badge.classList.add('error');
-                badge.textContent = 'Error';
-            } else {
-                return; // No status update needed
+            if (validFiles.length === 0) {
+                return;
             }
             
-            item.querySelector('.file-item-name').appendChild(badge);
-        }
-
-        // Generate HTML for a single file item
-        function createFileListItem(file, index) {
-            const li = document.createElement('li');
-            li.className = 'file-item';
-            li.id = `file-item-${index}`;
-            
-            const fileName = file.name;
-            const originalExtension = fileName.split('.').pop().toUpperCase();
-            
-            li.innerHTML = `
-                <div class="file-item-name" title="${fileName}">${fileName}</div>
-                <div class="file-item-actions">
-                    <select id="targetFormat-${index}" class="select-input">
-                        ${formatOptions.map(opt => 
-                            `<option value="${opt.value}" ${opt.text.includes(originalExtension) ? 'selected' : ''}>${opt.text}</option>`
-                        ).join('')}
-                    </select>
-                    <button class="convert-single-btn" data-index="${index}">Convert</button>
-                </div>
-            `;
-            return li;
-        }
-
-        // Function to update UI based on selectedFiles
-        function updateUI() {
-            fileListUL.innerHTML = ''; // Clear previous list
-
-            if (selectedFiles.length > 0) {
-                selectedFiles.forEach((file, index) => {
-                    fileListUL.appendChild(createFileListItem(file, index));
-                });
-                fileListContainer.classList.remove('hidden');
-                noFilesMessage.classList.add('hidden');
-                convertAllBtn.disabled = false;
-                setStatus(`${selectedFiles.length} file(s) selected. Configure and convert.`, 'info');
-            } else {
-                fileListContainer.classList.add('hidden');
-                noFilesMessage.classList.remove('hidden');
-                convertAllBtn.disabled = true;
-                // Remove or change the status message for empty state
-                // setStatus('Please select image files.', 'info'); // Optional: show info instead of error
-            }
-            if (typeof lucide !== 'undefined') lucide.createIcons(); // Re-render Lucide icons if any were used
-        }
-
-        // Event listener for file selection (handles multiple)
-        fileInput.addEventListener('change', (event) => {
-            selectedFiles = Array.from(event.target.files);
+            selectedFiles = validFiles;
             updateUI();
-        });
-        
-        // Single Image Conversion Logic
-        function convertSingleImage(file, index) {
-            return new Promise((resolve, reject) => {
-                const targetFormatSelect = document.getElementById(`targetFormat-${index}`);
-                const convertBtn = document.querySelector(`.convert-single-btn[data-index="${index}"]`);
+            generatePreviews();
+        }
 
-                if (!file || !targetFormatSelect || !convertBtn) {
-                    return reject('File, format selector, or button element not found.');
-                }
-                
-                const originalFileName = file.name.substring(0, file.name.lastIndexOf('.')) || 'converted_image';
-                const targetMimeType = targetFormatSelect.value;
-                const targetExtension = extensionMap[targetMimeType] || 'file';
+        function updateUI() {
+            const count = selectedFiles.length;
+            
+            if (count === 0) {
+                elements.fileCount.textContent = 'No files selected.';
+                elements.fileCount.classList.add('hidden');
+                elements.previewContainer.classList.remove('visible');
+                elements.convertBtn.disabled = true;
+            } else {
+                elements.fileCount.textContent = `${count} image file(s) selected.`;
+                elements.fileCount.classList.remove('hidden');
+                elements.previewContainer.classList.add('visible');
+                elements.convertBtn.disabled = false;
+            }
+        }
 
-                updateFileStatus(index, 'converting');
-                convertBtn.disabled = true;
-                convertBtn.textContent = '...';
+        function generatePreviews() {
+            elements.previewGrid.innerHTML = '';
+            
+            if (selectedFiles.length === 0) return;
 
+            selectedFiles.forEach((file, index) => {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const img = new Image();
-                    img.onload = function() {
-                        let objectURL = null;
-                        try {
-                            canvas.width = img.width;
-                            canvas.height = img.height;
-                            ctx.clearRect(0, 0, canvas.width, canvas.height);
-                            ctx.drawImage(img, 0, 0);
-                            
-                            // Quality setting: 0.9 for JPEG/WebP, 1.0 for PNG
-                            const quality = (targetMimeType === 'image/jpeg' || targetMimeType === 'image/webp') ? 0.9 : 1.0;
-                            const dataURL = canvas.toDataURL(targetMimeType, quality);
-                            const blob = dataURLtoBlob(dataURL);
-                            if (!blob) throw new Error("Could not create Blob from image data.");
-                            
-                            objectURL = URL.createObjectURL(blob);
-
-                            // Automatic download trigger
-                            const a = document.createElement('a');
-                            a.href = objectURL;
-                            a.download = `${originalFileName}.${targetExtension}`;
-                            document.body.appendChild(a);
-                            a.click();
-                            
-                            // Clean up
-                            setTimeout(() => {
-                                URL.revokeObjectURL(objectURL);
-                                document.body.removeChild(a);
-                            }, 100);
-
-                            updateFileStatus(index, 'converted');
-                            convertBtn.textContent = 'Convert';
-                            resolve(`File ${file.name} converted successfully to ${targetExtension.toUpperCase()}.`);
-                        } catch (error) {
-                            console.error(`Conversion failed for ${file.name}:`, error);
-                            if (objectURL) URL.revokeObjectURL(objectURL);
-                            updateFileStatus(index, 'error');
-                            convertBtn.textContent = 'Error';
-                            convertBtn.disabled = false; // Allow retrying
-                            reject(`Conversion failed for ${file.name}.`);
-                        }
-                    };
-                    img.onerror = function() {
-                        updateFileStatus(index, 'error');
-                        convertBtn.textContent = 'Convert';
-                        convertBtn.disabled = false;
-                        reject(`Failed to load image for ${file.name}.`);
-                    };
-                    img.src = e.target.result;
-                };
-                reader.onerror = function() {
-                    updateFileStatus(index, 'error');
-                    convertBtn.textContent = 'Convert';
-                    convertBtn.disabled = false;
-                    reject(`Failed to read file ${file.name} from disk.`);
+                    const previewItem = document.createElement('div');
+                    previewItem.className = 'preview-item';
+                    
+                    const fileSize = (file.size / 1024).toFixed(1) + ' KB';
+                    
+                    previewItem.innerHTML = `
+                        <img class="preview-thumbnail" src="${e.target.result}" alt="${file.name}">
+                        <div class="preview-filename">${file.name}</div>
+                        <div class="preview-size">${fileSize}</div>
+                    `;
+                    
+                    elements.previewGrid.appendChild(previewItem);
                 };
                 reader.readAsDataURL(file);
             });
         }
-        
-        // Event delegation for single convert buttons
-        fileListUL.addEventListener('click', (event) => {
-            const btn = event.target.closest('.convert-single-btn');
-            if (btn) {
-                const index = parseInt(btn.dataset.index);
-                const fileToConvert = selectedFiles[index];
+
+        // --- Format Selection ---
+        function toggleDropdown() {
+            const options = document.getElementById('formatOptions');
+            options.classList.toggle('show');
+        }
+
+        function selectFormat(format, displayName) {
+            outputFormat = format;
+            document.getElementById('selectedFormat').textContent = displayName;
+            document.getElementById('formatOptions').classList.remove('show');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.custom-dropdown')) {
+                document.getElementById('formatOptions').classList.remove('show');
+            }
+        });
+
+        // --- Conversion Functions ---
+        function dataURLtoBlob(dataURL) {
+            const arr = dataURL.split(',');
+            const mime = arr[0].match(/:(.*?);/)[1];
+            const bstr = atob(arr[1]);
+            let n = bstr.length;
+            const u8arr = new Uint8Array(n);
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new Blob([u8arr], { type: mime });
+        }
+
+        function convertSingleImage(file, format) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        try {
+                            const config = formatConfig[format];
+                            
+                            elements.canvas.width = img.width;
+                            elements.canvas.height = img.height;
+                            ctx.clearRect(0, 0, img.width, img.height);
+                            ctx.drawImage(img, 0, 0);
+                            
+                            const dataURL = elements.canvas.toDataURL(config.mimeType, config.quality);
+                            const blob = dataURLtoBlob(dataURL);
+                            
+                            const originalName = file.name.substring(0, file.name.lastIndexOf('.')) || 'converted_image';
+                            const fileName = `${originalName}.${config.extension}`;
+                            
+                            resolve({ blob, fileName });
+                        } catch (error) {
+                            reject(error);
+                        }
+                    };
+                    img.onerror = () => reject(new Error('Failed to load image'));
+                    img.src = e.target.result;
+                };
+                reader.onerror = () => reject(new Error('Failed to read file'));
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function convertAllImages() {
+            if (selectedFiles.length === 0 || isConverting) return;
+            
+            isConverting = true;
+            elements.convertBtn.disabled = true;
+            elements.clearBtn.disabled = true;
+            elements.progressContainer.style.display = 'block';
+            
+            try {
+                for (let i = 0; i < selectedFiles.length; i++) {
+                    const file = selectedFiles[i];
+                    const progress = ((i + 1) / selectedFiles.length) * 100;
+                    
+                    // Update progress
+                    elements.progressFill.style.width = progress + '%';
+                    elements.progressText.textContent = `Converting ${i + 1} of ${selectedFiles.length}...`;
+                    
+                    try {
+                        const { blob, fileName } = await convertSingleImage(file, outputFormat);
+                        
+                        // Download the converted image
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = fileName;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                        
+                    } catch (error) {
+                        console.error(`Failed to convert ${file.name}:`, error);
+                    }
+                    
+                    // Small delay between conversions
+                    await new Promise(resolve => setTimeout(resolve, 200));
+                }
                 
-                if (fileToConvert) {
-                    convertSingleImage(fileToConvert, index)
-                        .then(msg => setStatus(msg, 'success'))
-                        .catch(err => setStatus(err, 'error'));
-                } else {
-                    setStatus('File not found in the list.', 'error');
-                }
+            } finally {
+                isConverting = false;
+                elements.convertBtn.disabled = false;
+                elements.clearBtn.disabled = false;
+                elements.progressContainer.style.display = 'none';
+                elements.progressFill.style.width = '0%';
             }
-        });
+        }
 
-        // Event listener for Convert All button
-        convertAllBtn.addEventListener('click', async () => {
-            if (selectedFiles.length === 0) {
-                setStatus('No files to convert.', 'error');
-                return;
+        function clearSelection() {
+            selectedFiles = [];
+            elements.fileInput.value = '';
+            elements.previewGrid.innerHTML = '';
+            updateUI();
+        }
+
+        // --- Drag and Drop Setup ---
+        function setupDragAndDrop() {
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                elements.dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                elements.dropZone.addEventListener(eventName, () => {
+                    elements.dropZone.classList.add('dragover');
+                }, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                elements.dropZone.addEventListener(eventName, () => {
+                    elements.dropZone.classList.remove('dragover');
+                }, false);
+            });
+
+            elements.dropZone.addEventListener('drop', function(e) {
+                handleFileSelect(e.dataTransfer.files);
+            }, false);
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
             }
+        }
 
-            convertAllBtn.disabled = true;
-            document.getElementById('buttonText').textContent = 'Converting All...';
-            
-            const results = [];
-            
-            for (let i = 0; i < selectedFiles.length; i++) {
-                try {
-                    const result = await convertSingleImage(selectedFiles[i], i);
-                    results.push({ file: selectedFiles[i].name, status: 'success', message: result });
-                } catch (error) {
-                    results.push({ file: selectedFiles[i].name, status: 'error', message: error });
-                }
-            }
-            
-            convertAllBtn.disabled = false;
-            document.getElementById('buttonText').textContent = 'Convert All Images';
-
-            const successCount = results.filter(r => r.status === 'success').length;
-            const errorCount = results.length - successCount;
-            
-            if (errorCount > 0) {
-                setStatus(`Finished batch conversion: ${successCount} successful, ${errorCount} failed. Check individual statuses.`, 'error');
-            } else {
-                setStatus(`Successfully converted all ${successCount} files!`, 'success');
-            }
-        });
-
-
+        // --- Initialize ---
         window.onload = function() {
-            fileInput.value = ''; // Clear any residual value
-            selectedFiles = []; // Ensure array is empty
-            updateUI(); // Update UI to reflect empty state
-            if (typeof lucide !== 'undefined') lucide.createIcons();
+            setupDragAndDrop();
+            updateUI();
         };
     </script>
 </body>

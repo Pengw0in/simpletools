@@ -3,225 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF to Images Splitter (ZIP)</title>
-    <link rel="icon" type="image/x-icon" href="../../public/logo.ico">
-    <link rel="stylesheet" href="/components/toggle.css">
-    <!-- jsZIP library for creating the ZIP file -->
+    <title>PDF to Images Splitter</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" defer></script>
-    <!-- pdf.js library for parsing and rendering PDFs -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
+    
     <style>
+        /* Global Reset and Retro Font */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Press Start 2P', cursive;
         }
+
+        /* Basic Retro Color Palette */
+        :root {
+            --window-bg: #c0c0c0; 
+            --border-dark: #808080;
+            --border-light: #ffffff;
+            --text-color: #000000;
+            --button-face: #c0c0c0;
+            --button-pressed: #dfdfdf;
+            --input-bg: #ffffff;
+            --header-title: #000080;
+            --error-color: #ffcccc;
+            --success-color: #008000;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--bg-color);
-            color: var(--text-primary);
+            background: var(--window-bg);
+            color: var(--text-color);
             line-height: 1.6;
-            min-height: 100vh;
+            padding: 30px;
         }
+
+        /* --- Classic Windows Border Mixin --- */
+        .window-frame {
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--window-bg);
+            padding: 3px; 
+            box-shadow: none;
+        }
+
         .container {
-            max-width: 768px;
+            max-width: 800px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 0; 
         }
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            position: relative;
-        }
-        .header h1 {
-            font-size: 2rem;
-            font-weight: 300;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-        }
-        .header p {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 8px;
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
-            z-index: 100;
-            color: var(--text-secondary);
-            transition: all 0.2s ease;
+
+        /* --- Title Bar/Header --- */
+        .title-bar {
+            background: var(--header-title);
+            color: var(--border-light);
+            padding: 5px 8px;
+            font-size: 16px;
+            font-weight: bold;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            box-sizing: border-box;
-            line-height: 0;
+            border-bottom: 1px solid var(--border-dark);
         }
-        .theme-toggle:hover {
-            background: var(--hover-bg);
-            border-color: var(--text-secondary);
-            color: var(--text-primary);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+
+        .title-bar-text {
+            white-space: nowrap;
         }
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
-            padding: 32px;
+
+        /* The main window body */
+        .app-body {
+            padding: 15px;
         }
-        .form-group {
-            margin-bottom: 24px;
+
+        /* --- Section Styling (Sunken Panel) --- */
+        .section {
+            margin-bottom: 15px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--button-pressed);
+            padding: 1px;
         }
-        .form-label {
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-            display: block;
+
+        .section-header {
+            padding: 6px 8px;
+            font-size: 11px;
+            font-weight: normal;
+            border-top: 1px solid var(--border-dark);
+            border-left: 1px solid var(--border-dark);
+            border-right: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-light);
+            background: #ffffff; 
+            display: inline-block;
+            margin-bottom: -1px;
+            position: relative;
+            z-index: 10;
         }
-        .file-input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            background: var(--input-bg);
-            color: var(--text-primary);
-            font-size: 14px;
-            transition: border-color 0.2s;
+
+        .section-content {
+            padding: 15px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--window-bg);
+            margin-top: -1px;
         }
-        .file-input:focus {
-            outline: none;
-            border-color: var(--text-primary);
-            box-shadow: 0 0 0 1px var(--text-primary);
-        }
+
+        /* --- Drop Zone --- */
         .drop-zone {
-            border: 2px dashed var(--border-color);
-            border-radius: 8px;
-            padding: 40px 20px;
+            border: 3px dashed var(--border-dark);
+            padding: 30px 20px;
             text-align: center;
             cursor: pointer;
-            transition: background 0.3s, border-color 0.3s;
-            position: relative;
-            margin-bottom: 24px;
+            transition: none;
+            margin-bottom: 15px;
+            background: var(--input-bg);
             user-select: none;
         }
+
         .drop-zone:hover {
-            border-color: var(--text-primary);
-            background: var(--hover-bg);
+            border-color: var(--text-color);
+            background: var(--button-pressed);
         }
+
         .drop-zone.dragover {
-            border-color: var(--text-primary);
-            background: var(--hover-bg);
-            opacity: 0.8;
+            border-color: var(--text-color);
+            background: var(--button-pressed);
         }
+
         .drop-zone input {
             display: none;
         }
+
+        .drop-zone-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--border-dark);
+        }
+
         .drop-zone-text {
-            color: var(--text-secondary);
-            font-size: 16px;
-            font-weight: 500;
-            margin-top: 10px;
+            color: var(--text-color);
+            font-size: 10px;
+            font-weight: normal;
         }
+
+        /* --- File Count --- */
         .file-count {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin-bottom: 16px;
+            font-size: 10px;
+            color: var(--text-color);
+            margin-bottom: 15px;
             text-align: center;
-            font-weight: 500;
+            font-weight: normal;
+            padding: 8px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--input-bg);
         }
+
         .file-count.hidden {
             display: none;
         }
-        .btn {
-            width: 100%;
-            padding: 12px 0;
-            background: var(--text-primary);
-            color: var(--card-bg);
-            border: none;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: background 0.2s, transform 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        .btn:disabled {
-            background: var(--border-color);
-            color: var(--text-secondary);
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-        .btn:hover:not(:disabled) {
-            background: var(--text-secondary);
-            color: var(--card-bg);
-            transform: translateY(-1px);
-        }
-        .status-message {
-            margin-top: 0px;
-            text-align: center;
-            padding: 12px 20px;
-            border-radius: 4px;
-            font-size: 14px;
-            border: 1px solid var(--border-color);
-            background: var(--notification-bg);
-            color: var(--card-bg);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .status-message.visible {
-            opacity: 1;
-        }
-        .status-message.error {
-            background: var(--error-color);
-            color: #fff;
-            border-color: var(--error-color);
-        }
-        .status-message.info {
-            background: var(--notification-bg);
-            color: var(--card-bg);
-            border-color: var(--notification-bg);
-        }
-        [data-theme="dark"] .status-message {
-            background: #fafafa;
-            color: #222;
-        }
-        [data-theme="dark"] .status-message.error {
-            background: #ff6b6b;
-            color: #fff;
-        }
-        .btn-icon {
-            width: 20px;
-            height: 20px;
-            color: inherit;
-            vertical-align: middle;
-        }
-        /* --- NEW STYLES FOR COMPACT GALLERY --- */
+
+        /* --- PDF Preview Container --- */
         #pdf-preview-container {
-            margin-top: 16px;
-            margin-bottom: 0px; 
-            padding: 8px 0;
+            margin: 15px 0;
+            padding: 8px;
             white-space: nowrap;
             overflow-x: auto;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
             background: var(--input-bg);
-            display: none; /* Hide until PDF is selected and loaded */
+            display: none;
         }
+
         #pdf-preview-container.visible {
             display: block;
         }
+
         .pdf-preview-item {
             display: inline-flex;
             flex-direction: column;
@@ -230,38 +193,38 @@
             width: 130px;
             margin: 0 4px;
             vertical-align: top;
-            background: var(--card-bg);
-            border-radius: 6px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            background: var(--window-bg);
+            border-style: solid;
+            border-width: 1px;
+            border-color: var(--border-dark);
             position: relative;
         }
+
         .preview-image-wrapper {
             width: 100px;
             height: 100px;
             overflow: hidden;
             margin-bottom: 8px;
-            border-radius: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
             background: #000;
+            border: 1px solid var(--border-dark);
         }
+
         .preview-image {
             width: 100%;
             height: 100%;
             object-fit: contain;
-            transition: transform 0.3s ease;
         }
+
         .page-info {
-            font-size: 10px;
-            color: var(--text-secondary);
+            font-size: 9px;
+            color: var(--text-color);
             margin-bottom: 4px;
-            max-width: 100%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
             text-align: center;
         }
+
         .rotation-controls {
             display: flex;
             justify-content: center;
@@ -269,88 +232,244 @@
             margin-bottom: 4px;
             width: 100%;
         }
+
         .rotation-controls button {
             flex-grow: 1;
             padding: 4px 6px;
-            background: var(--text-secondary);
-            color: var(--card-bg);
-            border: none;
-            border-radius: 4px;
+            border-style: solid;
+            border-width: 2px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--button-face);
+            color: var(--text-color);
             cursor: pointer;
-            font-size: 10px;
+            font-size: 8px;
             line-height: 1;
-            transition: background 0.2s, transform 0.1s;
+            transition: none;
         }
-        .rotation-controls button:hover {
-            background: var(--text-primary);
-            transform: scale(1.02);
+
+        .rotation-controls button:active {
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 5px 5px 3px 7px;
         }
-        /* --- END NEW STYLES --- */
+
+        /* --- Main Button --- */
+        .btn {
+            width: 100%;
+            padding: 12px 0;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--button-face);
+            color: var(--text-color);
+            font-size: 11px;
+            font-weight: normal;
+            cursor: pointer;
+            transition: none;
+            box-shadow: none;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        /* Inner content wrapper for the button's text/icon */
+        .btn-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .btn:disabled {
+            background: var(--border-dark);
+            color: var(--button-pressed);
+            cursor: not-allowed;
+        }
+
+        .btn:active:not(:disabled) {
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 13px 0 11px 0;
+        }
+
+        .btn-icon {
+            font-size: 11px;
+        }
+
+        /* --- Status Message --- */
+        .status-message {
+            margin-top: 15px;
+            text-align: center;
+            padding: 12px 20px;
+            font-size: 10px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--input-bg);
+            color: var(--text-color);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .status-message.visible {
+            opacity: 1;
+        }
+
+        .status-message.error {
+            background: var(--error-color);
+            color: var(--text-color);
+        }
+
+        .status-message.info {
+            background: var(--input-bg);
+            color: var(--text-color);
+        }
+
+        .status-message.success {
+            background: var(--success-color);
+            color: var(--border-light);
+        }
 
         /* Hide the canvas element used for rendering */
         #render-canvas {
             display: none;
         }
+
+        /* --- Retro Progress Bar Styles (New) --- */
+        #loading-bar-container {
+            width: 100%;
+            height: 25px; 
+            margin-top: 0; /* Remove top/bottom margin */
+            margin-bottom: 0; 
+            display: none; /* Hidden by default, controlled by JS */
+            
+            /* Classic 3D sunken border effect */
+            border-style: solid;
+            border-width: 2px;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: var(--input-bg);
+            padding: 2px;
+            box-sizing: content-box; /* Important for border size calculation */
+        }
+
+        #loading-bar-container.visible {
+            display: block;
+        }
+
+        .progress-bar {
+            display: flex;
+            height: 100%;
+            /* Background color of the track (light grey) */
+            background-color: var(--window-bg); 
+            overflow: hidden;
+        }
+
+        /* Key fix for segmented progress bar: use a fixed segment width and margin-right */
+        .progress-segment {
+            background-color: #000080; /* Dark blue color from the image */
+            height: 100%;
+            width: 10px; /* Fixed width for the segment blocks */
+            margin-right: 2px; /* Gap between segments */
+            /* Add a subtle highlight border to the segments for an extra retro touch */
+            border-top: 1px solid #4040ff;
+            border-left: 1px solid #4040ff;
+            flex-shrink: 0; /* Prevent segments from shrinking */
+        }
+
+        /* Hide the spin animation and icon when the button is being replaced by the bar */
         .spin {
-            animation: spin 1s linear infinite;
+            display: none !important; 
         }
-        @keyframes spin {
-            100% { transform: rotate(360deg);}
-        }
-        @media (max-width: 600px) {
+
+        /* --- Responsive Design --- */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
             .container {
-                padding: 20px 8px;
+                max-width: 100%;
             }
-            .card {
-                padding: 16px;
+            
+            .drop-zone {
+                padding: 20px 15px;
             }
-            .header h1 {
-                font-size: 2rem;
+            
+            .drop-zone-text {
+                font-size: 9px;
+            }
+
+            .pdf-preview-item {
+                width: 110px;
+            }
+
+            .preview-image-wrapper {
+                width: 80px;
+                height: 80px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-                <i data-lucide="sun" class="theme-icon" id="theme-icon"></i>
-            </button>
-            <h1>PDF to Images Splitter</h1>
-            <p>Upload a PDF file to split it into individual PNG images and download them as a ZIP.</p>
+    <div class="container window-frame">
+        <div class="title-bar">
+            <div class="title-bar-text">PDF to Images Splitter</div>
         </div>
-        <div class="card">
-            <div id="drop-zone" class="drop-zone" onclick="document.getElementById('pdf-file').click()">
-                <i data-lucide="upload-cloud" style="width: 32px; height: 32px; color: var(--text-secondary);"></i>
-                <p class="drop-zone-text">Drop PDF here or click to select file</p>
-                <input
-                    type="file"
-                    id="pdf-file"
-                    accept="application/pdf"
-                    onchange="handleFileSelect(this.files)"
-                >
-            </div>
-            
-            <div id="file-count" class="file-count hidden">No file selected.</div>
+        
+        <div class="app-body">
+            <div class="section">
+                <div class="section-header">Upload PDF File</div>
+                <div class="section-content">
+                    <div id="drop-zone" class="drop-zone" onclick="document.getElementById('pdf-file').click()">
+                        <div class="drop-zone-icon">
+                            <img src="https://64.media.tumblr.com/94eb4c24198978507319e8689cad89ac/45c8a5b7153403c2-bc/s540x810/989089678e3a98bbb691bafd7a22c12c44cf90b9.png" alt="Folder Icon" style="width:64px;height:64px;image-rendering:pixelated;">
+                        </div>
+                        <p class="drop-zone-text">Drop PDF here or click to select file</p>
+                        <input
+                            type="file"
+                            id="pdf-file"
+                            accept="application/pdf"
+                            onchange="handleFileSelect(this.files)"
+                        >
+                    </div>
+                    
+                    <div id="file-count" class="file-count hidden">No file selected.</div>
 
-            <div id="pdf-preview-container">
+                    <div id="pdf-preview-container">
+                    </div>
                 </div>
+            </div>
 
-            <button
-                id="convert-button"
-                class="btn"
-                onclick="splitPdfToImages()"
-                disabled
-            >
-                <i data-lucide="download" class="btn-icon" id="button-icon"></i>
-                <span id="button-text">Split PDF & Download ZIP</span>
-            </button>
-            <div id="status-message" class="status-message"></div>
-            <canvas id="render-canvas"></canvas>
+            <div class="section">
+                <div class="section-header">Process & Download</div>
+                <div class="section-content">
+                    
+                    <div id="loading-bar-container">
+                        <div id="progress-bar" class="progress-bar">
+                            </div>
+                    </div>
+                    
+                    <button
+                        id="convert-button"
+                        class="btn"
+                        onclick="splitPdfToImages()"
+                        disabled
+                    >
+                        <span class="btn-content">
+                            <span id="button-text">Split PDF & Download ZIP</span>
+                        </span>
+                    </button>
+                    
+                    <div id="status-message" class="status-message"></div>
+                </div>
+            </div>
         </div>
     </div>
-    <script src="/components/toggle.js"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <canvas id="render-canvas"></canvas>
+
     <script>
         // Global variables
         let pdfDoc = null;
@@ -358,6 +477,24 @@
 
         if (typeof pdfjsLib !== 'undefined') {
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        }
+
+        // NEW: Function to generate the loading bar segments based on a percentage
+        function updateLoadingBar(progressPercentage) {
+            const progressBar = document.getElementById('progress-bar');
+            // Clear existing segments
+            progressBar.innerHTML = '';
+            
+            // Total segments to draw (increase this number for smoother, more detailed bar)
+            const totalSegments = 25; 
+            // Calculate how many segments should be filled
+            const segmentsToDraw = Math.ceil(progressPercentage / (100 / totalSegments));
+            
+            for (let i = 0; i < segmentsToDraw; i++) {
+                const segment = document.createElement('div');
+                segment.className = 'progress-segment';
+                progressBar.appendChild(segment);
+            }
         }
 
         // --- UI Update Functions (Centralized) ---
@@ -386,6 +523,9 @@
             button.disabled = count === 0;
             
             previewContainer.classList.toggle('visible', count > 0);
+            
+            // Ensure loading bar is hidden when a new file is loaded
+            setLoadingState(false);
         }
         
         function showStatus(message, type = 'info') {
@@ -394,21 +534,21 @@
             statusMessage.className = `status-message visible ${type}`;
         }
         
-        function setLoadingState(isLoading) {
+        // MODIFIED: To control the visibility of the new loading bar
+        function setLoadingState(isLoading, progress = 0) {
             const button = document.getElementById('convert-button');
+            const loadingBarContainer = document.getElementById('loading-bar-container');
             const buttonText = document.getElementById('button-text');
-            const buttonIcon = document.getElementById('button-icon');
+
             button.disabled = isLoading;
+            button.style.display = isLoading ? 'none' : 'flex'; // Hide button when loading
+            loadingBarContainer.classList.toggle('visible', isLoading);
+            
             if (isLoading) {
-                buttonText.textContent = 'Processing PDF...';
-                buttonIcon.setAttribute('data-lucide', 'loader-2');
-                buttonIcon.classList.add('spin');
+                updateLoadingBar(progress);
             } else {
                 buttonText.textContent = 'Split PDF & Download ZIP';
-                buttonIcon.setAttribute('data-lucide', 'download');
-                buttonIcon.classList.remove('spin');
             }
-            if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
         // --- Image Loading and Preview Rendering ---
@@ -468,7 +608,7 @@
 
                 // Clear and prepare preview container
                 if (numPages > 3) {
-                    previewContainer.innerHTML = '<p style="font-size: 12px; color: var(--text-secondary); text-align: center; margin-bottom: 8px;">(Scroll right to see all pages)</p>';
+                    previewContainer.innerHTML = '<p style="font-size: 10px; color: var(--text-color); text-align: center; margin-bottom: 8px;">(Scroll right to see all pages)</p>';
                 }
 
                 for (let i = 1; i <= numPages; i++) {
@@ -481,14 +621,14 @@
                     const item = document.createElement('div');
                     item.className = 'pdf-preview-item';
                     item.innerHTML = `
-                        <div class="rotation-controls">
-                            <button onclick="rotatePage(${i-1}, -90)" aria-label="Rotate left">
-                                 <i data-lucide="rotate-ccw" style="width: 12px; height: 12px; vertical-align: middle;"></i>
-                            </button>
-                            <button onclick="rotatePage(${i-1}, 90)" aria-label="Rotate right">
-                                 <i data-lucide="rotate-cw" style="width: 12px; height: 12px; vertical-align: middle;"></i>
-                            </button>
-                        </div>
+<div class="rotation-controls">
+    <button onclick="rotatePage(${i-1}, -90)" aria-label="Rotate left">
+        <img src="https://64.media.tumblr.com/bf74500095e40a307d234a45e2fa0e7b/8155f67beb67c88e-30/s540x810/5f5ba323d5613435440bd65329a1a8d7520b156e.png" alt="Rotate Left" style="width:24px;height:24px;image-rendering:pixelated;">
+    </button>
+    <button onclick="rotatePage(${i-1}, 90)" aria-label="Rotate right">
+        <img src="https://64.media.tumblr.com/bf74500095e40a307d234a45e2fa0e7b/8155f67beb67c88e-30/s540x810/5f5ba323d5613435440bd65329a1a8d7520b156e.png" alt="Rotate Right" style="width:24px;height:24px;transform: rotate(180deg);image-rendering:pixelated;">
+    </button>
+</div>
                         <div class="preview-image-wrapper">
                             <img class="preview-image" id="preview-img-${i-1}" src="${imageData}" alt="Page ${i}">
                         </div>
@@ -496,7 +636,6 @@
                     `;
                     
                     previewContainer.appendChild(item);
-                    if (typeof lucide !== 'undefined') lucide.createIcons(); 
                 }
                 if (numPages > 0) {
                     showStatus(`Previews generated for ${numPages} page(s). Adjust orientations as needed.`, 'info');
@@ -554,7 +693,7 @@
             }
         }
 
-        // --- Main Conversion Logic ---
+        // --- Main Conversion Logic (MODIFIED to include progress) ---
         async function splitPdfToImages() {
             if (!pdfDoc) {
                 showStatus('Please select a PDF file first.', 'error');
@@ -566,29 +705,42 @@
                 showStatus('Please select a single PDF file.', 'error');
                 return;
             }
-            setLoadingState(true);
+            
+            // Start loading state with 0% progress
+            setLoadingState(true, 0); 
             showStatus('Reading PDF file...', 'info');
+            
             const pdfFile = files[0];
             try {
                 if (typeof pdfjsLib === 'undefined' || typeof JSZip === 'undefined') {
                     throw new Error("Required libraries (pdf.js or jszip) failed to load. Check CDN links.");
                 }
+                
+                // Re-load the PDF array buffer
                 const arrayBuffer = await new Promise((resolve, reject) => {
                     const reader = new FileReader();
                     reader.onload = (e) => resolve(e.target.result);
                     reader.onerror = (e) => reject(new Error("Failed to read PDF file."));
                     reader.readAsArrayBuffer(pdfFile);
                 });
-                const pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-                const numPages = pdfDoc.numPages;
+                
+                // Use the loaded array buffer, not the global pdfDoc (which is only for previews)
+                const processingPdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                const numPages = processingPdfDoc.numPages;
                 showStatus(`PDF loaded successfully. Found ${numPages} page(s).`, 'info');
+                
                 const zip = new JSZip();
                 const canvas = document.getElementById('render-canvas');
                 const context = canvas.getContext('2d');
+
                 for (let i = 1; i <= numPages; i++) {
-                    showStatus(`Processing page ${i} of ${numPages}...`, 'info');
-                    const page = await pdfDoc.getPage(i);
-                    const scale = 3;
+                    // Calculate and update progress based on page processing
+                    const progress = Math.round((i / numPages) * 100);
+                    setLoadingState(true, progress); // Update the loading bar
+                    showStatus(`Processing page ${i} of ${numPages} (${progress}% complete)...`, 'info');
+                    
+                    const page = await processingPdfDoc.getPage(i);
+                    const scale = 3; // High scale for final image quality
                     const viewport = page.getViewport({ scale: scale });
                     const rotation = pageData[i-1].rotation;
 
@@ -617,12 +769,19 @@
                     const base64Data = imageData.split(',')[1];
                     zip.file(`${pdfFile.name.replace(/\.pdf$/i, '')}_page_${i}.png`, base64Data, { base64: true });
                 }
+                
+                // Ensure 100% progress before ZIP compression
+                setLoadingState(true, 100);
                 showStatus('Compressing files and generating ZIP...', 'info');
+
+                // Generate ZIP file
                 const zipBlob = await zip.generateAsync({
                     type: "blob",
                     compression: "DEFLATE",
                     compressionOptions: { level: 9 }
                 });
+
+                // Download the file
                 const downloadUrl = URL.createObjectURL(zipBlob);
                 const link = document.createElement('a');
                 link.href = downloadUrl;
@@ -631,19 +790,19 @@
                 link.click();
                 document.body.removeChild(link);
                 URL.revokeObjectURL(downloadUrl);
+                
                 showStatus(`Successfully split PDF into ${numPages} images!`, 'success');
             } catch (error) {
                 console.error("PDF Split Error:", error);
                 showStatus(`Operation failed. Error: ${error.message}. Please try again with a different PDF.`, 'error');
             } finally {
-                setLoadingState(false);
+                setLoadingState(false); // Reset UI
             }
         }
 
         window.onload = function() {
             setupDragAndDrop();
             updateFileCount([]); // Initialize UI
-            if (typeof lucide !== 'undefined') lucide.createIcons();
         };
     </script>
 </body>
