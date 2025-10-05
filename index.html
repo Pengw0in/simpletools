@@ -11,7 +11,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     
     <style>
-        /* ...existing styles remain the same... */
         /* Global Reset and Retro Font */
         * {
             margin: 0;
@@ -35,7 +34,7 @@
             --kofi-color: #F8DA02;
             --kofi-dark: #C6AF00;
             --link-color: #0000ff;
-            /* New: System tray color */
+            /* System tray color */
             --tray-bg: #c0c0c0;
             --tray-border-dark: #808080;
             --tray-border-light: #ffffff;
@@ -46,7 +45,7 @@
             background: #008080;
             color: var(--text-color);
             line-height: 1.6;
-            padding: 27px; /* Changed from 30px to 27px (10% smaller) */
+            padding: 27px;
             min-height: 100vh;
             overflow-y: scroll; 
         }
@@ -62,7 +61,7 @@
         }
 
         .container {
-            max-width: 1080px; /* Changed from 1200px to 1080px (10% smaller) */
+            max-width: 1080px;
             margin: 0 auto;
             padding: 0; 
         }
@@ -71,11 +70,11 @@
         .title-bar {
             background: var(--header-title);
             color: var(--border-light);
-            padding: 4.5px 7.2px; /* Changed from 5px 8px (10% smaller) */
-            font-size: 14.4px; /* Changed from 16px to 14.4px (10% smaller) */
+            padding: 4.5px 7.2px;
+            font-size: 14.4px;
             font-weight: bold;
             display: flex;
-            justify-content: space-between; /* Ensures space between title and clock */
+            justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid var(--border-dark);
         }
@@ -86,12 +85,11 @@
 
         /* --- System Tray Clock Style --- */
         .title-bar-clock {
-            /* INCREASED from 10px */
-            font-size: 9.9px; /* Changed from 11px to 9.9px (10% smaller) */
+            font-size: 9.9px;
             font-weight: normal;
             background-color: var(--tray-bg); 
             color: var(--text-color);
-            padding: 1.8px 4.5px; /* Changed from 2px 5px (10% smaller) */
+            padding: 1.8px 4.5px;
             /* 3D inset effect */
             border-style: solid;
             border-width: 1px;
@@ -99,8 +97,8 @@
             height: 100%;
             display: flex;
             align-items: center;
-            gap: 4.5px; /* Changed from 5px to 4.5px (10% smaller) */
-            margin-right: -3px; /* Pull it slightly to the edge of the blue bar */
+            gap: 4.5px;
+            margin-right: -3px;
             white-space: nowrap;
         }
 
@@ -110,9 +108,8 @@
             display: inline-block;
             background-color: var(--kofi-color);
             color: var(--text-color);
-            padding: 1.8px 7.2px; /* Changed from 2px 8px (10% smaller) */
-            /* INCREASED from 10px */
-            font-size: 10.8px; /* Changed from 12px to 10.8px (10% smaller) */
+            padding: 1.8px 7.2px;
+            font-size: 10.8px;
             text-decoration: none;
             border-style: solid;
             border-width: 2px;
@@ -123,7 +120,7 @@
             white-space: nowrap;
             box-shadow: inset -1px -1px var(--kofi-dark), inset 1px 1px var(--border-light);
             transition: none;
-            margin-left: 9px; /* Changed from 10px to 9px (10% smaller) */
+            margin-left: 9px;
         }
 
         .kofi-button:hover {
@@ -135,71 +132,70 @@
             background-color: var(--kofi-dark);
             border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
             transform: translateY(1px) translateX(1px);
-            padding: 2.7px 6.3px 0.9px 8.1px; /* Changed from 3px 7px 1px 9px (10% smaller) */
+            padding: 2.7px 6.3px 0.9px 8.1px;
         }
 
         .kofi-svg {
-            width: 28.8px; /* Changed from 32px to 28.8px (10% smaller) */
-            height: 28.8px; /* Changed from 32px to 28.8px (10% smaller) */
+            width: 28.8px;
+            height: 28.8px;
             vertical-align: middle;
-            margin-right: 3.6px; /* Changed from 4px to 3.6px (10% smaller) */
+            margin-right: 3.6px;
             image-rendering: pixelated;
         }
         
         .footer-kofi-button {
-            margin-top: 9px; /* Changed from 10px to 9px (10% smaller) */
+            margin-top: 9px;
             margin-left: 0;
             display: inline-flex; 
             align-items: center;
         }
         
         .footer-kofi-button .kofi-svg {
-            width: 14.4px; /* Changed from 16px to 14.4px (10% smaller) */
-            height: 14.4px; /* Changed from 16px to 14.4px (10% smaller) */
+            width: 14.4px;
+            height: 14.4px;
         }
         
         .app-body {
-            padding: 13.5px; /* Changed from 15px to 13.5px (10% smaller) */
+            padding: 13.5px;
         }
 
         /* --- Header Section --- */
         .header {
             text-align: center;
-            margin-bottom: 27px; /* Changed from 30px to 27px (10% smaller) */
+            margin-bottom: 27px;
         }
 
         .logo-title {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 18px; /* Changed from 20px to 18px (10% smaller) */
-            margin-bottom: 13.5px; /* Changed from 15px to 13.5px (10% smaller) */
+            gap: 18px;
+            margin-bottom: 13.5px;
         }
 
         .logo-img {
-            width: 43.2px; /* Changed from 48px to 43.2px (10% smaller) */
-            height: 43.2px; /* Changed from 48px to 43.2px (10% smaller) */
+            width: 43.2px;
+            height: 43.2px;
             image-rendering: pixelated;
         }
 
         .logo-title h1 {
-            font-size: 28.8px; /* Changed from 32px to 28.8px (10% smaller) */
+            font-size: 28.8px;
             color: var(--header-title);
             font-weight: normal;
         }
 
         .header p {
-            /* INCREASED from 12px */
-            font-size: 12.6px; /* Changed from 14px to 12.6px (10% smaller) */
+            font-size: 12.6px;
             color: var(--text-color);
-            margin-bottom: 18px; /* Changed from 20px to 18px (10% smaller) */
+            margin-bottom: 18px;
         }
 
         /* --- Category Headings --- */
         .category-heading {
-            font-size: 12.6px; /* Changed from 14px to 12.6px (10% smaller) */
+            font-size: 12.6px;
             color: var(--header-title);
-            margin: 27px 0 13.5px 0; /* Changed from 30px 0 15px 0 (10% smaller) */
+            margin: 27px 0 13.5px 0;
             padding: 0; 
             font-weight: normal;
             border-bottom: none; 
@@ -208,7 +204,7 @@
         .category-heading::after {
             content: '';
             display: block;
-            margin-top: 7.2px; /* Changed from 8px to 7.2px (10% smaller) */
+            margin-top: 7.2px;
             height: 2px;
             background: var(--border-dark); 
         }
@@ -216,14 +212,16 @@
         /* --- Tools Grid --- */
         .tools-grid {
             grid-template-columns: repeat(3, 1fr); 
-            gap: 22.5px; /* Changed from 25px to 22.5px (10% smaller) */
-            margin-bottom: 31.5px; /* Changed from 35px to 31.5px (10% smaller) */
+            gap: 22.5px;
+            margin-bottom: 31.5px;
             display: grid; 
+            /* MODIFIED: Ensures all cards stretch to the height of the tallest card in the row */
+            align-items: stretch;
         }
 
         .tool-card {
             display: block;
-            padding: 13.5px; /* Changed from 15px to 13.5px (10% smaller) */
+            padding: 13.5px;
             text-decoration: none;
             color: var(--text-color);
             border-style: solid;
@@ -232,6 +230,9 @@
             background: var(--input-bg);
             transition: none;
             cursor: pointer;
+            /* MODIFIED: Ensure internal flex/grid allows description to push the card down */
+            display: flex;
+            flex-direction: column; 
         }
 
         .tool-card:hover {
@@ -240,50 +241,39 @@
 
         .tool-card:active {
             border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
-            padding: 14.4px 12.6px 12.6px 14.4px; /* Changed from 16px 14px 14px 16px (10% smaller) */
-        }
-
-        .tool-icon {
-            /* INCREASED from 14px */
-            font-size: 14.4px; /* Changed from 16px to 14.4px (10% smaller) */
-            color: var(--header-title);
-            margin-right: 7.2px; /* Changed from 8px to 7.2px (10% smaller) */
-            display: inline-block;
-            padding-top: 1.8px; /* Changed from 2px to 1.8px (10% smaller) */
+            padding: 14.4px 12.6px 12.6px 14.4px;
         }
 
         .tool-title {
-            /* INCREASED from 12px */
-            font-size: 12.6px; /* Changed from 14px to 12.6px (10% smaller) */
+            font-size: 12.6px;
             font-weight: normal;
-            margin-bottom: 5.4px; /* Changed from 6px to 5.4px (10% smaller) */
+            margin-bottom: 5.4px;
             color: var(--text-color);
-            display: flex; 
-            align-items: center; 
+            /* Removed display: flex and align-items for a simpler look without icons */
         }
         
         .tool-description {
-            /* INCREASED from 8px */
-            font-size: 9px; /* Changed from 10px to 9px (10% smaller) */
+            font-size: 9px;
             color: #404040; 
             line-height: 1.3;
-            margin-top: 5.4px; /* Changed from 6px to 5.4px (10% smaller) */
+            margin-top: 5.4px;
+            /* MODIFIED: Key to push description to the bottom of the card */
+            flex-grow: 1;
         }
 
         /* --- Suggestion Section --- */
         .suggestion-section {
             text-align: center;
-            margin: 27px 0; /* Changed from 30px 0 to 27px 0 (10% smaller) */
+            margin: 27px 0;
         }
 
         .suggestion-link {
             display: inline-flex;
             align-items: center;
-            gap: 7.2px; /* Changed from 8px to 7.2px (10% smaller) */
+            gap: 7.2px;
             color: var(--link-color);
             text-decoration: underline;
-            /* INCREASED from 10px */
-            font-size: 10.8px; /* Changed from 12px to 10.8px (10% smaller) */
+            font-size: 10.8px;
             font-weight: bold;
             transition: none;
             cursor: pointer;
@@ -292,9 +282,8 @@
         .footer-link {
             color: var(--link-color); 
             text-decoration: underline;
-            /* INCREASED from 9px */
-            font-size: 9.9px; /* Changed from 11px to 9.9px (10% smaller) */
-            margin: 0 4.5px; /* Changed from 0 5px (10% smaller) */
+            font-size: 9.9px;
+            margin: 0 4.5px;
             white-space: nowrap;
         }
         
@@ -303,14 +292,14 @@
         }
 
         .suggestion-icon {
-            font-size: 10.8px; /* Changed from 12px to 10.8px (10% smaller) */
+            font-size: 10.8px;
         }
 
         /* --- Footer --- */
         .footer {
             text-align: center;
-            margin-top: 27px; /* Changed from 30px to 27px (10% smaller) */
-            padding: 13.5px; /* Changed from 15px to 13.5px (10% smaller) */
+            margin-top: 27px;
+            padding: 13.5px;
             border-style: solid;
             border-width: 3px;
             border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
@@ -318,42 +307,40 @@
         }
 
         .footer p {
-            /* INCREASED from 9px */
-            font-size: 9.9px; /* Changed from 11px to 9.9px (10% smaller) */
+            font-size: 9.9px;
             color: var(--text-color);
-            margin: 1.8px 0; /* Changed from 2px 0 to 1.8px 0 (10% smaller) */
+            margin: 1.8px 0;
         }
         
         .footer-links-row {
-            margin: 9px 0; /* Changed from 10px 0 to 9px 0 (10% smaller) */
+            margin: 9px 0;
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 4.5px 13.5px; /* Changed from 5px 15px (10% smaller) */
+            gap: 4.5px 13.5px;
         }
         
         .footer-support-row {
-            margin-top: 13.5px; /* Changed from 15px to 13.5px (10% smaller) */
+            margin-top: 13.5px;
         }
 
         /* --- Responsive Design --- */
         @media (max-width: 1000px) {
             .tools-grid {
                 grid-template-columns: repeat(2, 1fr); 
-                gap: 18px; /* Changed from 20px to 18px (10% smaller) */
+                gap: 18px;
             }
             .title-bar-clock {
-                font-size: 7.2px; /* Changed from 8px to 7.2px (10% smaller) */
-                padding: 0.9px 2.7px; /* Changed from 1px 3px (10% smaller) */
+                font-size: 7.2px;
+                padding: 0.9px 2.7px;
             }
         }
         
         @media (max-width: 768px) {
             body {
-                padding: 13.5px; /* Changed from 15px to 13.5px (10% smaller) */
+                padding: 13.5px;
             }
             .title-bar-clock {
-                 /* Hide the clock on small screens to save space */
                 display: none; 
             }
             .title-bar {
@@ -387,49 +374,49 @@
                 <h2 class="category-heading">Data & Markup</h2>
                 <div class="tools-grid category-grid" data-category="data-markup">
                     <a href="/json" class="tool-card" data-tool="JSON Viewer">
-                        <h3 class="tool-title"><span class="tool-icon">{: }</span> JSON Viewer</h3>
+                        <h3 class="tool-title">JSON Viewer</h3>
                         <p class="tool-description">
                             Parse and view JSON files with syntax highlighting and collapsible structure.
                         </p>
                     </a>
 
                     <a href="/csv" class="tool-card" data-tool="CSV Viewer">
-                        <h3 class="tool-title"><span class="tool-icon">Tbl</span> CSV Viewer</h3>
+                        <h3 class="tool-title">CSV Viewer</h3>
                         <p class="tool-description">
                             View CSV files in a clean table format with search and pagination.
                         </p>
                     </a>
                     
                     <a href="/yaml" class="tool-card" data-tool="YAML Viewer">
-                        <h3 class="tool-title"><span class="tool-icon">-:-</span> YAML Viewer</h3>
+                        <h3 class="tool-title">YAML Viewer</h3>
                         <p class="tool-description">
                             View and convert YAML files with JSON conversion support.
                         </p>
                     </a>
 
                     <a href="/xml" class="tool-card" data-tool="XML Viewer">
-                        <h3 class="tool-title"><span class="tool-icon">&lt; /&gt;</span> XML Viewer</h3>
+                        <h3 class="tool-title">XML Viewer</h3>
                         <p class="tool-description">
                             Parse and display XML files with proper formatting and structure.
                         </p>
                     </a>
                     
                     <a href="/sql" class="tool-card" data-tool="SQL Formatter">
-                        <h3 class="tool-title"><span class="tool-icon">DB</span> SQL Formatter</h3>
+                        <h3 class="tool-title">SQL Formatter</h3>
                         <p class="tool-description">
                             Format and beautify SQL queries with support for multiple dialects.
                         </p>
                     </a>
 
                     <a href="/cssformatter" class="tool-card" data-tool="CSS Formatter">
-                        <h3 class="tool-title"><span class="tool-icon">S</span> CSS Formatter</h3>
+                        <h3 class="tool-title">CSS Formatter</h3>
                         <p class="tool-description">
                             Minify or beautify CSS code with proper formatting and indentation.
                         </p>
                     </a>
 
                     <a href="/jsformatter" class="tool-card" data-tool="JavaScript Formatter">
-                        <h3 class="tool-title"><span class="tool-icon">Fn</span> JavaScript Formatter</h3>
+                        <h3 class="tool-title">JavaScript Formatter</h3>
                         <p class="tool-description">
                             Minify or beautify JavaScript code with proper formatting and indentation.
                         </p>
@@ -441,49 +428,49 @@
                 <div class="tools-grid category-grid" data-category="design-media">
                     
                     <a href="/imgconv" class="tool-card" data-tool="Image Converter">
-                        <h3 class="tool-title"><span class="tool-icon">PNG</span> Image Converter</h3>
+                        <h3 class="tool-title">Image Converter</h3>
                         <p class="tool-description">
                             Convert images between JPG, PNG, and WebP formats directly in your browser.
                         </p>
                     </a>
 
                     <a href="/pallete" class="tool-card" data-tool="Color Palette Generator">
-                        <h3 class="tool-title"><span class="tool-icon">Clr</span> Color Palette Generator</h3>
+                        <h3 class="tool-title">Color Palette Generator</h3>
                         <p class="tool-description">
                             Pick colors from images or generate palettes from any base color.
                         </p>
                     </a>
 
                     <a href="/gradientgen" class="tool-card" data-tool="Gradient Generator">
-                        <h3 class="tool-title"><span class="tool-icon">Grd</span> Gradient Generator</h3>
+                        <h3 class="tool-title">Gradient Generator</h3>
                         <p class="tool-description">
                             Create custom CSS gradients with unlimited color stops and live preview.
                         </p>
                     </a>
                     
                     <a href="/qr" class="tool-card" data-tool="QR Code Generator">
-                        <h3 class="tool-title"><span class="tool-icon">Code</span> QR Code Generator</h3>
+                        <h3 class="tool-title">QR Code Generator</h3>
                         <p class="tool-description">
                             Generate QR codes from text, URLs, or any data with download option.
                         </p>
                     </a>
 
                     <a href="/imgtopdf" class="tool-card" data-tool="Image to PDF">
-                        <h3 class="tool-title"><span class="tool-icon">-></span> Image to PDF</h3>
+                        <h3 class="tool-title">Image to PDF</h3>
                         <p class="tool-description">
                             Convert and merge JPG/PNG images into a single PDF file.
                         </p>
                     </a>
 
                     <a href="/pdftoimg" class="tool-card" data-tool="PDF to Images">
-                        <h3 class="tool-title"><span class="tool-icon"><-</span> PDF to Images</h3>
+                        <h3 class="tool-title">PDF to Images</h3>
                         <p class="tool-description">
                             Split a PDF into individual PNG images and download them as a ZIP file.
                         </p>
                     </a>
 
                     <a href="/imgmeta" class="tool-card" data-tool="Metadata Viewer">
-                        <h3 class="tool-title"><span class="tool-icon">Exif</span> Metadata Viewer</h3>
+                        <h3 class="tool-title">Metadata Viewer</h3>
                         <p class="tool-description">
                             View EXIF data from uploaded images.
                         </p>
@@ -495,56 +482,56 @@
                 <div class="tools-grid category-grid" data-category="text-utility">
                     
                     <a href="/regex" class="tool-card" data-tool="Regex Tester">
-                        <h3 class="tool-title"><span class="tool-icon">R.*</span> Regex Tester</h3>
+                        <h3 class="tool-title">Regex Tester</h3>
                         <p class="tool-description">
                             Test regular expressions with real-time matching and groups.
                         </p>
                     </a>
 
                     <a href="/textdiff" class="tool-card" data-tool="Text Difference">
-                        <h3 class="tool-title"><span class="tool-icon">Diff</span> Text Difference</h3>
+                        <h3 class="tool-title">Text Difference</h3>
                         <p class="tool-description">
                             Compare two text files with highlighted differences.
                         </p>
                     </a>
 
                     <a href="/markdown" class="tool-card" data-tool="Markdown Editor">
-                        <h3 class="tool-title"><span class="tool-icon">#</span> Markdown Editor</h3>
+                        <h3 class="tool-title">Markdown Editor</h3>
                         <p class="tool-description">
                             Write and preview Markdown with live rendering and syntax highlighting.
                         </p>
                     </a>
 
                     <a href="/analysis" class="tool-card" data-tool="Text Analysis">
-                        <h3 class="tool-title"><span class="tool-icon">ABC</span> Text Analysis</h3>
+                        <h3 class="tool-title">Text Analysis</h3>
                         <p class="tool-description">
                             Count and Search words, characters, lines and analyze text with reading time estimates.
                         </p>
                     </a>
                     
                     <a href="/convert" class="tool-card" data-tool="Unit Converter">
-                        <h3 class="tool-title"><span class="tool-icon">Cnv</span> Unit Converter</h3>
+                        <h3 class="tool-title">Unit Converter</h3>
                         <p class="tool-description">
                             Convert between different units of length, weight, temperature, and more.
                         </p>
                     </a>
 
                     <a href="/base64" class="tool-card" data-tool="Base64 Converter">
-                        <h3 class="tool-title"><span class="tool-icon">B64</span> Base64 Converter</h3>
+                        <h3 class="tool-title">Base64 Converter</h3>
                         <p class="tool-description">
                             Encode text to Base64 or decode Base64 back to text instantly.
                         </p>
                     </a>
 
                     <a href="/textgen" class="tool-card" data-tool="Lorem Ipsum Generator">
-                        <h3 class="tool-title"><span class="tool-icon">LIP</span> Text Generator</h3>
+                        <h3 class="tool-title">Text Generator</h3>
                         <p class="tool-description">
                             Generate placeholder text in paragraphs, sentences, or words.
                         </p>
                     </a>
 
                     <a href="/time" class="tool-card" data-tool="Timestamp Converter">
-                        <h3 class="tool-title"><span class="tool-icon">1970</span> Time Converter</h3>
+                        <h3 class="tool-title">Time Converter</h3>
                         <p class="tool-description">
                             Convert between different timestamp formats like Unix, ISO, and RFC 2822.
                         </p>
@@ -557,8 +544,8 @@
                 </div>
 
             <div class="footer">
-                <p>All tools run entirely in your browser. No paywalls - No ads.</p>
-                <p>Made by Zéndex</p>
+                <p>All tools run entirely in your browser. </p>
+                <p>Made by Zéndex!</p>
 
                 <div class="footer-links-row">
                     <a href="privacy.html" class="footer-link">Privacy Policy</a>
