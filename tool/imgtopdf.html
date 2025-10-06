@@ -32,7 +32,7 @@
         }
 
         body {
-            background: #008080;
+            background:var(--window-bg);
             color: var(--text-color);
             line-height: 1.6;
             padding: 30px;
@@ -56,7 +56,7 @@
 
         /* --- Title Bar/Header --- */
         .title-bar {
-            background: var(--header-title);
+            background: #008080;
             color: var(--border-light);
             padding: 5px 8px;
             font-size: 16px;
@@ -509,6 +509,7 @@
                         onclick="convertImagesToPdf()"
                         disabled
                     >
+                        <span id="button-icon" class="btn-icon">💾</span>
                         <span id="button-text">Convert & Download PDF</span>
                     </button>
                 </div>
@@ -599,7 +600,9 @@
         function setLoadingState(isLoading) {
             const button = document.getElementById('convert-button');
             const buttonText = document.getElementById('button-text');
-            const buttonIcon = document.getElementById('button-icon');
+            // This element is now guaranteed to exist due to the HTML fix
+            const buttonIcon = document.getElementById('button-icon'); 
+            
             button.disabled = isLoading;
             if (isLoading) {
                 buttonText.textContent = 'Generating PDF...';
@@ -662,13 +665,10 @@
                 item.innerHTML = `
                     <div class="controls-row">
                         <button onclick="rotateImage('${uniqueId}', -90)" aria-label="Rotate left">
-                            ↺
+                            <img src="https://64.media.tumblr.com/bf74500095e40a307d234a45e2fa0e7b/8155f67beb67c88e-30/s540x810/5f5ba323d5613435440bd65329a1a8d7520b156e.png" alt="Rotate Left" style="width:24px;height:24px;image-rendering:pixelated;">
                         </button>
                         <button onclick="rotateImage('${uniqueId}', 90)" aria-label="Rotate right">
-                            ↻
-                        </button>
-                        <button onclick="deleteImage('${uniqueId}')" class="delete-btn" aria-label="Remove image">
-                            ✕
+                           <img src="https://64.media.tumblr.com/bf74500095e40a307d234a45e2fa0e7b/8155f67beb67c88e-30/s540x810/5f5ba323d5613435440bd65329a1a8d7520b156e.png" alt="Rotate Right" style="width:24px;height:24px;transform: rotate(180deg);image-rendering:pixelated;">
                         </button>
                     </div>
                     <div class="preview-image-wrapper">
@@ -763,15 +763,18 @@
             const pdfOrientation = document.getElementById('pdf-orientation').value;
 
             try {
-                if (typeof window.jspdf === 'undefined' || typeof window.jspdf.jsPDF !== 'function') {
-                    throw new Error("PDF generation library (jsPDF) failed to load.");
-                }
+                // Fix jsPDF initialization
                 const { jsPDF } = window.jspdf;
-                const doc = new jsPDF(pdfOrientation, 'mm', 'a4'); 
+                const doc = new jsPDF({
+                    orientation: pdfOrientation,
+                    unit: 'mm',
+                    format: 'a4'
+                }); 
                 
                 let pdfWidth = doc.internal.pageSize.getWidth();
                 let pdfHeight = doc.internal.pageSize.getHeight();
 
+                // Remove the initial blank page
                 doc.deletePage(1);
 
                 for (let i = 0; i < imageFilesData.length; i++) {
@@ -782,21 +785,25 @@
 
                     let imgWidth = image.naturalWidth;
                     let imgHeight = image.naturalHeight;
-                    const format = file.type.split('/')[1].toUpperCase();
                     
                     // Canvas rotation & resizing
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
                     
-                    const maxSize = Math.max(imgWidth, imgHeight);
-                    canvas.width = maxSize;
-                    canvas.height = maxSize;
+                    // Determine canvas size based on rotation
+                    if (rotation % 180 === 0) {
+                        canvas.width = imgWidth;
+                        canvas.height = imgHeight;
+                    } else {
+                        canvas.width = imgHeight;
+                        canvas.height = imgWidth;
+                    }
                     
-                    ctx.translate(maxSize / 2, maxSize / 2);
+                    ctx.translate(canvas.width / 2, canvas.height / 2);
                     ctx.rotate(rotation * Math.PI / 180);
                     ctx.drawImage(image, -imgWidth / 2, -imgHeight / 2);
 
-                    const rotatedDataUrl = canvas.toDataURL(file.type, 1.0);
+                    const rotatedDataUrl = canvas.toDataURL('image/jpeg', 0.9);
 
                     const tempImg = await loadImage(rotatedDataUrl);
                     const rotatedImgWidth = tempImg.naturalWidth;
@@ -816,7 +823,7 @@
                     const y = (pdfHeight - finalHeight) / 2;
 
                     doc.addPage();
-                    doc.addImage(rotatedDataUrl, format, x, y, finalWidth, finalHeight);
+                    doc.addImage(rotatedDataUrl, 'JPEG', x, y, finalWidth, finalHeight);
                 }
 
                 const currentDate = new Date().toISOString().slice(0, 10);
@@ -824,6 +831,7 @@
                 
             } catch (error) {
                 console.error("PDF Generation Error:", error);
+                alert("Error generating PDF: " + error.message);
             } finally {
                 setLoadingState(false);
             }

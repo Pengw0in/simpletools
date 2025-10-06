@@ -217,6 +217,7 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
+            cursor: pointer; /* Add cursor pointer to indicate clickable */
         }
 
         .page-info {
@@ -384,6 +385,57 @@
             display: none !important; 
         }
 
+        /* --- Modal --- */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--window-bg);
+            padding: 8px;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            border-style: solid;
+            border-width: 3px;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            background: var(--button-face);
+            color: var(--text-color);
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2001;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        .modal-close:active {
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            padding: 1px 0 0 1px;
+        }
+
         /* --- Responsive Design --- */
         @media (max-width: 768px) {
             body {
@@ -470,6 +522,11 @@
     </div>
 
     <canvas id="render-canvas"></canvas>
+
+    <div id="image-modal" class="modal">
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+        <img id="modal-image" class="modal-content" src="" alt="Image Preview">
+    </div>
 
     <script>
         // Global variables
@@ -631,7 +688,7 @@
     </button>
 </div>
                         <div class="preview-image-wrapper">
-                            <img class="preview-image" id="preview-img-${i-1}" src="${imageData}" alt="Page ${i}">
+                            <img class="preview-image" id="preview-img-${i-1}" src="${imageData}" alt="Page ${i}" onclick="openModal('${imageData}', 'Page ${i}')">
                         </div>
                         <div class="page-info">Page ${i}</div>
                     `;
@@ -800,6 +857,33 @@
                 setLoadingState(false); // Reset UI
             }
         }
+
+        function openModal(src, alt) {
+            const modal = document.getElementById('image-modal');
+            const modalImg = document.getElementById('modal-image');
+            modalImg.src = src;
+            modalImg.alt = alt;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('image-modal');
+            modal.style.display = 'none';
+        }
+
+        // Close modal on ESC key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Close modal on click outside image
+        document.getElementById('image-modal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeModal();
+            }
+        });
 
         window.onload = function() {
             setupDragAndDrop();
